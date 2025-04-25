@@ -228,10 +228,3 @@ FOR EACH ROW EXECUTE FUNCTION update_modified_column();
 CREATE TRIGGER update_orders_modtime
 BEFORE UPDATE ON orders
 FOR EACH ROW EXECUTE FUNCTION update_modified_column();
-
-DO $$
-BEGIN
-  IF CURRENT_SETTING('SEED_TEST_DATA') = 'true' THEN
-    \ir seed-test-data.sql
-  END IF;
-END $$;

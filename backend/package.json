@@ -13,5 +13,10 @@
   },
   "devDependencies": {
     "@types/passport-auth0": "^1.0.9"
+  },
+  "scripts": {
+  "start": "node dist/main.ts",
+  "start:dev": "nest start --watch",
+  "build": "nest build"
   }
 }
