@@ -9,8 +9,8 @@ CREATE TYPE supply_order_status AS ENUM ('draft', 'confirmed', 'delivered');
 -- Таблиця користувачів
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    auth0_id VARCHAR(255) UNIQUE NOT NULL, 
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
     role user_role NOT NULL,
     phone_number VARCHAR(20),
     is_active BOOLEAN DEFAULT TRUE,
