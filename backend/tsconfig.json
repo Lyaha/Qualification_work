@@ -15,7 +15,8 @@
       "moduleResolution": "node",
       "esModuleInterop": true,
       "resolveJsonModule": true,
-      "skipLibCheck": true
+      "skipLibCheck": true,
+      "types": ["jest"]
     },
     "include": ["**/*.ts"],
     "exclude": ["node_modules", "dist"]
