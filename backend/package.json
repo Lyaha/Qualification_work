@@ -4,6 +4,7 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^11.1.0",
     "@nestjs/typeorm": "^11.0.0",
     "@types/passport-jwt": "^4.0.1",
     "jwks-rsa": "^3.2.0",
@@ -12,11 +13,12 @@
     "passport-jwt": "^4.0.1"
   },
   "devDependencies": {
+    "@nestjs/cli": "^11.0.7",
     "@types/passport-auth0": "^1.0.9"
   },
   "scripts": {
-  "start": "node dist/main.ts",
-  "start:dev": "nest start --watch",
-  "build": "nest build"
+    "start": "node dist/main.js",
+    "start:dev": "nest start --watch",
+    "build": "nest build"
   }
 }
