@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../entity/user.entity'; // Якщо є така ентіті
+import { User } from '../src/entity/user.entity'; // Якщо є така ентіті
 import { JwtPayload } from './types/jwt-payload.interface';
 
 @Injectable()
