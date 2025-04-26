@@ -3,6 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { User } from './entity/user.entity';
 import { UsersModule } from './users/users.module';
+import { ProductsModule } from './products/products.module';
+import { Category } from './entity/category.entity';
+import { Product } from './entity/product.entity';
+import { Warehouse } from './entity/warehouse.entity';
 
 @Module({
   imports: [
@@ -13,11 +17,12 @@ import { UsersModule } from './users/users.module';
       username: process.env.POSTGRES_USER || 'postgres',
       password: process.env.POSTGRES_PASSWORD || 'postgres',
       database: process.env.POSTGRES_DB || 'warehouse_db',
-      entities: [User],
+      entities: [User, Product, Category, Warehouse],
       synchronize: false, // true тільки в dev-режимі
       autoLoadEntities: true,
     }),
     UsersModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [],

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Category } from './category.entity';
 import { Warehouse } from './warehouse.entity';
 
@@ -14,6 +14,7 @@ export class Product {
   description!: string;
 
   @ManyToOne(() => Category)
+  @JoinColumn({ name: 'category_id' }) // Укажите имя внешнего ключа
   category!: Category;
 
   @Column({ unique: true, nullable: true })
@@ -32,6 +33,7 @@ export class Product {
   expiration_date!: Date;
 
   @ManyToOne(() => Warehouse)
+  @JoinColumn({ name: 'warehouse_id' })
   warehouse!: Warehouse;
 
   @Column({ nullable: true })

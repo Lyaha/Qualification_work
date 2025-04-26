@@ -14,7 +14,7 @@ export class User {
   id!: string;
 
   @Column({ unique: true })
-  uth0_id!: string;
+  auth0_id!: string;
 
   @Column({ unique: true })
   email!: string;
