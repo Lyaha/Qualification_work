@@ -5,7 +5,6 @@ import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 
 export default defineConfig([
-  prettierConfig,
   {
     files: ['src/**/*.ts'],
     languageOptions: {
@@ -26,4 +25,5 @@ export default defineConfig([
       'prettier/prettier': 'error',
     },
   },
+  prettierConfig,
 ]);
