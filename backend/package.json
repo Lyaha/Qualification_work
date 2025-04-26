@@ -5,25 +5,38 @@
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.0",
+    "@nestjs/swagger": "^11.1.5",
     "@nestjs/testing": "^11.1.0",
     "@nestjs/typeorm": "^11.0.0",
     "@types/mocha": "^10.0.10",
     "@types/passport-jwt": "^4.0.1",
+    "type": "module",
     "jwks-rsa": "^3.2.0",
     "passport": "^0.7.0",
     "passport-auth0": "^1.4.4",
     "passport-jwt": "^4.0.1",
-    "pg": "^8.15.6"
+    "pg": "^8.15.6",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.7",
     "@types/jest": "^29.5.14",
-    "@types/passport-auth0": "^1.0.9"
+    "@types/passport-auth0": "^1.0.9",
+    "@typescript-eslint/eslint-plugin": "^8.31.0",
+    "@typescript-eslint/parser": "^8.31.0",
+    "eslint": "^9.25.1",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-define-config": "^2.1.0",
+    "eslint-plugin-prettier": "^5.2.6",
+    "prettier": "^3.5.3",
+    "typescript-eslint": "^8.31.0"
   },
   "scripts": {
     "start": "node dist/main.js",
     "start:dev": "nest start --watch",
     "build": "nest build",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint src/**/*.ts --fix",
+    "format": "prettier --write ."
   }
 }
