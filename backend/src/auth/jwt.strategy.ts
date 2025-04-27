@@ -21,11 +21,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    // Payload — це вміст токена (user info)
     return {
       sub: payload.sub,
       email: payload.email,
-      roles: payload['https://yourapp.com/roles'], // Якщо налаштовані кастомні клейми
     };
   }
 }

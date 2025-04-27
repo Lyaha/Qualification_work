@@ -37,4 +37,22 @@ export class UsersService {
     const user = await this.findOne(id);
     await this.usersRepository.remove(user);
   }
+
+  async findByParam(email?: string, auth0_id?: string): Promise<User> {
+    if (email) {
+      const user = await this.usersRepository.findOne({ where: { email } });
+      if (!user) {
+        throw new NotFoundException(`User with email ${email} not found`);
+      }
+      return user;
+    }
+    if (auth0_id) {
+      const user = await this.usersRepository.findOne({ where: { auth0_id } });
+      if (!user) {
+        throw new NotFoundException(`User with auth0_id ${auth0_id} not found`);
+      }
+      return user;
+    }
+    throw new Error('Must provide either email or auth0_id');
+  }
 }
