@@ -8,6 +8,7 @@ import { Category } from './entity/category.entity';
 import { Product } from './entity/product.entity';
 import { Warehouse } from './entity/warehouse.entity';
 import { AuthModule } from './auth/auth.module';
+import { WarehousesModule } from './warhouses/warhouses.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     UsersModule,
     ProductsModule,
+    WarehousesModule,
     AuthModule,
   ],
   controllers: [AppController],
