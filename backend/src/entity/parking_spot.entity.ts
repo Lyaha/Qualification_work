@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Warehouse } from './warehouse.entity';
 
 export enum ParkingSpotStatus {
   AVAILABLE = 'available',
@@ -11,12 +12,25 @@ export class ParkingSpot {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column()
-  location!: string;
+  @ManyToOne(() => Warehouse)
+  @JoinColumn({ name: 'warehouse_id' })
+  warehouse!: Warehouse;
 
-  @Column({ type: 'enum', enum: ParkingSpotStatus })
+  @Column()
+  warehouse_id!: string;
+
+  @Column({
+    type: 'enum',
+    enum: ParkingSpotStatus,
+  })
   status!: ParkingSpotStatus;
 
-  @Column({ nullable: true })
-  warehouse_id!: string;
+  @Column({ type: 'timestamp', nullable: true })
+  reserved_until!: Date;
+
+  @Column({ type: 'uuid', nullable: true })
+  reference_id!: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  entity_type!: string;
 }
