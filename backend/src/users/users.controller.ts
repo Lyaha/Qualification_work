@@ -1,8 +1,22 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  UseGuards,
+  Query,
+  ForbiddenException,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from '../entity/user.entity';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { ApiBearerAuth, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
+import { RoleGuard } from '../auth/roles.guard';
+import { CurrentUser } from '../auth/current-user.decorator';
+import { RolePermissions } from '../auth/roles-hierarchy';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')
@@ -11,27 +25,69 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @UseGuards(RoleGuard)
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<User> {
-    return this.usersService.findOne(id);
+  async findOne(@Param('id') id: string, @CurrentUser() currentUser: User): Promise<User> {
+    const targetUser = await this.usersService.findOne(id);
+    if (!targetUser) {
+      throw new ForbiddenException(
+        'User not found or you do not have permission to view this user',
+      );
+    }
+    if (currentUser.id !== targetUser.id) {
+      const allowedRoles = RolePermissions[currentUser.role];
+      if (!allowedRoles.includes(targetUser.role)) {
+        throw new ForbiddenException('You do not have permission to view this user');
+      }
+    }
+    return targetUser;
   }
 
   @Post()
+  @UseGuards(RoleGuard)
   create(@Body() data: Partial<User>): Promise<User> {
     return this.usersService.create(data);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() data: Partial<User>): Promise<User> {
+  async update(
+    @Param('id') id: string,
+    @Body() data: Partial<User>,
+    @CurrentUser() currentUser: User,
+  ): Promise<User> {
+    const targetUser = await this.usersService.findOne(id);
+    if (!targetUser) {
+      throw new ForbiddenException(
+        'User not found or you do not have permission to edit this user',
+      );
+    }
+    if (currentUser.id !== targetUser.id) {
+      const allowedRoles = RolePermissions[currentUser.role];
+      if (!allowedRoles.includes(targetUser.role)) {
+        throw new ForbiddenException('You do not have permission to edit this user');
+      }
+    }
     return this.usersService.update(id, data);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id') id: string, @CurrentUser() currentUser: User): Promise<void> {
+    const targetUser = await this.usersService.findOne(id);
+    if (!targetUser) {
+      throw new ForbiddenException(
+        'User not found or you do not have permission to delete this user',
+      );
+    }
+    if (currentUser.id !== targetUser.id) {
+      const allowedRoles = RolePermissions[currentUser.role];
+      if (!allowedRoles.includes(targetUser.role)) {
+        throw new ForbiddenException('You do not have permission to delete this user');
+      }
+    }
     return this.usersService.remove(id);
   }
 
