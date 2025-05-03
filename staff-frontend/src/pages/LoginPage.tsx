@@ -7,11 +7,7 @@ const LoginPage = () => {
   return (
     <Box textAlign="center" mt={20}>
       <Heading mb={4}>Please Log In</Heading>
-      <Button
-        colorScheme="teal"
-        size="lg"
-        onClick={() => loginWithRedirect()}
-      >
+      <Button colorScheme="teal" size="lg" onClick={() => loginWithRedirect()}>
         Log In
       </Button>
     </Box>

@@ -5,21 +5,19 @@ import HomePage from './pages/HomePage';
 import StartPage from './pages/StartPage';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import ForbiddenPage from './pages/ForbiddenPage';
+import ProtectedRoleRoute from './components/ProtectedRoleRoute';
+import { config } from './config';
 
 function App() {
-  console.log({
-    domain: process.env.REACT_APP_AUTH0_DOMAIN,
-    clientId: process.env.REACT_APP_AUTH0_CLIENT_ID,
-    redirect_uri: window.location.origin,
-  });
   return (
     <ChakraProvider value={defaultSystem}>
       <Auth0Provider
-        domain={process.env.REACT_APP_AUTH0_DOMAIN!}
-        clientId={process.env.REACT_APP_AUTH0_CLIENT_ID!}
+        domain={config.auth0.domain}
+        clientId={config.auth0.clientId}
         authorizationParams={{
           redirect_uri: window.location.origin,
-          audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+          audience: config.auth0.audience,
           scope: 'openid profile email offline_access',
         }}
         useRefreshTokens={true}
@@ -33,7 +31,17 @@ function App() {
               path="/start"
               element={
                 <ProtectedRoute>
-                  <StartPage />
+                  <ProtectedRoleRoute>
+                    <StartPage />
+                  </ProtectedRoleRoute>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/forbidden"
+              element={
+                <ProtectedRoute>
+                  <ForbiddenPage />
                 </ProtectedRoute>
               }
             />
