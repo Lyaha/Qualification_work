@@ -19,8 +19,11 @@ function App() {
         clientId={process.env.REACT_APP_AUTH0_CLIENT_ID!}
         authorizationParams={{
           redirect_uri: window.location.origin,
-          scope: 'openid profile email read:users',
+          audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+          scope: 'openid profile email offline_access',
         }}
+        useRefreshTokens={true}
+        cacheLocation="localstorage"
       >
         <BrowserRouter>
           <Routes>
