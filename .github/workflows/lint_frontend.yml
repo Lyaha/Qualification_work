@@ -1,0 +1,37 @@
+name: Lint and Type Check for Frontend
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        projects: ['staff-frontend']
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+          cache: 'npm'
+          cache-dependency-path: ${{ matrix.projects }}/package-lock.json
+
+      - name: Install dependencies for ${{ matrix.projects }}
+        working-directory: ${{ matrix.projects }}
+        run: npm ci
+
+      - name: Run ESLint in ${{ matrix.projects }}
+        working-directory: ${{ matrix.projects }}
+        run: npm run lint
+
+      - name: Run Prettier check in ${{ matrix.projects }}
+        working-directory: ${{ matrix.projects }}
+        run: npm run format -- --check
+
+      - name: Type Check in ${{ matrix.projects }}
+        working-directory: ${{ matrix.projects }}
+        run: npm run type-check
