@@ -51,7 +51,6 @@ export class UsersController {
   @Get('/auth-staff')
   async AuthStaff(@Req() req: any, @CurrentUser() currentUser: any): Promise<Boolean> {
     //console.log('Current user:', currentUser);
-    const targetUser = await this.usersService.findOne(currentUser.id);
     try {
       if (!currentUser) {
         throw new ForbiddenException('User not found');
