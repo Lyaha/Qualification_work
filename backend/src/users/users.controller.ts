@@ -9,6 +9,7 @@ import {
   UseGuards,
   Query,
   ForbiddenException,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from '../entity/user.entity';
@@ -30,7 +31,43 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
+  @Post()
+  @UseGuards(RoleGuard)
+  create(@Body() data: Partial<User>): Promise<User> {
+    return this.usersService.create(data);
+  }
+
+  @Get('/find')
+  @ApiQuery({ name: 'email', required: false })
+  @ApiQuery({ name: 'auth0_id', required: false })
+  @ApiOkResponse({ type: User })
+  async findByParam(
+    @Query('email') email?: string,
+    @Query('auth0_id') auth0_id?: string,
+  ): Promise<User> {
+    return this.usersService.findByParam(email, auth0_id);
+  }
+
+  @Get('/auth-staff')
+  async AuthStaff(@Req() req: any, @CurrentUser() currentUser: any): Promise<Boolean> {
+    //console.log('Current user:', currentUser);
+    const targetUser = await this.usersService.findOne(currentUser.id);
+    try {
+      if (!currentUser) {
+        throw new ForbiddenException('User not found');
+      }
+      if (currentUser.role == 'client') {
+        return false;
+      }
+      await this.usersService.update(currentUser.id, { last_login_at: new Date(Date.now()) });
+      return true;
+    } catch (error) {
+      console.error('Error updating last login time:', error);
+      throw new ForbiddenException('Failed to update last login time');
+    }
+  }
+
+  @Get('/user/:id')
   async findOne(@Param('id') id: string, @CurrentUser() currentUser: User): Promise<User> {
     const targetUser = await this.usersService.findOne(id);
     if (!targetUser) {
@@ -47,13 +84,7 @@ export class UsersController {
     return targetUser;
   }
 
-  @Post()
-  @UseGuards(RoleGuard)
-  create(@Body() data: Partial<User>): Promise<User> {
-    return this.usersService.create(data);
-  }
-
-  @Put(':id')
+  @Put('/user/:id')
   async update(
     @Param('id') id: string,
     @Body() data: Partial<User>,
@@ -74,7 +105,7 @@ export class UsersController {
     return this.usersService.update(id, data);
   }
 
-  @Delete(':id')
+  @Delete('user/:id')
   async remove(@Param('id') id: string, @CurrentUser() currentUser: User): Promise<void> {
     const targetUser = await this.usersService.findOne(id);
     if (!targetUser) {
@@ -89,16 +120,5 @@ export class UsersController {
       }
     }
     return this.usersService.remove(id);
-  }
-
-  @Get('/find')
-  @ApiQuery({ name: 'email', required: false })
-  @ApiQuery({ name: 'auth0_id', required: false })
-  @ApiOkResponse({ type: User })
-  async findByParam(
-    @Query('email') email?: string,
-    @Query('auth0_id') auth0_id?: string,
-  ): Promise<User> {
-    return this.usersService.findByParam(email, auth0_id);
   }
 }
