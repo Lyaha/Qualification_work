@@ -13,7 +13,7 @@ const ProtectedRoleRoute = ({ children }: ProtectedRoleRouteProps): React.ReactE
     return <div>Loading...</div>;
   }
 
-  return isStaff ? <>{children}</> : <Navigate to="/login" replace />;
+  return isStaff ? <>{children}</> : <Navigate to="/forbidden" replace />;
 };
 
 export default ProtectedRoleRoute;

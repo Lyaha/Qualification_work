@@ -7,14 +7,15 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuthAndRedirect = async () => {
-      if (isLoading) return;
-      if (isAuthenticated) {
-        navigate('/start');
-      }
-    };
-    checkAuthAndRedirect();
-  }, [isAuthenticated, isLoading, navigate]);
+    if (isLoading) {
+      return;
+    }
+    if (isAuthenticated) {
+      navigate('/start');
+    } else {
+      navigate('/login');
+    }
+  }, [navigate, isAuthenticated]);
 
   if (isLoading) {
     return <div>Loading ...</div>;

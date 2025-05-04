@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps): React.ReactElement |
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
+  console.log('isAuthenticated ', isAuthenticated);
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
