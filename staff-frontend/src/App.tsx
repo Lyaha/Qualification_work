@@ -1,4 +1,4 @@
-import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
+import { ChakraProvider } from '@chakra-ui/react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { Auth0Provider } from '@auth0/auth0-react';
 import HomePage from './pages/HomePage';

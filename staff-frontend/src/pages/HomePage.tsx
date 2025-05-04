@@ -15,7 +15,7 @@ const HomePage = () => {
     } else {
       navigate('/login');
     }
-  }, [navigate, isAuthenticated]);
+  }, [navigate, isAuthenticated, isLoading]);
 
   if (isLoading) {
     return <div>Loading ...</div>;
