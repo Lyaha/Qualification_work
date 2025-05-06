@@ -1,13 +1,12 @@
 import { Box, Heading, Button } from '@chakra-ui/react';
 import { useAuth0 } from '@auth0/auth0-react';
-import Menu from '../components/Menu';
+import Layout from '../components/Layout';
 
 const StartPage = () => {
   const { logout } = useAuth0();
 
   return (
-    <Box>
-      <Menu />
+    <Layout>
       <Box textAlign="center" mt={20}>
         <Heading mb={4}>Welcome to Your App!</Heading>
         <Button
@@ -17,7 +16,7 @@ const StartPage = () => {
           Log Out
         </Button>
       </Box>
-    </Box>
+    </Layout>
   );
 };
 

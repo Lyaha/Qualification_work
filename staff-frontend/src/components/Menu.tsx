@@ -5,21 +5,21 @@ import {
   Avatar,
   useDisclosure,
   Drawer,
-  DrawerBody,
   DrawerHeader,
-  DrawerContent,
   Stack,
   Button,
   Link,
+  Portal,
 } from '@chakra-ui/react';
-import { FaLock, FaMoon, FaSun } from 'react-icons/fa';
+import { FaMoon, FaSun } from 'react-icons/fa';
 import { useColorMode } from './ui/color-mode';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { useIsMobile } from '../hooks/useIsMobile';
+import { IoMdClose, IoMdMenu } from 'react-icons/io';
 
 const Menu = () => {
-  const { open, onOpen, onClose } = useDisclosure();
+  const { onOpen, onClose } = useDisclosure();
   const { toggleColorMode } = useColorMode();
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -28,7 +28,7 @@ const Menu = () => {
   const UserInfo = () => (
     <Flex align="center" p={4} gap={3} mb={4}>
       <Avatar.Root>
-        <Avatar.Fallback name="Segun Adebayo" />
+        <Avatar.Fallback name="John Doe" />
       </Avatar.Root>
       <Box textAlign="left">
         <Text fontWeight="bold">John Doe</Text>
@@ -96,9 +96,6 @@ const Menu = () => {
             borderColor="chakra-border-color"
             bg="chakra-body-bg"
           >
-            <Button aria-label="Open menu" onClick={onOpen} variant="ghost">
-              <FaLock />
-            </Button>
             <Flex align="center" gap={2}>
               <Button boxSize={8} onClick={toggleColorMode}>
                 {theme === 'light' ? <FaSun /> : <FaMoon />}
@@ -109,22 +106,29 @@ const Menu = () => {
             </Flex>
             <Box w="40px" />
           </Flex>
-
-          <Drawer.Root onClose={onClose} isOpen={open}>
-            <DrawerContent>
-              <DrawerHeader borderBottomWidth="1px">
-                <Flex align="center" gap={2} bg="chakra-body-bg">
-                  <Button boxSize={8} onClick={toggleColorMode}>
-                    {theme === 'light' ? <FaSun /> : <FaMoon />}
-                  </Button>
-                  FluxGate
-                </Flex>
-              </DrawerHeader>
-              <DrawerBody p={0}>
-                <UserInfo />
-                <MenuContent isMobile />
-              </DrawerBody>
-            </DrawerContent>
+          <Drawer.Root key={'start'} placement={'start'}>
+            <Drawer.Trigger>
+              <Button aria-label="Open menu" onClick={onOpen} variant="ghost">
+                <IoMdMenu />
+              </Button>
+            </Drawer.Trigger>
+            <Portal>
+              <Drawer.Backdrop />
+              <Drawer.Positioner>
+                <Drawer.Content>
+                  <DrawerHeader>Menu</DrawerHeader>
+                  <Drawer.Body>
+                    <Drawer.CloseTrigger>
+                      <Button aria-label="Close menu" onClick={onClose}>
+                        <IoMdClose />
+                      </Button>
+                    </Drawer.CloseTrigger>
+                    <UserInfo />
+                    <MenuContent isMobile />
+                  </Drawer.Body>
+                </Drawer.Content>
+              </Drawer.Positioner>
+            </Portal>
           </Drawer.Root>
         </>
       )}
