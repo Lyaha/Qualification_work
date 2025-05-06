@@ -4,9 +4,9 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import HomePage from './pages/HomePage';
 import StartPage from './pages/StartPage';
 import LoginPage from './pages/LoginPage';
-import ProtectedRoute from './components/ProtectedRoute';
+//import ProtectedRoute from './components/ProtectedRoute';
 import ForbiddenPage from './pages/ForbiddenPage';
-import ProtectedRoleRoute from './components/ProtectedRoleRoute';
+//import ProtectedRoleRoute from './components/ProtectedRoleRoute';
 import { config } from './config';
 import chakraTheme from './theme';
 import { ThemeProvider } from 'next-themes';
@@ -33,19 +33,19 @@ function App() {
               <Route
                 path="/start"
                 element={
-                  <ProtectedRoute>
-                    <ProtectedRoleRoute>
-                      <StartPage />
-                    </ProtectedRoleRoute>
-                  </ProtectedRoute>
+                  //<ProtectedRoute>
+                  //<ProtectedRoleRoute>
+                  <StartPage />
+                  //</Routes></ProtectedRoleRoute>
+                  //</ProtectedRoute>
                 }
               />
               <Route
                 path="/forbidden"
                 element={
-                  <ProtectedRoute>
-                    <ForbiddenPage />
-                  </ProtectedRoute>
+                  //<ProtectedRoute>
+                  <ForbiddenPage />
+                  //</ProtectedRoute>
                 }
               />
               <Route path="*" element={<Navigate to="/" />} />
