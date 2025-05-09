@@ -66,6 +66,15 @@ export class UsersController {
     }
   }
 
+  @Get('/me')
+  @ApiOkResponse({ type: User })
+  async getCurrentUser(@CurrentUser() currentUser: User): Promise<User> {
+    if (!currentUser) {
+      throw new ForbiddenException('User not authenticated');
+    }
+    return currentUser;
+  }
+
   @Get('/user/:id')
   async findOne(@Param('id') id: string, @CurrentUser() currentUser: User): Promise<User> {
     const targetUser = await this.usersService.findOne(id);

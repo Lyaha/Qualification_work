@@ -13,6 +13,12 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
+  @Column()
+  first_name!: string;
+
+  @Column()
+  last_name!: string;
+
   @Column({ unique: true })
   auth0_id!: string;
 

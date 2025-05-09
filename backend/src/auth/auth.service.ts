@@ -14,7 +14,15 @@ export class AuthService {
 
   async validateUser(payload: JwtPayload): Promise<User> {
     const auth0Id = payload.sub;
-    let email = payload.email;
+    let email = '';
+    let first_name = '';
+    let last_name = '';
+
+    let user = await this.usersRepository.findOne({
+      where: { auth0_id: auth0Id },
+    });
+    email = user ? user.email : '';
+
     if (!email) {
       try {
         const response = await axios.get('https://' + process.env.AUTH0_DOMAIN + '/userinfo', {
@@ -24,20 +32,20 @@ export class AuthService {
         });
 
         email = response.data.email;
+        first_name = response.data.given_name;
+        last_name = response.data.family_name;
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : String(err);
         throw new UnauthorizedException('Unable to retrieve email from Auth0: ' + errorMessage);
       }
     }
 
-    let user = await this.usersRepository.findOne({
-      where: { auth0_id: auth0Id },
-    });
-
     if (!user) {
       user = this.usersRepository.create({
         auth0_id: auth0Id,
-        email,
+        first_name: first_name,
+        last_name: last_name,
+        email: email,
         role: UserRole.CLIENT,
         is_active: true,
         last_login_at: new Date(Date.now()),
