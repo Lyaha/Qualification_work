@@ -1,22 +1,22 @@
 import {
   Box,
   Flex,
-  Text,
-  Avatar,
   useDisclosure,
   Drawer,
   DrawerHeader,
-  Stack,
   Button,
   Link,
   Portal,
 } from '@chakra-ui/react';
 import { FaMoon, FaSun } from 'react-icons/fa';
-import { useColorMode } from './ui/color-mode';
+import { useColorMode, useColorModeValue } from './ui/color-mode';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { IoMdClose, IoMdMenu } from 'react-icons/io';
+import { useAuth0 } from '@auth0/auth0-react';
+import UserInfo from './UserInfoBox';
+import MenuContent from './MenuItems';
 
 const Menu = () => {
   const { onOpen, onClose } = useDisclosure();
@@ -24,31 +24,8 @@ const Menu = () => {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
-
-  const UserInfo = () => (
-    <Flex align="center" p={4} gap={3} mb={4}>
-      <Avatar.Root>
-        <Avatar.Fallback name="John Doe" />
-      </Avatar.Root>
-      <Box textAlign="left">
-        <Text fontWeight="bold">John Doe</Text>
-        <Text fontSize="sm" color="gray.600">
-          john.doe@company.com
-        </Text>
-      </Box>
-    </Flex>
-  );
-
-  const MenuContent = ({ isMobile = false }) => (
-    <Stack spaceX={3} spaceY={3} p={isMobile ? 4 : 0} mb={isMobile ? 0 : 4}>
-      <Box divideX="2px">
-        {/* Здесь будут кнопки меню */}
-        <Text p={2}>Dashboard</Text>
-        <Text p={2}>Settings</Text>
-        <Text p={2}>Profile</Text>
-      </Box>
-    </Stack>
-  );
+  const { logout } = useAuth0();
+  const bg_menu = useColorModeValue('#ebebeb', '#163519');
 
   useEffect(() => setMounted(true), []);
 
@@ -66,7 +43,9 @@ const Menu = () => {
           position="fixed"
           left={0}
           top={0}
-          bg="chakra-body-bg"
+          bg={bg_menu}
+          display="flex"
+          flexDirection="column"
         >
           <Flex p={4} align="center" gap={2} _hover={{ textDecoration: 'none' }}>
             <Box mb={4}>
@@ -79,9 +58,19 @@ const Menu = () => {
               {theme === 'light' ? <FaSun /> : <FaMoon />}
             </Button>
           </Flex>
-
-          <UserInfo />
-          <MenuContent />
+          <Box overflowY="auto" flexGrow={1} p={4}>
+            <UserInfo />
+            <MenuContent />
+          </Box>
+          <Flex mt="auto" justify="center" p={4}>
+            <Button
+              bg="#1ac766"
+              color="fg"
+              onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+            >
+              Logout
+            </Button>
+          </Flex>
         </Box>
       )}
 
@@ -124,8 +113,21 @@ const Menu = () => {
                       </Button>
                     </Drawer.CloseTrigger>
                     <UserInfo />
-                    <MenuContent isMobile />
+                    <MenuContent />
                   </Drawer.Body>
+                  <Drawer.Footer>
+                    <Flex p={4} justify="center" w={'100%'}>
+                      <Button
+                        bg="#1ac766"
+                        color="fg"
+                        onClick={() =>
+                          logout({ logoutParams: { returnTo: window.location.origin } })
+                        }
+                      >
+                        Logout
+                      </Button>
+                    </Flex>
+                  </Drawer.Footer>
                 </Drawer.Content>
               </Drawer.Positioner>
             </Portal>
