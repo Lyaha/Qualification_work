@@ -1,11 +1,11 @@
 -- Заповнення users
-INSERT INTO users (id, auth0_id, email, role, phone_number, is_active, created_at, updated_at)
+INSERT INTO users (id, first_name, last_name, auth0_id, email, role, phone_number, is_active, created_at, updated_at)
 VALUES 
-(gen_random_uuid(), 'auth0|user1client',  'client1@test.com',  'client',          '+3801111111', TRUE, now(), now()),
-(gen_random_uuid(), 'auth0|user2worker',  'worker1@test.com',  'warehouse_worker','+3802222222', TRUE, now(), now()),
-(gen_random_uuid(), 'auth0|user3manager', 'manager1@test.com', 'manager',         '+3803333333', TRUE, now(), now()),
-(gen_random_uuid(), 'auth0|user4admin',   'admin1@test.com',   'admin',           '+3804444444', TRUE, now(), now()),
-(gen_random_uuid(), 'auth0|user5director','director1@test.com','director',        '+3805555555', TRUE, now(), now());
+(gen_random_uuid(), 'testname1', 'testlastname1', 'auth0|user1client',  'client1@test.com',  'client',          '+3801111111', TRUE, now(), now()),
+(gen_random_uuid(), 'testname2', 'testlastname2', 'auth0|user2worker',  'worker1@test.com',  'warehouse_worker','+3802222222', TRUE, now(), now()),
+(gen_random_uuid(), 'testname3', 'testlastname3', 'auth0|user3manager', 'manager1@test.com', 'manager',         '+3803333333', TRUE, now(), now()),
+(gen_random_uuid(), 'testname4', 'testlastname4', 'auth0|user4admin',   'admin1@test.com',   'admin',           '+3804444444', TRUE, now(), now()),
+(gen_random_uuid(), 'testname5', 'testlastname5', 'auth0|user5director','director1@test.com','director',        '+3805555555', TRUE, now(), now());
 -- Заповнення warehouses
 INSERT INTO warehouses (name, location, working_hours) 
 VALUES 
@@ -149,3 +149,20 @@ VALUES
 ((SELECT id FROM products LIMIT 1 OFFSET 2), 19000.00, 20000.00, (SELECT id FROM users LIMIT 1 OFFSET 3)),
 ((SELECT id FROM products LIMIT 1 OFFSET 3), 6500.00, 7000.00, (SELECT id FROM users LIMIT 1 OFFSET 3)),
 ((SELECT id FROM products LIMIT 1 OFFSET 4), 14000.00, 15000.00, (SELECT id FROM users LIMIT 1 OFFSET 3));
+
+INSERT INTO supply_order_items (supply_order_id, product_id, quantity, unit_price) 
+VALUES
+((SELECT id FROM supply_orders LIMIT 1 OFFSET 0), (SELECT id FROM products WHERE name = 'Ноутбук HP'), 20, 20000.00),
+((SELECT id FROM supply_orders LIMIT 1 OFFSET 1), (SELECT id FROM products WHERE name = 'iPhone 14'), 30, 30000.00),
+((SELECT id FROM supply_orders LIMIT 1 OFFSET 2), (SELECT id FROM products WHERE name = 'Холодильник Samsung'), 10, 15000.00),
+((SELECT id FROM supply_orders LIMIT 1 OFFSET 3), (SELECT id FROM products WHERE name = 'Монитор Dell'), 25, 5000.00),
+((SELECT id FROM supply_orders LIMIT 1 OFFSET 4), (SELECT id FROM products WHERE name = 'Пральна машина LG'), 15, 12000.00);
+
+-- Заповнення tasks
+INSERT INTO tasks (worker_id, order_item_id, supply_order_item_id, quantity, deadline, status, note) 
+VALUES
+((SELECT id FROM users WHERE email = 'omgthisisus@gmail.com'),  (SELECT id FROM order_items LIMIT 1 OFFSET 0),  NULL,  1,  '2025-05-10',  'pending',  'Підготувати ноутбук до відправки'),
+((SELECT id FROM users WHERE email = 'worker1@test.com'), (SELECT id FROM order_items LIMIT 1 OFFSET 1), NULL, 2, '2024-02-25', 'in_progress', 'Комплектація замовлення смартфонів'),
+((SELECT id FROM users WHERE email = 'worker1@test.com'), NULL, (SELECT id FROM supply_order_items LIMIT 1 OFFSET 2), 10, '2024-03-30', 'completed', 'Прийняти партію холодильників'),
+((SELECT id FROM users WHERE email = 'worker1@test.com'), NULL, (SELECT id FROM supply_order_items LIMIT 1 OFFSET 3), 25, '2024-04-15', 'pending', 'Розвантаження моніторів'),
+((SELECT id FROM users WHERE email = 'worker1@test.com'), NULL, (SELECT id FROM supply_order_items LIMIT 1 OFFSET 4), 15, '2024-05-10', 'in_progress', 'Перевірка пральних машин при прийомці');

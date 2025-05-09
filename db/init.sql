@@ -4,11 +4,14 @@ CREATE TYPE order_status AS ENUM ('pending', 'confirmed', 'completed', 'canceled
 CREATE TYPE discount_type AS ENUM ('percentage', 'fixed');
 CREATE TYPE movement_type AS ENUM ('incoming', 'outgoing', 'transfer');
 CREATE TYPE parking_spot_status AS ENUM ('available', 'reserved', 'occupied');
-CREATE TYPE supply_order_status AS ENUM ('draft', 'confirmed', 'delivered');
+CREATE TYPE supply_order_status AS ENUM ('draft', 'confirmed', 'delivered', 'completed');
+CREATE TYPE task_status AS ENUM ('pending', 'in_progress', 'completed');
 
 -- Таблиця користувачів
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
     auth0_id VARCHAR(255) UNIQUE NOT NULL, 
     email VARCHAR(255) UNIQUE NOT NULL,
     role user_role NOT NULL,
@@ -197,6 +200,23 @@ CREATE TABLE price_history (
     new_price DECIMAL(10,2) NOT NULL,
     changed_by UUID NOT NULL REFERENCES users(id),
     changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE tasks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    worker_id UUID NOT NULL REFERENCES users(id),
+    order_item_id UUID REFERENCES order_items(id),
+    supply_order_item_id UUID REFERENCES supply_order_items(id),
+    quantity INT NOT NULL CHECK (quantity > 0),
+    deadline DATE NOT NULL,
+    status task_status NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP,
+    note TEXT,
+    CHECK (
+        (order_item_id IS NOT NULL AND supply_order_item_id IS NULL) OR
+        (order_item_id IS NULL AND supply_order_item_id IS NOT NULL)
+    )
 );
 
 -- Індекси
