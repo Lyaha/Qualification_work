@@ -1,0 +1,71 @@
+{
+  "auth": {
+    "welcome": "Welcome to FluxGate",
+    "staffPortal": "Staff Portal - Please sign in to continue",
+    "signIn": "Sign In with Company Account",
+    "loading": "Loading...",
+    "secureLogout": "Sign Out"
+  },
+  "navigation": {
+    "home": "Home",
+    "tasks": "Tasks",
+    "orders": "Orders",
+    "supplies": "Supplies",
+    "warehouse": "Warehouse",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "tasks": {
+    "currentTasks": "Current Tasks",
+    "status": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed"
+    },
+    "type": {
+      "order": "Order",
+      "supply": "Supply"
+    },
+    "urgent": "Urgent",
+    "quantity": "Quantity",
+    "deadline": "Deadline"
+  },
+  "forbidden": {
+    "title": "Access Denied",
+    "message": "You don't have permission to access this page. Please contact an administrator if you believe this is an error."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error!",
+    "success": "Success!",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "backToHome": "Back to Home",
+    "needHelp": "Need help? Contact us at:",
+    "emailCopied": "Email copied",
+    "emailCopiedDesc": "Email address has been copied to clipboard"
+  },
+  "errors": {
+    "userNotFound": "User not found",
+    "loadingFailed": "Failed to load data",
+    "unauthorized": "Authorization required",
+    "forbidden": "Access denied",
+    "serverError": "Server error",
+    "networkError": "Network error"
+  },
+  "menu": {
+    "name": "Menu",
+    "logout": "Logout"
+  },
+  "system": {
+    "appName": "FluxGate",
+    "appDescription": "Warehouse Management System",
+    "version": "Version",
+    "copyright": "© 2024 FluxGate. All rights reserved"
+  }
+}

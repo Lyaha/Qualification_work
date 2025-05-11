@@ -6,6 +6,8 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { useColorMode } from '../components/ui/color-mode';
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 const shake = keyframes`
   0% { transform: translateX(0) }
@@ -20,6 +22,7 @@ const ForbiddenPage = () => {
   const { toggleColorMode } = useColorMode();
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   useEffect(() => setMounted(true), []);
 
@@ -36,16 +39,13 @@ const ForbiddenPage = () => {
       bg="bg"
       px={4}
     >
-      <Button
-        onClick={toggleColorMode}
-        variant="ghost"
-        colorScheme="primary"
-        position="absolute"
-        top={4}
-        right={4}
-      >
-        {theme === 'dark' ? <FaSun /> : <FaMoon />} {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-      </Button>
+      <Box position="absolute" top={4} right={4} display="flex" gap={2}>
+        <LanguageSwitcher />
+        <Button onClick={toggleColorMode} variant="ghost" colorScheme="primary">
+          {theme === 'dark' ? <FaSun /> : <FaMoon />}
+        </Button>
+      </Box>
+
       <motion.div
         animate={{
           scale: [1, 1.1, 1],
@@ -64,12 +64,11 @@ const ForbiddenPage = () => {
       </motion.div>
 
       <Heading as="h1" size="2xl" mb={4} color="error.500" fontFamily="Poppins, sans-serif">
-        Access Restricted
+        {t('forbidden.title')}
       </Heading>
 
       <Text fontSize="xl" mb={8} color="text.secondary" maxW="600px">
-        You don&apos;t have the necessary permissions to access this portal. Please contact your
-        system administrator or return to the previous page.
+        {t('forbidden.message')}
       </Text>
 
       <Box display="flex" gap={4} flexDirection={{ base: 'column', md: 'row' }}>
@@ -80,7 +79,7 @@ const ForbiddenPage = () => {
           _hover={{ transform: 'translateY(-2px)' }}
         >
           <Link href="/" style={{ textDecoration: 'none' }}>
-            <FaArrowLeft /> Back to Home
+            <FaArrowLeft /> {t('common.backToHome')}
           </Link>
         </Button>
         <Button
@@ -93,12 +92,12 @@ const ForbiddenPage = () => {
             animation: `${shake} 0.5s ease-in-out`,
           }}
         >
-          <FaLock /> Secure Logout
+          <FaLock /> {t('auth.secureLogout')}
         </Button>
       </Box>
 
       <Text mt={8} fontSize="sm">
-        Need help? Contact{' '}
+        {t('common.needHelp')}{' '}
         <Link
           href="mailto:support@fluxgate.com"
           color="#0f8950"

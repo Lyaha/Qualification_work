@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 export const useIsMobile = (): boolean => {
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === 'undefined') return false;
-    return window.innerWidth < 992; // соответствует lg: '62em'
+    return window.innerWidth < 992;
   });
 
   useEffect(() => {

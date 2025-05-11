@@ -17,6 +17,7 @@ import { IoMdClose, IoMdMenu } from 'react-icons/io';
 import { useAuth0 } from '@auth0/auth0-react';
 import UserInfo from './UserInfoBox';
 import MenuContent from './MenuItems';
+import { useTranslation } from 'react-i18next';
 
 const Menu = () => {
   const { onOpen, onClose } = useDisclosure();
@@ -26,6 +27,7 @@ const Menu = () => {
   const isMobile = useIsMobile();
   const { logout } = useAuth0();
   const bg_menu = useColorModeValue('#ebebeb', '#163519');
+  const { t } = useTranslation();
 
   useEffect(() => setMounted(true), []);
 
@@ -49,10 +51,14 @@ const Menu = () => {
         >
           <Flex p={4} align="center" gap={2} _hover={{ textDecoration: 'none' }}>
             <Box mb={4}>
-              <img src="/logo.png" alt="FluxGate Logo" style={{ width: '45px', height: 'auto' }} />
+              <img
+                src="/logo.png"
+                alt={`${t('system.appName')} Logo`}
+                style={{ width: '45px', height: 'auto' }}
+              />
             </Box>
             <Link href="/" fontSize="xl" fontWeight="bold">
-              FluxGate
+              {t('system.appName')}
             </Link>
             <Button ml={3} boxSize={8} onClick={toggleColorMode}>
               {theme === 'light' ? <FaSun /> : <FaMoon />}
@@ -68,7 +74,7 @@ const Menu = () => {
               color="fg"
               onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
             >
-              Logout
+              {t('menu.logout')}
             </Button>
           </Flex>
         </Box>
@@ -90,7 +96,7 @@ const Menu = () => {
                 {theme === 'light' ? <FaSun /> : <FaMoon />}
               </Button>
               <Link href="/" fontSize="xl" fontWeight="bold">
-                FluxGate
+                {t('system.appName')}
               </Link>
             </Flex>
             <Box w="40px" />
@@ -105,7 +111,7 @@ const Menu = () => {
               <Drawer.Backdrop />
               <Drawer.Positioner>
                 <Drawer.Content>
-                  <DrawerHeader>Menu</DrawerHeader>
+                  <DrawerHeader>{t('menu.name')}</DrawerHeader>
                   <Drawer.Body>
                     <Drawer.CloseTrigger>
                       <Button aria-label="Close menu" onClick={onClose}>
@@ -124,7 +130,7 @@ const Menu = () => {
                           logout({ logoutParams: { returnTo: window.location.origin } })
                         }
                       >
-                        Logout
+                        {t('menu.logout')}
                       </Button>
                     </Flex>
                   </Drawer.Footer>

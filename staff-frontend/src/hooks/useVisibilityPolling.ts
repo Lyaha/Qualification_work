@@ -7,7 +7,7 @@ const useVisibilityPolling = (callback: PollingCallback, intervalMs: 5000) => {
 
   useEffect(() => {
     const startPolling = () => {
-      callback(); // запуск сразу
+      callback();
       if (!intervalRef.current) {
         intervalRef.current = setInterval(callback, intervalMs);
       }

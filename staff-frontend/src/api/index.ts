@@ -17,3 +17,4 @@ export * from './entity/supplyOrder';
 export * from './entity/supplyOrderItem';
 export * from './entity/task';
 export * from './users';
+export * from './tasks';

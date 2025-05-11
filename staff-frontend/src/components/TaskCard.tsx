@@ -1,8 +1,9 @@
 import { Box, Flex, Text, Progress, Tag, Icon } from '@chakra-ui/react';
-import { differenceInSeconds, formatDistanceToNow } from 'date-fns';
-import { uk } from 'date-fns/locale';
+import { differenceInDays, differenceInSeconds, formatDistanceToNow } from 'date-fns';
+import { uk, enUS } from 'date-fns/locale';
 import { FaBox, FaTruck, FaExclamationCircle } from 'react-icons/fa';
 import { useColorModeValue } from './ui/color-mode';
+import { useTranslation } from 'react-i18next';
 
 interface TaskCardProps {
   task: {
@@ -16,10 +17,15 @@ interface TaskCardProps {
     supplier?: string;
     total?: number;
     unitPrice?: number;
+    order_item_id?: string;
+    supply_order_item_id?: string;
+    completed_at?: string;
+    note?: string;
   };
 }
 
 const TaskCard = ({ task }: TaskCardProps) => {
+  const { t, i18n } = useTranslation();
   const deadlineHours = differenceInSeconds(task.deadline, new Date());
   const progressPercent = Math.max(0, Math.min(100, (1 - deadlineHours / 168) * 100));
   const statusColor = {
@@ -27,13 +33,19 @@ const TaskCard = ({ task }: TaskCardProps) => {
     in_progress: 'blue',
     completed: 'green',
   }[task.status];
-  const isUrgent = deadlineHours > 0;
+
+  const isUrgent =
+    task.status !== 'completed' &&
+    differenceInDays(task.deadline, new Date()) <= 0 &&
+    differenceInDays(task.deadline, new Date()) >= -1;
   const bg_card = useColorModeValue('#ebebeb', '#454343');
 
   const typeIcons = {
     order: FaBox,
     supply: FaTruck,
   };
+
+  const dateLocale = i18n.language === 'uk' ? uk : enUS;
 
   return (
     <Box
@@ -60,33 +72,28 @@ const TaskCard = ({ task }: TaskCardProps) => {
             <Icon as={typeIcons[task.type]} boxSize={4} display={'flex'} />
           </Tag.StartElement>
           <Tag.Label fontSize="sm" fontWeight="bold">
-            {task.type === 'order' ? ' Замовлення' : ' Поставка'}
+            {t(`tasks.type.${task.type}`)}
           </Tag.Label>
         </Tag.Root>
       </Box>
 
       <Flex justify="space-between" my={2}>
         {isUrgent && <Icon as={FaExclamationCircle} color="red.500" boxSize={6} />}
-        <Text fontSize="sm" color="gray.500">
-          {formatDistanceToNow(task.deadline, { addSuffix: true, locale: uk })}
+        <Text fontSize="sm" color="gray.300">
+          {formatDistanceToNow(task.deadline, { addSuffix: true, locale: dateLocale })}
         </Text>
       </Flex>
 
       <Text fontWeight="bold" mb={2}>
         {task.product}
       </Text>
-
       <Flex direction="column" gap={2} mb={4}>
         <Text>
-          Кількість: {task.quantity} шт.
+          {t('tasks.quantity')}: {task.quantity} {t('common.units')}
           {task.unitPrice && ` × ${task.unitPrice} ₴`}
         </Text>
-
-        {task.client && <Text>Клієнт: {task.client}</Text>}
-        {task.supplier && <Text>Постачальник: {task.supplier}</Text>}
-        {task.total && <Text fontWeight="bold">Разом: {task.total} ₴</Text>}
+        <Text color="gray.300">{task.note}</Text>
       </Flex>
-
       <Progress.Root value={progressPercent} size="xs" colorScheme={statusColor} />
     </Box>
   );
