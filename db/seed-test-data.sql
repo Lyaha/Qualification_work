@@ -161,8 +161,8 @@ VALUES
 -- Заповнення tasks
 INSERT INTO tasks (worker_id, order_item_id, supply_order_item_id, quantity, deadline, status, note) 
 VALUES
-((SELECT id FROM users WHERE email = 'omgthisisus@gmail.com'),  (SELECT id FROM order_items LIMIT 1 OFFSET 0),  NULL,  1,  '2025-05-10',  'pending',  'Підготувати ноутбук до відправки'),
-((SELECT id FROM users WHERE email = 'worker1@test.com'), (SELECT id FROM order_items LIMIT 1 OFFSET 1), NULL, 2, '2024-02-25', 'in_progress', 'Комплектація замовлення смартфонів'),
-((SELECT id FROM users WHERE email = 'worker1@test.com'), NULL, (SELECT id FROM supply_order_items LIMIT 1 OFFSET 2), 10, '2024-03-30', 'completed', 'Прийняти партію холодильників'),
-((SELECT id FROM users WHERE email = 'worker1@test.com'), NULL, (SELECT id FROM supply_order_items LIMIT 1 OFFSET 3), 25, '2024-04-15', 'pending', 'Розвантаження моніторів'),
-((SELECT id FROM users WHERE email = 'worker1@test.com'), NULL, (SELECT id FROM supply_order_items LIMIT 1 OFFSET 4), 15, '2024-05-10', 'in_progress', 'Перевірка пральних машин при прийомці');
+((SELECT id FROM users WHERE email = 'worker1@test.com'), (SELECT id FROM order_items LIMIT 1 OFFSET 0), NULL, 1, '2025-05-10 14:00:00', 'pending', 'Підготувати ноутбук до відправки'),
+((SELECT id FROM users WHERE email = 'worker1@test.com'), (SELECT id FROM order_items LIMIT 1 OFFSET 1), NULL, 2, '2024-02-25 16:30:00', 'in_progress', 'Комплектація замовлення смартфонів'),
+((SELECT id FROM users WHERE email = 'worker1@test.com'), NULL, (SELECT id FROM supply_order_items LIMIT 1 OFFSET 2), 10, '2024-03-30 09:15:00', 'completed', 'Прийняти партію холодильників'),
+((SELECT id FROM users WHERE email = 'worker1@test.com'), NULL, (SELECT id FROM supply_order_items LIMIT 1 OFFSET 3), 25, '2024-04-15 11:45:00', 'pending', 'Розвантаження моніторів'),
+((SELECT id FROM users WHERE email = 'worker1@test.com'), NULL, (SELECT id FROM supply_order_items LIMIT 1 OFFSET 4), 15, '2024-05-10 13:20:00', 'in_progress', 'Перевірка пральних машин при прийомці');

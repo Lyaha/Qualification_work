@@ -208,7 +208,7 @@ CREATE TABLE tasks (
     order_item_id UUID REFERENCES order_items(id),
     supply_order_item_id UUID REFERENCES supply_order_items(id),
     quantity INT NOT NULL CHECK (quantity > 0),
-    deadline DATE NOT NULL,
+    deadline TIMESTAMP NOT NULL,
     status task_status NOT NULL DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     completed_at TIMESTAMP,
