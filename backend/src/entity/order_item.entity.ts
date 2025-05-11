@@ -16,6 +16,9 @@ export class OrderItem {
   product!: Product;
 
   @Column()
+  product_id!: string;
+
+  @Column()
   quantity!: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })

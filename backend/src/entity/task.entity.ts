@@ -14,46 +14,42 @@ export class Task {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
+  @Column()
+  worker_id!: string;
+
   @ManyToOne(() => User)
   @JoinColumn({ name: 'worker_id' })
   worker!: User;
 
-  @Column()
-  worker_id!: string;
+  @Column({ nullable: true })
+  order_item_id!: string;
 
   @ManyToOne(() => OrderItem, { nullable: true })
   @JoinColumn({ name: 'order_item_id' })
-  orderItem?: OrderItem;
+  order_item!: OrderItem;
 
   @Column({ nullable: true })
-  order_item_id?: string;
+  supply_order_item_id!: string;
 
   @ManyToOne(() => SupplyOrderItem, { nullable: true })
   @JoinColumn({ name: 'supply_order_item_id' })
-  supplyOrderItem?: SupplyOrderItem;
+  supply_order_item!: SupplyOrderItem;
 
-  @Column({ nullable: true })
-  supply_order_item_id?: string;
-
-  @Column({ type: 'int' })
+  @Column()
   quantity!: number;
 
-  @Column({ type: 'date' })
+  @Column()
   deadline!: Date;
 
-  @Column({
-    type: 'enum',
-    enum: TaskStatus,
-    default: TaskStatus.PENDING,
-  })
-  status!: TaskStatus;
+  @Column({ default: 'pending' })
+  status!: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at!: Date;
 
   @Column({ type: 'timestamp', nullable: true })
-  completed_at?: Date;
+  completed_at!: Date;
 
   @Column({ type: 'text', nullable: true })
-  note?: string;
+  note!: string;
 }

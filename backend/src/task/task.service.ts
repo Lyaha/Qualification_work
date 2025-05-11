@@ -37,4 +37,16 @@ export class TaskService {
     const Task = await this.findOne(id);
     await this.taskRepository.remove(Task);
   }
+
+  async findByField(field: keyof Task, value: any): Promise<Task[]> {
+    return this.taskRepository.find({
+      where: { [field]: value },
+      relations: [
+        'order_item',
+        'order_item.order',
+        'supply_order_item',
+        'supply_order_item.supply_order',
+      ],
+    });
+  }
 }
