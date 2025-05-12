@@ -67,7 +67,7 @@ const LoginPage = () => {
           </Heading>
 
           <Text fontSize="lg" color="text.secondary" mb={8}>
-            {t('system.description')}
+            {t('system.appDescription')}
           </Text>
 
           <Box position="absolute" top={4} right={4} display="flex" gap={2}>

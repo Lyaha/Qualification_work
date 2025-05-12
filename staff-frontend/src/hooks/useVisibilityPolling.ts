@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 type PollingCallback = () => void | Promise<void>;
 
-const useVisibilityPolling = (callback: PollingCallback, intervalMs: 5000) => {
+const useVisibilityPolling = (callback: PollingCallback, intervalMs = 5000) => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
