@@ -42,6 +42,7 @@ import { PriceHistoryModule } from './price_history/price_history.module';
 import { StorageZoneModule } from './storage_zone/storage_zone.module';
 import { SupplierModule } from './supplier/supplier.module';
 import { TaskModule } from './task/task.module';
+import { MenuModule } from './menu/menu.module';
 
 @Module({
   imports: [
@@ -96,6 +97,7 @@ import { TaskModule } from './task/task.module';
     StorageZoneModule,
     SupplierModule,
     TaskModule,
+    MenuModule, // Добавляем MenuModule
   ],
   controllers: [AppController],
   providers: [],
