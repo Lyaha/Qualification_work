@@ -9,6 +9,7 @@ import {
   FaBoxes,
   FaUsers,
   FaUserLock,
+  FaCookieBite,
 } from 'react-icons/fa';
 
 export const menuIcons: { [key: string]: any } = {
@@ -22,4 +23,5 @@ export const menuIcons: { [key: string]: any } = {
   boxes: FaBoxes,
   users: FaUsers,
   'user-lock': FaUserLock,
+  'cookie-bite': FaCookieBite,
 };

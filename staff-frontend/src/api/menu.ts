@@ -13,6 +13,14 @@ export interface MenuItem {
   title?: string; // будет добавляться на фронтенде после локализации
 }
 
+export interface AccessResponse {
+  hasAccess: boolean;
+}
+
 export const getMenu = async (): Promise<MenuItem[]> => {
   return getRequest<MenuItem[]>('/menu');
+};
+
+export const checkAccess = async (path: string): Promise<AccessResponse> => {
+  return getRequest<AccessResponse>(`/menu/check-access?path=${encodeURIComponent(path)}`);
 };
