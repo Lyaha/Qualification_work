@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User, UserRole } from '../entity/user.entity';
+import { User, UserRole } from '../bd.models/entity/user.entity';
 import { JwtPayload } from './types/jwt-payload.interface';
 import axios from 'axios';
 

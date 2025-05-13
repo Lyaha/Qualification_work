@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/entity/user.entity';
+import { User } from 'src/bd.models/entity/user.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],

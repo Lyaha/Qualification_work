@@ -1,4 +1,4 @@
-import { UserRole } from '../entity/user.entity';
+import { UserRole } from '../bd.models/entity/user.entity';
 
 export interface MenuItem {
   id: string;

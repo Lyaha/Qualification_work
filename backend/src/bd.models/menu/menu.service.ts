@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User, UserRole } from '../bd.models/entity/user.entity';
+import { User, UserRole } from '../entity/user.entity';
 import { MenuItem, menuConfig } from '../../config/menu.config';
 
 @Injectable()

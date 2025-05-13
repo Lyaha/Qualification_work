@@ -13,11 +13,11 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from '../entity/user.entity';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { ApiBearerAuth, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
-import { RoleGuard } from '../auth/roles.guard';
-import { CurrentUser } from '../auth/current-user.decorator';
-import { RolePermissions } from '../auth/roles-hierarchy';
+import { RoleGuard } from '../../auth/roles.guard';
+import { CurrentUser } from '../../auth/current-user.decorator';
+import { RolePermissions } from '../../auth/roles-hierarchy';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')

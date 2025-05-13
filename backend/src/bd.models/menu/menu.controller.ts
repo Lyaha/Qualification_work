@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { CurrentUser } from '../../auth/current-user.decorator';
-import { User } from '../bd.models/entity/user.entity';
+import { User } from '../entity/user.entity';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
