@@ -28,7 +28,14 @@
     },
     "urgent": "Urgent",
     "quantity": "Quantity",
-    "deadline": "Deadline"
+    "deadline": "Deadline",
+    "unknownProduct": "Unknown product",
+    "legend": "Task card legend",
+    "legendItems": {
+      "order": "Order: the task is related to a customer order",
+      "supply": "Supply: the task is related to a product supply",
+      "urgent": "Urgent: the task requires immediate attention"
+    }
   },
   "forbidden": {
     "title": "Access Denied",

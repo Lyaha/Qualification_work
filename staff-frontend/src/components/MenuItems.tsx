@@ -1,21 +1,19 @@
-import { Box, Text, Stack, useMenu, Button, Icon } from '@chakra-ui/react';
+import { Box, Text, Stack, Button, Icon } from '@chakra-ui/react';
 import { useIsMobile } from '../hooks/useIsMobile';
-import { MenuItem } from '../api/menu';
 import { menuIcons } from '../utils/menuIcons';
 import { useCallback, useEffect, useState } from 'react';
-import { useToast } from './ui/toaster';
 import { useTranslation } from 'react-i18next';
-import useVisibilityPolling from '../hooks/useVisibilityPolling';
 import { useNavigate } from 'react-router-dom';
+import { useMenu } from '../hooks/useMenu';
+import { useToast } from './ui/toaster';
 
 const MenuContent = () => {
   const isMobile = useIsMobile();
-  const { handleSearch, loading, error } = useMenu();
-  const toaster = useToast();
-  const [menuItems, setMenuItems] = useState<MenuItem[] | null>(null);
-  const [toastVisibly, setToastVisibly] = useState(false);
+  const { menuItems, loading, error } = useMenu();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const toaster = useToast();
+  const [toastVisibly, setToastVisibly] = useState(false);
 
   const handleNavigation = useCallback(
     (path: string) => {
@@ -23,15 +21,6 @@ const MenuContent = () => {
     },
     [navigate],
   );
-
-  const fetchUserData = useCallback(async () => {
-    const result = await handleSearch();
-    if (result) {
-      setMenuItems(result);
-    }
-  }, [handleSearch]);
-
-  useVisibilityPolling(fetchUserData, 5000);
 
   useEffect(() => {
     if (error && !toastVisibly) {
@@ -48,7 +37,7 @@ const MenuContent = () => {
     }
   }, [error, toaster, toastVisibly, t]);
 
-  if (loading && !menuItems) {
+  if (loading && menuItems!) {
     return <Text>{t('common.loading')}</Text>;
   }
 
@@ -65,7 +54,7 @@ const MenuContent = () => {
             w="full"
           >
             {item.icon && menuIcons[item.icon] ? <Icon as={menuIcons[item.icon]} /> : undefined}
-            {item.id}
+            {item.title}
           </Button>
         ))}
       </Box>

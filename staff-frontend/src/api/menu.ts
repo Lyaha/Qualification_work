@@ -8,7 +8,9 @@ export interface MenuItem {
   };
   path: string;
   icon?: string;
+  allowedRoles: string[];
   children?: MenuItem[];
+  title?: string; // будет добавляться на фронтенде после локализации
 }
 
 export const getMenu = async (): Promise<MenuItem[]> => {

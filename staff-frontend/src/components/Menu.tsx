@@ -18,6 +18,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import UserInfo from './UserInfoBox';
 import MenuContent from './MenuItems';
 import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Menu = () => {
   const { onOpen, onClose } = useDisclosure();
@@ -34,7 +35,7 @@ const Menu = () => {
   if (!mounted) return null;
 
   return (
-    <>
+    <Box>
       {/* Десктопное меню */}
       {!isMobile && (
         <Box
@@ -82,25 +83,14 @@ const Menu = () => {
 
       {/* Мобильное меню */}
       {isMobile && (
-        <>
-          <Flex
-            p={4}
-            justify="space-between"
-            align="center"
-            borderBottom="1px"
-            borderColor="chakra-border-color"
-            bg="chakra-body-bg"
-          >
-            <Flex align="center" gap={2}>
-              <Button boxSize={8} onClick={toggleColorMode}>
-                {theme === 'light' ? <FaSun /> : <FaMoon />}
-              </Button>
-              <Link href="/" fontSize="xl" fontWeight="bold">
-                {t('system.appName')}
-              </Link>
-            </Flex>
-            <Box w="40px" />
-          </Flex>
+        <Flex
+          p={4}
+          justify="space-between"
+          align="center"
+          borderBottom="1px"
+          borderColor="chakra-border-color"
+          bg="chakra-body-bg"
+        >
           <Drawer.Root key={'start'} placement={'start'}>
             <Drawer.Trigger>
               <Button aria-label="Open menu" onClick={onOpen} variant="ghost">
@@ -138,9 +128,18 @@ const Menu = () => {
               </Drawer.Positioner>
             </Portal>
           </Drawer.Root>
-        </>
+          <Link href="/" fontSize="xl" fontWeight="bold" color={'#1ac766'}>
+            {t('system.appName')}
+          </Link>
+          <Flex align="center" gap={2}>
+            <LanguageSwitcher />
+            <Button boxSize={8} onClick={toggleColorMode}>
+              {theme === 'light' ? <FaSun /> : <FaMoon />}
+            </Button>
+          </Flex>
+        </Flex>
       )}
-    </>
+    </Box>
   );
 };
 

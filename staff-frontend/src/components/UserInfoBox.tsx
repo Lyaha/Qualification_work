@@ -35,7 +35,7 @@ const UserInfo = () => {
     }
   }, [handleSearch]);
 
-  useVisibilityPolling(fetchUserData, 5000);
+  useVisibilityPolling(fetchUserData, 300000);
 
   useEffect(() => {
     if (error && !toastVisibly) {
