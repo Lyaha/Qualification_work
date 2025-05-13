@@ -24,6 +24,27 @@ export const menuConfig: MenuItem[] = [
     allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
   },
   {
+    id: 'product',
+    translations: {
+      uk: 'Товари',
+      en: 'Product',
+    },
+    path: '/products',
+    icon: 'cookie-bite',
+    allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+    children: [
+      {
+        id: 'batch',
+        translations: {
+          uk: 'Партія',
+          en: 'batch',
+        },
+        path: '/products/batch',
+        allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+      },
+    ],
+  },
+  {
     id: 'tasks',
     translations: {
       uk: 'Завдання',
@@ -101,7 +122,7 @@ export const menuConfig: MenuItem[] = [
     },
     path: '/settings',
     icon: 'cog',
-    allowedRoles: [UserRole.ADMIN, UserRole.DIRECTOR],
+    allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
     children: [
       {
         id: 'users',
@@ -119,7 +140,16 @@ export const menuConfig: MenuItem[] = [
           en: 'Roles & Permissions',
         },
         path: '/settings/roles',
-        allowedRoles: [UserRole.DIRECTOR],
+        allowedRoles: [UserRole.ADMIN, UserRole.DIRECTOR],
+      },
+      {
+        id: 'general',
+        translations: {
+          uk: 'Загальні',
+          en: 'General',
+        },
+        path: '/settings/general',
+        allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
       },
     ],
   },

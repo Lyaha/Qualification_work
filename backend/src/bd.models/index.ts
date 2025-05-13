@@ -31,11 +31,6 @@ export * from './log/log.controller';
 export * from './log/log.module';
 export * from './log/log.service';
 
-// Menu
-export * from './menu/menu.controller';
-export * from './menu/menu.module';
-export * from './menu/menu.service';
-
 // Order
 export * from './order/order.controller';
 export * from './order/order.module';

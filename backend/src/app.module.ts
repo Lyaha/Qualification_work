@@ -22,7 +22,6 @@ import {
   StorageZoneModule,
   SupplierModule,
   TaskModule,
-  MenuModule,
 } from './bd.models';
 import {
   User,
@@ -45,6 +44,7 @@ import {
   PriceHistory,
   StorageZone,
 } from './bd.models/entity';
+import { MenuModule } from './menu/menu.module';
 
 @Module({
   imports: [
