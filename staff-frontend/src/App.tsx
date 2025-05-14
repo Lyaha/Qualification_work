@@ -13,6 +13,7 @@ import { ThemeProvider } from 'next-themes';
 import { ToastProvider } from './components/ui/toaster';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
+import ProductPage from './pages/ProductPage';
 
 function App() {
   return (
@@ -41,6 +42,16 @@ function App() {
                       <ProtectedRoute>
                         <ProtectedRoleRoute>
                           <StartPage />
+                        </ProtectedRoleRoute>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/products"
+                    element={
+                      <ProtectedRoute>
+                        <ProtectedRoleRoute>
+                          <ProductPage />
                         </ProtectedRoleRoute>
                       </ProtectedRoute>
                     }
