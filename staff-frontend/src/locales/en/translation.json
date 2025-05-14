@@ -53,13 +53,19 @@
     "back": "Back",
     "next": "Next",
     "backToHome": "Back to Home",
-    "needHelp": "Need help? Contact us at:",
+    "needHelp": "Need help? Contact us:",
+    "units": "pcs.",
     "emailCopied": "Email copied",
-    "emailCopiedDesc": "Email address has been copied to clipboard"
+    "emailCopiedDesc": "Email address has been copied to clipboard",
+    "search": "Search",
+    "noResults": "No results found",
+    "actions": "Actions",
+    "add": "Add"
   },
   "errors": {
     "userNotFound": "User not found",
     "loadingFailed": "Failed to load data",
+    "deleteFailed": "Failed to delete",
     "unauthorized": "Authorization required",
     "forbidden": "Access denied",
     "serverError": "Server error",
@@ -74,5 +80,17 @@
     "appDescription": "Warehouse Management System",
     "version": "Version",
     "copyright": "© 2024 FluxGate. All rights reserved"
+  },
+  "products": {
+    "title": "Products",
+    "add": "Add Product",
+    "edit": "Edit Product",
+    "delete": "Delete Product",
+    "name": "Name",
+    "description": "Description",
+    "category": "Category",
+    "price": "Price",
+    "stock": "Stock",
+    "purchasePrice": "Purchase Price"
   }
 }
