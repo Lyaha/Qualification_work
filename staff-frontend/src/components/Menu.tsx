@@ -35,7 +35,7 @@ const Menu = () => {
   if (!mounted) return null;
 
   return (
-    <Box>
+    <Box background={bg_menu}>
       {/* Десктопное меню */}
       {!isMobile && (
         <Box
