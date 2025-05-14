@@ -44,14 +44,12 @@ CREATE TABLE products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    category_id UUID NOT NULL REFERENCES categories(id),
+    category_id UUID REFERENCES categories(id),
+    category VARCHAR(100) NOT NULL,
     barcode VARCHAR(50) UNIQUE,
     price_purchase DECIMAL(10,2) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
-    weight DECIMAL(10,2),
-    expiration_date DATE,
-    warehouse_id UUID NOT NULL REFERENCES warehouses(id),
-    storage_location VARCHAR(255)
+    weight DECIMAL(10,2)
 );
 
 -- Таблиця замовлень
@@ -189,6 +187,8 @@ CREATE TABLE batches (
     warehouse_id UUID NOT NULL REFERENCES warehouses(id),
     quantity INT NOT NULL CHECK (quantity > 0),
     expiration_date DATE,
+    location VARCHAR(255),
+    storage_location VARCHAR(255),
     received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

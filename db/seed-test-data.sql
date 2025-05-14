@@ -25,13 +25,13 @@ VALUES
 ('Холодильники', (SELECT id FROM categories WHERE name = 'Побутова техніка'));
 
 -- Заповнення products
-INSERT INTO products (name, description, category_id, barcode, price_purchase, price, weight, warehouse_id, storage_location) 
+INSERT INTO products (name, description, category_id, barcode, price_purchase, price, weight, category) 
 VALUES 
-('Ноутбук HP', '15.6", Core i5', (SELECT id FROM categories WHERE name = 'Ноутбуки'), '111111', 20000.00, 25000.00, 2.1, (SELECT id FROM warehouses WHERE name = 'Склад А'), 'A1-12'),
-('iPhone 14', '128GB, Space Gray', (SELECT id FROM categories WHERE name = 'Смартфони'), '222222', 30000.00, 35000.00, 0.2, (SELECT id FROM warehouses WHERE name = 'Склад Б'), 'B3-45'),
-('Холодильник Samsung', '350L, No Frost', (SELECT id FROM categories WHERE name = 'Холодильники'), '333333', 15000.00, 20000.00, 50.0, (SELECT id FROM warehouses WHERE name = 'Склад В'), 'C2-78'),
-('Монитор Dell', '24", Full HD', (SELECT id FROM categories WHERE name = 'Електроніка'), '444444', 5000.00, 7000.00, 3.5, (SELECT id FROM warehouses WHERE name = 'Склад Г'), 'G5-21'),
-('Пральна машина LG', '8кг, Inverter', (SELECT id FROM categories WHERE name = 'Побутова техніка'), '555555', 12000.00, 15000.00, 40.0, (SELECT id FROM warehouses WHERE name = 'Склад Д'), 'D1-33');
+('Ноутбук HP', '15.6", Core i5', (SELECT id FROM categories WHERE name = 'Ноутбуки'), '111111', 20000.00, 25000.00, 2.1, 'Ноутбуки'),
+('iPhone 14', '128GB, Space Gray', (SELECT id FROM categories WHERE name = 'Смартфони'), '222222', 30000.00, 35000.00, 0.2, 'Смартфони'),
+('Холодильник Samsung', '350L, No Frost', (SELECT id FROM categories WHERE name = 'Холодильники'), '333333', 15000.00, 20000.00, 50.0, 'Холодильники'),
+('Монитор Dell', '24", Full HD', (SELECT id FROM categories WHERE name = 'Електроніка'), '444444', 5000.00, 7000.00, 3.5, 'Електроніка'),
+('Пральна машина LG', '8кг, Inverter', (SELECT id FROM categories WHERE name = 'Побутова техніка'), '555555', 12000.00, 15000.00, 40.0, 'Побутова техніка');
 
 -- Заповнення orders
 INSERT INTO orders (client_id, total_amount, status, payment_method, warehouse_id) 
@@ -133,13 +133,13 @@ VALUES
 ((SELECT id FROM products LIMIT 1 OFFSET 4), (SELECT id FROM storage_zones LIMIT 1 OFFSET 3), (SELECT id FROM storage_zones LIMIT 1 OFFSET 4), 4, 'transfer', (SELECT id FROM users LIMIT 1 OFFSET 4), 'Оптимізація сховища');
 
 -- Заповнення batches
-INSERT INTO batches (product_id, warehouse_id, quantity, expiration_date) 
+INSERT INTO batches (product_id, warehouse_id, quantity, expiration_date, location, storage_location) 
 VALUES 
-((SELECT id FROM products LIMIT 1 OFFSET 0), (SELECT id FROM warehouses LIMIT 1 OFFSET 0), 100, '2025-12-31'),
-((SELECT id FROM products LIMIT 1 OFFSET 1), (SELECT id FROM warehouses LIMIT 1 OFFSET 1), 50, '2026-06-30'),
-((SELECT id FROM products LIMIT 1 OFFSET 2), (SELECT id FROM warehouses LIMIT 1 OFFSET 2), 30, NULL),
-((SELECT id FROM products LIMIT 1 OFFSET 3), (SELECT id FROM warehouses LIMIT 1 OFFSET 3), 20, '2027-01-01'),
-((SELECT id FROM products LIMIT 1 OFFSET 4), (SELECT id FROM warehouses LIMIT 1 OFFSET 4), 15, NULL);
+((SELECT id FROM products WHERE name = 'Ноутбук HP'), (SELECT id FROM warehouses WHERE name = 'Склад А'), 100, '2025-12-31', 'Київ, вул. Центральна 1', 'A1-12'),
+((SELECT id FROM products WHERE name = 'iPhone 14'), (SELECT id FROM warehouses WHERE name = 'Склад Б'), 50, '2026-06-30', 'Львів, вул. Головна 5', 'B3-45'),
+((SELECT id FROM products WHERE name = 'Холодильник Samsung'), (SELECT id FROM warehouses WHERE name = 'Склад В'), 30, NULL, 'Одеса, вул. Морська 12', 'C2-78'),
+((SELECT id FROM products WHERE name = 'Монитор Dell'), (SELECT id FROM warehouses WHERE name = 'Склад Г'), 20, '2027-01-01', 'Харків, вул. Промислова 7', 'G5-21'),
+((SELECT id FROM products WHERE name = 'Пральна машина LG'), (SELECT id FROM warehouses WHERE name = 'Склад Д'), 15, NULL, 'Дніпро, вул. Заводська 3', 'D1-33');
 
 -- Заповнення price_history
 INSERT INTO price_history (product_id, old_price, new_price, changed_by) 
