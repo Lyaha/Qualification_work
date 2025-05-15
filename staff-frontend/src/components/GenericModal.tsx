@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { useToast } from './ui/toaster';
 import { ReactNode, useEffect, useState } from 'react';
-import { NumberInput } from './ui/number-input';
+import { NumberInputRoot, NumberInputField } from './ui/number-input';
 import {
   Button,
+  CloseButton,
+  createListCollection,
   Dialog,
   Input,
   Portal,
@@ -15,6 +17,7 @@ import {
 } from '@chakra-ui/react';
 import FormControl from './ui/form-control';
 import React from 'react';
+import { CustomSelectItem } from '../pages/ProductPage';
 
 export type FormField<T> = {
   name: keyof T;
@@ -39,14 +42,6 @@ interface GenericFormModalProps<T> {
   submitText?: string;
   cancelText?: string;
 }
-
-const CustomSelectItem = React.forwardRef<
-  HTMLDivElement,
-  SelectItemProps & { children?: React.ReactNode }
->((props, ref) => {
-  console.log('CustomSelectItem props:', JSON.stringify(props, null, 2));
-  return <Select.Item ref={ref} {...props} />;
-});
 
 export const GenericFormModal = <T extends Record<string, any>>({
   isOpen,
@@ -108,45 +103,63 @@ export const GenericFormModal = <T extends Record<string, any>>({
     switch (field.type) {
       case 'number':
         return (
-          <NumberInput
-            value={formData[field.name] as number | undefined}
-            onChange={(valueString: string) =>
-              handleChange(field.name, valueString === '' ? undefined : Number(valueString))
-            }
-            placeholder={field.placeholder}
+          <NumberInputRoot
             min={field.min}
             max={field.max}
             step={field.step}
             width="full"
-            isDisabled={isLoading}
-          />
+            disabled={isLoading}
+            value={formData[field.name]?.toString() || ''}
+            onValueChange={({ valueAsNumber }) => {
+              handleChange(field.name, valueAsNumber);
+            }}
+          >
+            <NumberInputField placeholder={field.placeholder} />
+          </NumberInputRoot>
         );
 
-      case 'select':
+      case 'select': {
+        const collection = createListCollection({
+          items: (field.options || []).map((option) => ({
+            value: option.value.toString(),
+            label: option.label,
+          })),
+        });
+
         return (
           <Select.Root
             value={formData[field.name]?.toString() || ''}
-            onChange={(e: SelectRootProps) => handleChange(field.name, e.value)}
-            collection={field.options || []}
+            onValueChange={(value) => handleChange(field.name, value)}
+            collection={collection}
             size="sm"
+            zIndex={1402}
           >
             <Select.Control>
               <Select.Trigger>
-                <Select.ValueText />
+                <Select.ValueText placeholder={field.placeholder} />
               </Select.Trigger>
             </Select.Control>
 
             <Portal>
-              <Select.Positioner>
+              <Select.Positioner
+                style={{
+                  position: 'fixed',
+                  zIndex: 1500,
+                  minWidth: 'var(--width)',
+                }}
+              >
                 <Select.Content>
-                  {field.options?.map((option) => (
-                    <CustomSelectItem>{option.label}</CustomSelectItem>
+                  {collection.items.map((item) => (
+                    <Select.Item key={item.value} item={item}>
+                      {item.label}
+                    </Select.Item>
                   ))}
                 </Select.Content>
               </Select.Positioner>
             </Portal>
           </Select.Root>
         );
+      }
 
       case 'textarea':
         return (
@@ -171,44 +184,56 @@ export const GenericFormModal = <T extends Record<string, any>>({
   };
 
   return (
-    <Dialog.Root isOpen={isOpen} onClose={onClose} size="xl">
-      <Dialog.Content>
-        <Dialog.Header>{title}</Dialog.Header>
-        <Dialog.CloseTrigger />
-        <Dialog.Body>
-          <Stack spaceX={4} spaceY={4} p={4}>
-            {fields.map((field) => (
-              <FormControl
-                key={field.name as string}
-                label={field.label}
-                isInvalid={!!errors[field.name]}
-              >
-                {renderInput(field)}
-                {errors[field.name] && (
-                  <Text color="red.500" fontSize="sm" mt={1}>
-                    {errors[field.name]}
-                  </Text>
-                )}
-              </FormControl>
-            ))}
-          </Stack>
-        </Dialog.Body>
+    <Dialog.Root
+      open={isOpen}
+      onOpenChange={(details) => {
+        if (!details.open) onClose();
+      }}
+      size="xl"
+      trapFocus={true}
+      closeOnEscape={true}
+      closeOnInteractOutside={true}
+    >
+      <Portal>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.Header>
+              <Dialog.Title>{title}</Dialog.Title>
+              <Dialog.CloseTrigger asChild>
+                <CloseButton size="sm" />
+              </Dialog.CloseTrigger>
+            </Dialog.Header>
 
-        <Dialog.Footer>
-          <Button variant="ghost" onClick={onClose} disabled={isLoading}>
-            {t(cancelText)}
-          </Button>
-          <Button
-            colorScheme="blue"
-            onClick={handleSubmit}
-            loading={isLoading}
-            loadingText={t('common.saving')}
-            ml={3}
-          >
-            {t(submitText)}
-          </Button>
-        </Dialog.Footer>
-      </Dialog.Content>
+            <Dialog.Body>
+              <Stack gap={4} p={4}>
+                {fields.map((field) => (
+                  <FormControl
+                    key={field.name as string}
+                    label={field.label}
+                    isInvalid={!!errors[field.name]}
+                  >
+                    {renderInput(field)}
+                    {/* ... ошибки ... */}
+                  </FormControl>
+                ))}
+              </Stack>
+            </Dialog.Body>
+
+            <Dialog.Footer gap={3}>
+              <Dialog.ActionTrigger asChild>
+                <Button variant="ghost" onClick={onClose} disabled={isLoading}>
+                  {t(cancelText)}
+                </Button>
+              </Dialog.ActionTrigger>
+
+              <Button colorScheme="blue" onClick={handleSubmit} loading={isLoading}>
+                {t(submitText)}
+              </Button>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
     </Dialog.Root>
   );
 };

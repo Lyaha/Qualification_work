@@ -2,14 +2,31 @@ import { useTranslation } from 'react-i18next';
 import { ColumnConfig, GenericTable } from '../components/GenericTable';
 import { useToast } from '../components/ui/toaster';
 import { useCallback, useState } from 'react';
-import { Product } from '../api';
-import { useDisclosure } from '@chakra-ui/react';
-import { deleteProduct, getProducts } from '../api/products';
+import { Category, Product } from '../api';
+import {
+  createListCollection,
+  List,
+  Portal,
+  Select,
+  SelectItemProps,
+  useDisclosure,
+} from '@chakra-ui/react';
+import { createProduct, deleteProduct, getProducts, updateProduct } from '../api/products';
 import { FormField, GenericFormModal } from '../components/GenericModal';
 import Layout from '../components/Layout';
 import useVisibilityPolling from '../hooks/useVisibilityPolling';
+import { getCategories } from '../api/categories';
+import React from 'react';
 
 const PAGE_SIZE = 5;
+export const CustomSelectItem = React.forwardRef<
+  HTMLDivElement,
+  SelectItemProps & { children?: React.ReactNode; item: any; key: any }
+>((props, ref) => {
+  console.log('CustomSelectItem props:', props);
+  return <Select.Item ref={ref} {...props} />;
+});
+CustomSelectItem.displayName = 'CustomSelectItem';
 
 const ProductPage = () => {
   const { t } = useTranslation();
@@ -19,6 +36,8 @@ const ProductPage = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
   const { open, onOpen, onClose } = useDisclosure();
+  const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const columns: ColumnConfig<Product>[] = [
     { header: t('products.name'), accessor: 'name' },
@@ -26,6 +45,16 @@ const ProductPage = () => {
     { header: t('products.purchasePrice'), accessor: 'price_purchase' },
     { header: t('products.price'), accessor: 'price' },
   ];
+
+  const frameworks = createListCollection({
+    items: [
+      { label: 'React.js', value: 'react' },
+      { label: 'Vue.js', value: 'vue' },
+      { label: 'Angular', value: 'angular' },
+      { label: 'Svelte', value: 'svelte' },
+    ],
+  });
+
   const productFields: FormField<Product>[] = [
     {
       name: 'name',
@@ -55,19 +84,34 @@ const ProductPage = () => {
 
   const fetchCategories = useCallback(async () => {
     try {
-      const response = await getProducts();
+      const response = await getCategories();
       if (response && Array.isArray(response)) {
-        setProducts(response);
-        setTotalItems(response.length);
+        setCategories(response);
       } else {
         console.error('Неверный формат ответа API:', response);
-        setProducts([]);
-        setTotalItems(0);
       }
     } catch (error) {
       toast.showToast({ title: t('errors.loadingFailed'), type: 'error' });
     }
   }, [t, toast]);
+
+  const handleSubmit = async (data: Product) => {
+    setLoading(true);
+    try {
+      if (selectedProduct) {
+        await updateProduct(selectedProduct.id, data);
+      } else {
+        await createProduct(data);
+      }
+      await fetchProducts();
+      onClose();
+      toast.showToast({ title: t('common.success'), type: 'success' });
+    } catch (error) {
+      toast.showToast({ title: t('errors.submitFailed'), type: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -86,6 +130,7 @@ const ProductPage = () => {
   }, [t, toast]);
 
   useVisibilityPolling(fetchProducts, 60000);
+  useVisibilityPolling(fetchCategories, 60000);
 
   const handleDelete = async (id: string) => {
     try {
@@ -128,13 +173,37 @@ const ProductPage = () => {
       <GenericFormModal
         isOpen={open}
         onClose={onClose}
-        title={product ? t('products.edit') : t('products.create')}
+        title={selectedProduct ? t('products.edit') : t('products.create')}
         fields={productFields}
         onSubmit={handleSubmit}
         initialValues={selectedProduct}
         isLoading={loading}
-        submitText={product ? 'common.save' : 'common.create'}
+        submitText={selectedProduct ? 'common.save' : 'common.create'}
       />
+      <Select.Root collection={frameworks} size="sm" width="320px">
+        <Select.HiddenSelect />
+        <Select.Label>Select framework</Select.Label>
+        <Select.Control>
+          <Select.Trigger>
+            <Select.ValueText />
+          </Select.Trigger>
+          <Select.IndicatorGroup>
+            <Select.Indicator />
+          </Select.IndicatorGroup>
+        </Select.Control>
+        <Portal>
+          <Select.Positioner>
+            <Select.Content>
+              {frameworks.items.map((category: any) => (
+                <Select.Item item={category.value} key={category.value}>
+                  {category.label}
+                  <Select.ItemIndicator />
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Positioner>
+        </Portal>
+      </Select.Root>
     </Layout>
   );
 };

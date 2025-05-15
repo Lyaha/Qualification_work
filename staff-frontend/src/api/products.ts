@@ -1,13 +1,12 @@
 import { getRequest, postRequest, putRequest, deleteRequest } from './request';
 import { Product } from './entity/product';
 
-export interface ProductResponse {
-  items: Product[];
-  total: number;
-}
+export const getProducts = async (): Promise<Product[]> => {
+  return getRequest<Product[]>('/products');
+};
 
-export const getProducts = async (): Promise<ProductResponse> => {
-  return getRequest<ProductResponse>(`/products`);
+export const getProduct = async (id: string): Promise<Product> => {
+  return getRequest<Product>(`/products/${id}`);
 };
 
 export const createProduct = async (product: Omit<Product, 'id'>): Promise<Product> => {

@@ -65,11 +65,11 @@ export const GenericTable = <T,>({
   const hasSelection = selection.length > 0;
   const indeterminate = hasSelection && selection.length < items.length;
 
-  const handleSelectAll = (checked: boolean) => {
+  const handleSelectAll = (checked: boolean | string) => {
     setSelection(checked ? items.map((item) => getId(item)) : []);
   };
 
-  const handleSelectItem = (id: string, checked: boolean) => {
+  const handleSelectItem = (id: string, checked: boolean | string) => {
     setSelection((prev) => (checked ? [...prev, id] : prev.filter((itemId) => itemId !== id)));
   };
 
@@ -90,7 +90,7 @@ export const GenericTable = <T,>({
                 <Checkbox.Root
                   size="sm"
                   checked={indeterminate ? 'indeterminate' : selection.length > 0}
-                  onCheckedChange={(changes: CheckboxRootProps) => handleSelectAll(changes.checked)}
+                  onCheckedChange={(changes) => handleSelectAll(changes.checked)}
                 >
                   <Checkbox.HiddenInput />
                   <Checkbox.Control />
@@ -124,9 +124,7 @@ export const GenericTable = <T,>({
                       <Checkbox.Root
                         size="sm"
                         checked={selection.includes(itemId)}
-                        onCheckedChange={(changes: CheckboxRootProps) =>
-                          handleSelectItem(itemId, changes.checked)
-                        }
+                        onCheckedChange={(changes) => handleSelectItem(itemId, changes.checked)}
                       >
                         <Checkbox.HiddenInput />
                         <Checkbox.Control />
@@ -168,12 +166,7 @@ export const GenericTable = <T,>({
         </Table.Root>
       </Table.ScrollArea>
 
-      <Pagination.Root
-        count={totalItems}
-        pageSize={pageSize}
-        page={currentPage}
-        onPageChange={onPageChange}
-      >
+      <Pagination.Root count={totalItems} pageSize={pageSize} page={currentPage}>
         <ButtonGroup variant="ghost" size="sm">
           <Pagination.PrevTrigger>
             <IconButton disabled={currentPage === 1}>
