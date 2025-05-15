@@ -3,7 +3,6 @@ import {
   Button,
   ButtonGroup,
   Checkbox,
-  CheckboxRootProps,
   Flex,
   Heading,
   IconButton,

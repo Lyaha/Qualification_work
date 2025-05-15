@@ -41,7 +41,7 @@ export const useAccessCheck = () => {
         setLoading(false);
       }
     },
-    [t, toaster],
+    [t, toaster, getAccessTokenSilently, navigate],
   );
 
   return { checkPathAccess, loading, error };

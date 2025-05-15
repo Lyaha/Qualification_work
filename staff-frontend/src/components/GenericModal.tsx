@@ -10,14 +10,9 @@ import {
   Input,
   Portal,
   Select,
-  SelectItemProps,
-  SelectRootProps,
   Stack,
-  Text,
 } from '@chakra-ui/react';
 import FormControl from './ui/form-control';
-import React from 'react';
-import { CustomSelectItem } from '../pages/ProductPage';
 
 export type FormField<T> = {
   name: keyof T;

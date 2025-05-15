@@ -5,7 +5,6 @@ import { useCallback, useState } from 'react';
 import { Category, Product } from '../api';
 import {
   createListCollection,
-  List,
   Portal,
   Select,
   SelectItemProps,
