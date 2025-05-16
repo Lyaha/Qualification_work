@@ -13,7 +13,8 @@ export class TaskController {
 
   @Get('/my')
   findMyTasks(@CurrentUser() currentUser: User): Promise<Task[]> {
-    return this.taskService.findByField('worker_id', currentUser.id);
+    const task = this.taskService.findByField('worker_id', currentUser.id);
+    return task;
   }
 
   @Post()

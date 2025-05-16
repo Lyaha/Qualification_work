@@ -1,8 +1,11 @@
+import { Category } from './category';
+
 export type Product = {
   id: string;
   name: string;
   description?: string;
-  category_id: string;
+  category: string;
+  category_entity: Category;
   barcode?: string;
   price_purchase: number;
   price: number;
@@ -10,4 +13,15 @@ export type Product = {
   expiration_date?: string;
   warehouse_id: string;
   storage_location?: string;
+};
+
+export type CustomEditAddProduct = {
+  name: string;
+  description?: string;
+  category_id: Category;
+  category?: string;
+  barcode?: string;
+  price_purchase: number;
+  price: number;
+  weight?: number;
 };

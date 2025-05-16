@@ -55,11 +55,9 @@ export const GenericFormModal = <T extends Record<string, any>>({
   const [errors, setErrors] = useState<Record<keyof T, string>>({} as Record<keyof T, string>);
 
   useEffect(() => {
-    if (isOpen) {
-      setFormData(initialValues || {});
-      setErrors({} as Record<keyof T, string>);
-    }
-  }, [isOpen, initialValues]);
+    setFormData(initialValues || {});
+    setErrors({} as Record<keyof T, string>);
+  }, [isOpen]);
 
   const handleChange = (name: keyof T, value: any) => {
     setFormData((prev) => ({
@@ -94,7 +92,7 @@ export const GenericFormModal = <T extends Record<string, any>>({
     }
   };
 
-  const renderInput = (field: FormField<T>): ReactNode => {
+  const renderInput = (field: FormField<T>): Promise<ReactNode> => {
     switch (field.type) {
       case 'number':
         return (
@@ -121,17 +119,24 @@ export const GenericFormModal = <T extends Record<string, any>>({
           })),
         });
 
+        const rawValue = formData[field.name];
+        const currentValue =
+          typeof rawValue === 'object' ? rawValue?.id?.toString() : rawValue?.toString() || '';
+        const isValidValue = collection.items.some((item) => item.value === currentValue);
+        const placeholder = isValidValue
+          ? collection.items.find((item) => item.value === currentValue)?.label
+          : ' ';
+
         return (
           <Select.Root
-            value={formData[field.name]?.toString() || ''}
-            onValueChange={(value) => handleChange(field.name, value)}
             collection={collection}
+            onValueChange={(value) => handleChange(field.name, value)}
             size="sm"
             zIndex={1402}
           >
             <Select.Control>
               <Select.Trigger>
-                <Select.ValueText placeholder={field.placeholder} />
+                <Select.ValueText placeholder={isValidValue ? placeholder : field.placeholder} />
               </Select.Trigger>
             </Select.Control>
 

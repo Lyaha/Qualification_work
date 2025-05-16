@@ -3,29 +3,16 @@ import { ColumnConfig, GenericTable } from '../components/GenericTable';
 import { useToast } from '../components/ui/toaster';
 import { useCallback, useState } from 'react';
 import { Category, Product } from '../api';
-import {
-  createListCollection,
-  Portal,
-  Select,
-  SelectItemProps,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Button, useDisclosure, Text } from '@chakra-ui/react';
 import { createProduct, deleteProduct, getProducts, updateProduct } from '../api/products';
 import { FormField, GenericFormModal } from '../components/GenericModal';
 import Layout from '../components/Layout';
 import useVisibilityPolling from '../hooks/useVisibilityPolling';
 import { getCategories } from '../api/categories';
-import React from 'react';
+import DetailModal from '../components/DetailModal';
+import { useNavigate } from 'react-router-dom';
 
 const PAGE_SIZE = 5;
-export const CustomSelectItem = React.forwardRef<
-  HTMLDivElement,
-  SelectItemProps & { children?: React.ReactNode; item: any; key: any }
->((props, ref) => {
-  console.log('CustomSelectItem props:', props);
-  return <Select.Item ref={ref} {...props} />;
-});
-CustomSelectItem.displayName = 'CustomSelectItem';
 
 const ProductPage = () => {
   const { t } = useTranslation();
@@ -34,25 +21,26 @@ const ProductPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
-  const { open, onOpen, onClose } = useDisclosure();
+  const {
+    open: OpenEditModal,
+    onOpen: onOpenEditModal,
+    onClose: onCloseEditModal,
+  } = useDisclosure();
+  const {
+    open: OpenDetailModal,
+    onOpen: onOpenDetailModal,
+    onClose: onCloseDetailModal,
+  } = useDisclosure();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const navigate = useNavigate();
 
   const columns: ColumnConfig<Product>[] = [
     { header: t('products.name'), accessor: 'name' },
-    { header: t('products.category'), accessor: 'category_id' },
+    { header: t('products.category'), accessor: 'category' },
     { header: t('products.purchasePrice'), accessor: 'price_purchase' },
     { header: t('products.price'), accessor: 'price' },
   ];
-
-  const frameworks = createListCollection({
-    items: [
-      { label: 'React.js', value: 'react' },
-      { label: 'Vue.js', value: 'vue' },
-      { label: 'Angular', value: 'angular' },
-      { label: 'Svelte', value: 'svelte' },
-    ],
-  });
 
   const productFields: FormField<Product>[] = [
     {
@@ -60,24 +48,56 @@ const ProductPage = () => {
       label: t('products.name'),
       type: 'text',
       required: true,
+      placeholder: t('products.namePlaceholder'),
     },
     {
       name: 'description',
       label: t('products.description'),
       type: 'textarea',
+      placeholder: t('products.descriptionPlaceholder'),
+    },
+    {
+      name: 'barcode',
+      label: t('products.barcode'),
+      type: 'text',
+      placeholder: t('products.barcodePlaceholder'),
+    },
+    {
+      name: 'price_purchase',
+      label: t('products.purchasePrice'),
+      type: 'number',
+      required: true,
+      min: 0,
+      step: 0.01,
+      placeholder: t('products.purchasePricePlaceholder'),
     },
     {
       name: 'price',
       label: t('products.price'),
       type: 'number',
       required: true,
+      min: 0,
+      step: 0.01,
+      placeholder: t('products.pricePlaceholder'),
     },
     {
-      name: 'category_id',
+      name: 'weight',
+      label: t('products.weight'),
+      type: 'number',
+      min: 0,
+      step: 0.1,
+      placeholder: t('products.weightPlaceholder'),
+    },
+    {
+      name: 'category_entity',
       label: t('products.category'),
       type: 'select',
-      options: categories.map((c) => ({ value: c.id, label: c.name })),
+      options: categories.map((c) => ({
+        value: c.id,
+        label: c.name,
+      })),
       required: true,
+      placeholder: t('products.selectCategory'),
     },
   ];
 
@@ -94,22 +114,55 @@ const ProductPage = () => {
     }
   }, [t, toast]);
 
-  const handleSubmit = async (data: Product) => {
+  const handleSubmit = async (data: any) => {
     setLoading(true);
     try {
+      const selectedCategory = categories.find((c) => c.id === data.category_entity.value[0]);
+      if (!selectedCategory) {
+        throw new Error(t('errors.categoryRequired'));
+      }
+
+      const productData = {
+        name: data.name,
+        description: data.description,
+        barcode: data.barcode,
+        price_purchase: data.price_purchase,
+        price: data.price,
+        weight: data.weight,
+        category_id: selectedCategory,
+        category: selectedCategory.name,
+      };
       if (selectedProduct) {
-        await updateProduct(selectedProduct.id, data);
+        await updateProduct(selectedProduct.id, productData);
       } else {
-        await createProduct(data);
+        await createProduct(productData);
       }
       await fetchProducts();
-      onClose();
+      onCloseEditModal();
       toast.showToast({ title: t('common.success'), type: 'success' });
     } catch (error) {
       toast.showToast({ title: t('errors.submitFailed'), type: 'error' });
     } finally {
       setLoading(false);
     }
+  };
+  const handleAdd = () => {
+    setSelectedProduct(undefined);
+    onOpenEditModal();
+  };
+
+  const handleEdit = (product: Product) => {
+    setSelectedProduct(product);
+    onOpenEditModal();
+  };
+
+  const handelDetail = (product: Product) => {
+    setSelectedProduct(product);
+    onOpenDetailModal();
+  };
+
+  const handelNavigate = () => {
+    navigate('/batches');
   };
 
   const fetchProducts = useCallback(async () => {
@@ -163,46 +216,32 @@ const ProductPage = () => {
         onPageChange={setCurrentPage}
         onDelete={handleDelete}
         onBulkDelete={handleBulkDelete}
-        onAdd={onOpen}
-        onEdit={setSelectedProduct}
+        onAdd={handleAdd}
+        onEdit={handleEdit}
         getId={(item) => item.id}
         isLoading={!products.length}
+        isView={true}
+        onView={handelDetail}
       />
 
       <GenericFormModal
-        isOpen={open}
-        onClose={onClose}
+        isOpen={OpenEditModal}
+        onClose={onCloseEditModal}
+        initialValues={selectedProduct}
         title={selectedProduct ? t('products.edit') : t('products.create')}
         fields={productFields}
         onSubmit={handleSubmit}
-        initialValues={selectedProduct}
         isLoading={loading}
         submitText={selectedProduct ? 'common.save' : 'common.create'}
       />
-      <Select.Root collection={frameworks} size="sm" width="320px">
-        <Select.HiddenSelect />
-        <Select.Label>Select framework</Select.Label>
-        <Select.Control>
-          <Select.Trigger>
-            <Select.ValueText />
-          </Select.Trigger>
-          <Select.IndicatorGroup>
-            <Select.Indicator />
-          </Select.IndicatorGroup>
-        </Select.Control>
-        <Portal>
-          <Select.Positioner>
-            <Select.Content>
-              {frameworks.items.map((category: any) => (
-                <Select.Item item={category.value} key={category.value}>
-                  {category.label}
-                  <Select.ItemIndicator />
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select.Positioner>
-        </Portal>
-      </Select.Root>
+      <DetailModal
+        isOpen={OpenDetailModal}
+        onClose={onCloseDetailModal}
+        title={selectedProduct?.name || ''}
+        additionalButton={<Button onClick={handelNavigate}>{t('product.batches')}</Button>}
+      >
+        <Text>Some Text</Text>
+      </DetailModal>
     </Layout>
   );
 };

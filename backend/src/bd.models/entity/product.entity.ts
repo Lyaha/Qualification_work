@@ -1,6 +1,32 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Category } from './category.entity';
-import { Warehouse } from './warehouse.entity';
+import { IsString, IsNumber, IsUUID, IsOptional } from 'class-validator';
+
+export class CreateProductDto {
+  @IsString()
+  name!: string;
+
+  @IsNumber()
+  price_purchase!: number;
+
+  @IsNumber()
+  price!: number;
+
+  @IsUUID()
+  category_id!: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsString()
+  @IsOptional()
+  barcode?: string;
+
+  @IsNumber()
+  @IsOptional()
+  weight?: number;
+}
 
 @Entity('products')
 export class Product {
@@ -13,11 +39,14 @@ export class Product {
   @Column({ type: 'text', nullable: true })
   description!: string;
 
-  @ManyToOne(() => Category)
-  @JoinColumn({ name: 'category_id' }) // Укажите имя внешнего ключа
-  category!: Category;
+  @Column()
+  category!: string;
 
-  @Column({ unique: true, nullable: true })
+  @ManyToOne(() => Category)
+  @JoinColumn({ name: 'category_id' }) // внешний ключ
+  category_entity!: Category;
+
+  @Column({ unique: true, nullable: true, length: 50 })
   barcode!: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
@@ -29,13 +58,6 @@ export class Product {
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   weight!: number;
 
-  @Column({ type: 'date', nullable: true })
-  expiration_date!: Date;
-
-  @ManyToOne(() => Warehouse)
-  @JoinColumn({ name: 'warehouse_id' })
-  warehouse!: Warehouse;
-
-  @Column({ nullable: true })
-  storage_location!: string;
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  updated_at!: Date;
 }

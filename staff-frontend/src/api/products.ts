@@ -1,5 +1,5 @@
 import { getRequest, postRequest, putRequest, deleteRequest } from './request';
-import { Product } from './entity/product';
+import { CustomEditAddProduct, Product } from './entity/product';
 
 export const getProducts = async (): Promise<Product[]> => {
   return getRequest<Product[]>('/products');
@@ -9,7 +9,9 @@ export const getProduct = async (id: string): Promise<Product> => {
   return getRequest<Product>(`/products/${id}`);
 };
 
-export const createProduct = async (product: Omit<Product, 'id'>): Promise<Product> => {
+export const createProduct = async (
+  product: Omit<CustomEditAddProduct, 'id'>,
+): Promise<Product> => {
   return postRequest<Product>('/products', product);
 };
 

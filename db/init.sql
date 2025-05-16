@@ -49,7 +49,8 @@ CREATE TABLE products (
     barcode VARCHAR(50) UNIQUE,
     price_purchase DECIMAL(10,2) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
-    weight DECIMAL(10,2)
+    weight DECIMAL(10,2),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Таблиця замовлень

@@ -16,7 +16,6 @@ const ProtectedRoleRoute = ({ children }: ProtectedRoleRouteProps): React.ReactE
 
   useEffect(() => {
     const checkAccess = async () => {
-      console.log(location.pathname);
       const result = await checkPathAccess(location.pathname);
       setHasAccess(result);
     };

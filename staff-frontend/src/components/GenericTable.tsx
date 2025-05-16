@@ -13,7 +13,7 @@ import {
   Stack,
   Table,
 } from '@chakra-ui/react';
-import { LuChevronLeft, LuChevronRight, LuPlus, LuTrash2 } from 'react-icons/lu';
+import { LuChevronLeft, LuChevronRight, LuPlus, LuTrash2, LuEye } from 'react-icons/lu';
 import { CiEdit } from 'react-icons/ci';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,6 +39,8 @@ type GenericTableProps<T> = {
   onEdit: (item: T) => void;
   getId: (item: T) => string;
   isLoading?: boolean;
+  isView?: boolean;
+  onView?: (item: T) => void;
   additionalActions?: (item: T) => React.ReactNode;
 };
 
@@ -56,16 +58,23 @@ export const GenericTable = <T,>({
   onEdit,
   getId,
   isLoading = false,
+  isView = false,
+  onView,
   additionalActions,
 }: GenericTableProps<T>) => {
   const { t } = useTranslation();
   const [selection, setSelection] = useState<string[]>([]);
 
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const currentItems = items.slice(startIndex, endIndex);
+
   const hasSelection = selection.length > 0;
   const indeterminate = hasSelection && selection.length < items.length;
 
   const handleSelectAll = (checked: boolean | string) => {
-    setSelection(checked ? items.map((item) => getId(item)) : []);
+    setSelection(checked ? currentItems.map((item) => getId(item)) : []);
   };
 
   const handleSelectItem = (id: string, checked: boolean | string) => {
@@ -82,7 +91,7 @@ export const GenericTable = <T,>({
       </Flex>
 
       <Table.ScrollArea borderWidth="1px" overflowX="auto">
-        <Table.Root variant="outline" size={{ base: 'sm', md: 'md' }}>
+        <Table.Root variant="outline" gap="5" size={{ base: 'sm', md: 'md' }}>
           <Table.Header>
             <Table.Row>
               <Table.ColumnHeader w="6">
@@ -112,7 +121,7 @@ export const GenericTable = <T,>({
                 </Table.Cell>
               </Table.Row>
             ) : items.length > 0 ? (
-              items.map((item) => {
+              currentItems.map((item) => {
                 const itemId = getId(item);
                 return (
                   <Table.Row
@@ -138,6 +147,11 @@ export const GenericTable = <T,>({
                     ))}
                     <Table.Cell>
                       <ButtonGroup size="sm">
+                        {isView && (
+                          <IconButton aria-label={t('common.view')} onClick={() => onView?.(item)}>
+                            <LuEye />
+                          </IconButton>
+                        )}
                         <IconButton aria-label={t('common.edit')} onClick={() => onEdit(item)}>
                           <CiEdit />
                         </IconButton>
@@ -165,7 +179,12 @@ export const GenericTable = <T,>({
         </Table.Root>
       </Table.ScrollArea>
 
-      <Pagination.Root count={totalItems} pageSize={pageSize} page={currentPage}>
+      <Pagination.Root
+        count={totalItems}
+        pageSize={pageSize}
+        page={currentPage}
+        onPageChange={(e) => onPageChange(e.page)}
+      >
         <ButtonGroup variant="ghost" size="sm">
           <Pagination.PrevTrigger>
             <IconButton disabled={currentPage === 1}>
@@ -177,7 +196,7 @@ export const GenericTable = <T,>({
             render={(page) => (
               <IconButton
                 variant={{ base: 'ghost', _selected: 'outline' }}
-                disabled={page.value !== currentPage}
+                disabled={page.value === currentPage}
               >
                 {page.value}
               </IconButton>
@@ -185,7 +204,7 @@ export const GenericTable = <T,>({
           />
 
           <Pagination.NextTrigger>
-            <IconButton disabled={currentPage >= Math.ceil(totalItems / pageSize)}>
+            <IconButton disabled={currentPage >= totalPages}>
               <LuChevronRight />
             </IconButton>
           </Pagination.NextTrigger>
