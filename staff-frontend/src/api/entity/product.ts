@@ -10,9 +10,7 @@ export type Product = {
   price_purchase: number;
   price: number;
   weight?: number;
-  expiration_date?: string;
-  warehouse_id: string;
-  storage_location?: string;
+  updated_at?: string;
 };
 
 export type CustomEditAddProduct = {

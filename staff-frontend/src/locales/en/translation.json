@@ -1,10 +1,10 @@
 {
   "auth": {
-    "welcome": "Welcome to FluxGate",
-    "staffPortal": "Staff Portal - Please sign in to continue",
-    "signIn": "Sign In with Company Account",
+    "welcome": "Welcome Back",
+    "staffPortal": "Staff Portal",
+    "signIn": "Sign In",
     "loading": "Loading...",
-    "secureLogout": "Sign Out"
+    "secureLogout": "Secure Logout"
   },
   "navigation": {
     "home": "Home",
@@ -29,8 +29,8 @@
     "urgent": "Urgent",
     "quantity": "Quantity",
     "deadline": "Deadline",
-    "unknownProduct": "Unknown product",
-    "legend": "Task card legend",
+    "unknownProduct": "Unknown Product",
+    "legend": "Task Legend",
     "legendItems": {
       "order": "Order: the task is related to a customer order",
       "supply": "Supply: the task is related to a product supply",
@@ -60,7 +60,11 @@
     "search": "Search",
     "noResults": "No results found",
     "actions": "Actions",
-    "add": "Add"
+    "add": "Add",
+    "view": "View",
+    "selected": "Selected",
+    "noData": "No data available",
+    "create": "Create"
   },
   "errors": {
     "userNotFound": "User not found",
@@ -69,7 +73,11 @@
     "unauthorized": "Authorization required",
     "forbidden": "Access denied",
     "serverError": "Server error",
-    "networkError": "Network error"
+    "networkError": "Network error",
+    "submitFailed": "Failed to submit",
+    "accessCheckFailed": "Failed to check access",
+    "categoryRequired": "Category is required",
+    "requiredField": "This field is required"
   },
   "menu": {
     "name": "Menu",
@@ -79,7 +87,7 @@
     "appName": "FluxGate",
     "appDescription": "Warehouse Management System",
     "version": "Version",
-    "copyright": "© 2024 FluxGate. All rights reserved"
+    "copyright": "© 2025 FluxGate. All rights reserved"
   },
   "products": {
     "title": "Products",
@@ -91,6 +99,19 @@
     "category": "Category",
     "price": "Price",
     "stock": "Stock",
-    "purchasePrice": "Purchase Price"
+    "purchasePrice": "Purchase Price",
+    "create": "Create Product",
+    "namePlaceholder": "Enter product name",
+    "descriptionPlaceholder": "Enter product description",
+    "barcode": "Barcode",
+    "barcodePlaceholder": "Enter product barcode",
+    "purchasePricePlaceholder": "Enter purchase price",
+    "pricePlaceholder": "Enter selling price",
+    "weight": "Weight",
+    "weightPlaceholder": "Enter product weight",
+    "selectCategory": "Select category",
+    "batches": "Product Batches",
+    "id": "ID",
+    "updatedAt": "Updated At"
   }
 }

@@ -3,7 +3,7 @@ import { ColumnConfig, GenericTable } from '../components/GenericTable';
 import { useToast } from '../components/ui/toaster';
 import { useCallback, useState } from 'react';
 import { Category, Product } from '../api';
-import { Button, useDisclosure, Text } from '@chakra-ui/react';
+import { Button, useDisclosure, Text, Stack, Box } from '@chakra-ui/react';
 import { createProduct, deleteProduct, getProducts, updateProduct } from '../api/products';
 import { FormField, GenericFormModal } from '../components/GenericModal';
 import Layout from '../components/Layout';
@@ -238,9 +238,81 @@ const ProductPage = () => {
         isOpen={OpenDetailModal}
         onClose={onCloseDetailModal}
         title={selectedProduct?.name || ''}
-        additionalButton={<Button onClick={handelNavigate}>{t('product.batches')}</Button>}
+        additionalButton={<Button onClick={handelNavigate}>{t('products.batches')}</Button>}
       >
-        <Text>Some Text</Text>
+        <Stack gap={3}>
+          {selectedProduct?.id && (
+            <Box>
+              <Text fontWeight="semibold">{t('products.id')}:</Text>
+              <Text>{selectedProduct.id}</Text>
+            </Box>
+          )}
+
+          {selectedProduct?.barcode && (
+            <Box>
+              <Text fontWeight="semibold">{t('products.barcode')}:</Text>
+              <Text>{selectedProduct.barcode}</Text>
+            </Box>
+          )}
+
+          <Box>
+            <Text fontWeight="semibold">{t('products.category')}:</Text>
+            <Text>{selectedProduct?.category || '-'}</Text>
+          </Box>
+
+          <Box>
+            <Text fontWeight="semibold">{t('products.description')}:</Text>
+            <Text>{selectedProduct?.description || '-'}</Text>
+          </Box>
+
+          <Box>
+            <Text fontWeight="semibold">{t('products.price')}:</Text>
+            <Text>
+              {selectedProduct?.price
+                ? new Intl.NumberFormat('uk-UA', {
+                    style: 'currency',
+                    currency: 'UAH',
+                  }).format(Number(selectedProduct.price))
+                : '-'}
+            </Text>
+          </Box>
+
+          <Box>
+            <Text fontWeight="semibold">{t('products.purchasePrice')}:</Text>
+            <Text>
+              {selectedProduct?.price_purchase
+                ? new Intl.NumberFormat('uk-UA', {
+                    style: 'currency',
+                    currency: 'UAH',
+                  }).format(Number(selectedProduct.price_purchase))
+                : '-'}
+            </Text>
+          </Box>
+
+          <Box>
+            <Text fontWeight="semibold">{t('products.weight')}:</Text>
+            <Text>
+              {selectedProduct?.weight
+                ? `${new Intl.NumberFormat('ru-RU').format(Number(selectedProduct.weight))} кг`
+                : '-'}
+            </Text>
+          </Box>
+
+          <Box>
+            <Text fontWeight="semibold">{t('products.updatedAt')}:</Text>
+            <Text>
+              {selectedProduct?.updated_at
+                ? new Date(selectedProduct.updated_at).toLocaleDateString('ru-RU', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })
+                : '-'}
+            </Text>
+          </Box>
+        </Stack>
       </DetailModal>
     </Layout>
   );

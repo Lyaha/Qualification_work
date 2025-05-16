@@ -46,8 +46,8 @@ export const GenericFormModal = <T extends Record<string, any>>({
   onSubmit,
   initialValues,
   isLoading = false,
-  submitText = 'Save',
-  cancelText = 'Cancel',
+  submitText = 'common.save',
+  cancelText = 'common.cancel',
 }: GenericFormModalProps<T>) => {
   const { t } = useTranslation();
   const toast = useToast();

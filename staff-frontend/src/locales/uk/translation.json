@@ -1,10 +1,10 @@
 {
   "auth": {
-    "welcome": "Ласкаво просимо до FluxGate",
-    "staffPortal": "Портал для співробітників - Увійдіть, щоб продовжити",
-    "signIn": "Увійти через корпоративний акаунт",
+    "welcome": "Ласкаво просимо",
+    "staffPortal": "Портал персоналу",
+    "signIn": "Увійти",
     "loading": "Завантаження...",
-    "secureLogout": "Вийти з системи"
+    "secureLogout": "Безпечний вихід"
   },
   "navigation": {
     "home": "Головна",
@@ -18,9 +18,9 @@
   "tasks": {
     "currentTasks": "Поточні завдання",
     "status": {
-      "pending": "Очікує виконання",
-      "inProgress": "В процесі",
-      "completed": "Виконано"
+      "pending": "Очікує",
+      "inProgress": "В роботі",
+      "completed": "Завершено"
     },
     "type": {
       "order": "Замовлення",
@@ -28,13 +28,13 @@
     },
     "urgent": "Терміново",
     "quantity": "Кількість",
-    "deadline": "Дедлайн",
+    "deadline": "Термін",
     "unknownProduct": "Невідомий продукт",
-    "legend": "Легенда карток завдань",
+    "legend": "Легенда завдань",
     "legendItems": {
-      "order": "Замовлення: задача пов'язана з замовленням клієнта",
-      "supply": "Поставка: задача пов'язана з поставкою товару",
-      "urgent": "Терміново: задача потребує негайної уваги"
+      "order": "Замовлення: завдання пов'язане з замовленням клієнта",
+      "supply": "Поставка: завдання пов'язане з поставкою товару",
+      "urgent": "Терміново: завдання потребує негайної уваги"
     }
   },
   "forbidden": {
@@ -56,20 +56,28 @@
     "needHelp": "Потрібна допомога? Зв'яжіться з нами:",
     "units": "шт.",
     "emailCopied": "Email скопійовано",
-    "emailCopiedDesc": "Email адресу успішно скопійовано до буферу обміну",
+    "emailCopiedDesc": "Email адресу скопійовано в буфер обміну",
     "search": "Пошук",
     "noResults": "Результатів не знайдено",
     "actions": "Дії",
-    "add": "Додати"
+    "add": "Додати",
+    "view": "Переглянути",
+    "selected": "Обрано",
+    "noData": "Дані відсутні",
+    "create": "Додати"
   },
   "errors": {
     "userNotFound": "Користувача не знайдено",
     "loadingFailed": "Помилка завантаження даних",
-    "deleteFailed": "Не вдалося видалити",
+    "deleteFailed": "Помилка видалення",
     "unauthorized": "Необхідна авторизація",
     "forbidden": "Доступ заборонено",
     "serverError": "Помилка сервера",
-    "networkError": "Помилка мережі"
+    "networkError": "Помилка мережі",
+    "submitFailed": "Помилка відправки",
+    "accessCheckFailed": "Помилка перевірки доступу",
+    "categoryRequired": "Категорія обов'язкова",
+    "requiredField": "Це поле обов'язкове"
   },
   "menu": {
     "name": "Меню",
@@ -79,7 +87,7 @@
     "appName": "FluxGate",
     "appDescription": "Система управління складом",
     "version": "Версія",
-    "copyright": "© 2024 FluxGate. Всі права захищено"
+    "copyright": "© 2025 FluxGate. Усі права захищено"
   },
   "products": {
     "title": "Продукти",
@@ -90,7 +98,20 @@
     "description": "Опис",
     "category": "Категорія",
     "price": "Ціна",
-    "stock": "В наявності",
-    "purchasePrice": "Закупівельна ціна"
+    "stock": "На складі",
+    "purchasePrice": "Закупівельна ціна",
+    "create": "Створити продукт",
+    "namePlaceholder": "Введіть назву продукту",
+    "descriptionPlaceholder": "Введіть опис продукту",
+    "barcode": "Штрих-код",
+    "barcodePlaceholder": "Введіть штрих-код продукту",
+    "purchasePricePlaceholder": "Введіть закупівельну ціну",
+    "pricePlaceholder": "Введіть ціну продажу",
+    "weight": "Вага",
+    "weightPlaceholder": "Введіть вагу продукту",
+    "selectCategory": "Виберіть категорію",
+    "batches": "Партії продукту",
+    "id": "Ідентифікатор",
+    "updatedAt": "Оновлено"
   }
 }
