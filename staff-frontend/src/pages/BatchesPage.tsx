@@ -3,7 +3,7 @@ import { ColumnConfig, GenericTable } from '../components/GenericTable';
 import { useToast } from '../components/ui/toaster';
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Batch, get, getByBatchId, Product } from '../api';
+import { Batch, getAllLocationBatches, getByBatchId, Product } from '../api';
 import {
   createBatch,
   deleteBatches,
@@ -146,50 +146,6 @@ const BatchesPage = () => {
     },
   ];
 
-  const handleSubmit = async (data: any) => {
-    setLoading(true);
-    try {
-      let selectedWarehouse = null;
-      console.log(data);
-      if (typeof data.warehouse_id === 'string') {
-        selectedWarehouse = warehouses.find((c) => c.id === data.warehouse_id);
-      } else {
-        selectedWarehouse = warehouses.find((c) => c.id === data.warehouse_id.value[0]);
-      }
-      if (!selectedWarehouse) {
-        throw new Error(t('errors.warehouseRequired'));
-      }
-      let batchData = null;
-      if (productId) {
-        batchData = {
-          product_id: productId,
-          quantity: data.quantity,
-          expiration_date: data.expiration_date,
-          warehouse_id: selectedWarehouse.id,
-        };
-      } else {
-        batchData = {
-          product_id: data.product_id,
-          quantity: data.quantity,
-          expiration_date: data.expiration_date,
-          warehouse_id: selectedWarehouse.id,
-        };
-      }
-      if (selectedBatch) {
-        await updateBatch(selectedBatch.id, batchData);
-      } else {
-        await createBatch(batchData);
-      }
-      await fetchBatches();
-      onCloseEditModal();
-      toast.showToast({ title: t('common.success'), type: 'success' });
-    } catch (error) {
-      toast.showToast({ title: t('errors.submitFailed'), type: 'error' });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const fetchBatches = useCallback(async () => {
     try {
       setLoading(true);
@@ -258,6 +214,50 @@ const BatchesPage = () => {
     }
   };
 
+  const handleSubmit = async (data: any) => {
+    setLoading(true);
+    try {
+      let selectedWarehouse = null;
+      console.log(data);
+      if (typeof data.warehouse_id === 'string') {
+        selectedWarehouse = warehouses.find((c) => c.id === data.warehouse_id);
+      } else {
+        selectedWarehouse = warehouses.find((c) => c.id === data.warehouse_id.value[0]);
+      }
+      if (!selectedWarehouse) {
+        throw new Error(t('errors.warehouseRequired'));
+      }
+      let batchData = null;
+      if (productId) {
+        batchData = {
+          product_id: productId,
+          quantity: data.quantity,
+          expiration_date: data.expiration_date,
+          warehouse_id: selectedWarehouse.id,
+        };
+      } else {
+        batchData = {
+          product_id: data.product_id,
+          quantity: data.quantity,
+          expiration_date: data.expiration_date,
+          warehouse_id: selectedWarehouse.id,
+        };
+      }
+      if (selectedBatch) {
+        await updateBatch(selectedBatch.id, batchData);
+      } else {
+        await createBatch(batchData);
+      }
+      await fetchBatches();
+      onCloseEditModal();
+      toast.showToast({ title: t('common.success'), type: 'success' });
+    } catch (error) {
+      toast.showToast({ title: t('errors.submitFailed'), type: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAdd = () => {
     setSelectedBatch(undefined);
     onOpenEditModal();
@@ -284,8 +284,8 @@ const BatchesPage = () => {
   };
 
   const handelNavigate = () => {
-    if (productId) {
-      navigate(`/batches/${productId}`);
+    if (selectedBatch) {
+      navigate(`/batch-location/${selectedBatch.id}`);
     }
   };
 

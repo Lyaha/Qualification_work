@@ -1,7 +1,11 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
 import { StorageZoneService } from './storage_zone.service';
 import { StorageZone } from '../entity/storage_zone.entity';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('access-token')
 @Controller('storage-zone')
 export class StorageZoneController {
   constructor(private readonly storageZoneService: StorageZoneService) {}

@@ -53,6 +53,25 @@ export const menuConfig: MenuItem[] = [
         hidden: true,
         allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
       },
+      {
+        id: 'batch-location',
+        translations: {
+          uk: 'Розміщення партій',
+          en: 'Batches Location',
+        },
+        path: '/batch-location',
+        allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+      },
+      {
+        id: 'batch-location-batchId',
+        translations: {
+          uk: 'Розміщення партії',
+          en: 'Batch Location',
+        },
+        path: '/batch-location/:batchId',
+        hidden: true,
+        allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+      },
     ],
   },
   {

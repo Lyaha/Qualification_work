@@ -16,7 +16,7 @@ export class BatchLocationService {
   }
 
   findAll(): Promise<BatchLocation[]> {
-    return this.batchLocationRepository.find();
+    return this.batchLocationRepository.find({ relations: ['storage_zone', 'box'] });
   }
 
   async findByBatchId(batchId: string): Promise<BatchLocation[]> {

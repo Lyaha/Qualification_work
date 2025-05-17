@@ -15,6 +15,7 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 import ProductPage from './pages/ProductPage';
 import BatchesPage from './pages/BatchesPage';
+import BatchLocationsPage from './pages/BatchLocationsPage';
 
 function App() {
   return (
@@ -73,6 +74,26 @@ function App() {
                       <ProtectedRoute>
                         <ProtectedRoleRoute>
                           <BatchesPage />
+                        </ProtectedRoleRoute>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/batch-location"
+                    element={
+                      <ProtectedRoute>
+                        <ProtectedRoleRoute>
+                          <BatchLocationsPage />
+                        </ProtectedRoleRoute>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/batch-location/:batchId"
+                    element={
+                      <ProtectedRoute>
+                        <ProtectedRoleRoute>
+                          <BatchLocationsPage />
                         </ProtectedRoleRoute>
                       </ProtectedRoute>
                     }

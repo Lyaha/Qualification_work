@@ -4,7 +4,7 @@ export type BatchLocation = {
   storage_zone_id?: string;
   box_id?: string;
   quantity: number;
-  created_at: string;
+  created_at?: string;
   storage_zone?: {
     id: string;
     location_code: string;
