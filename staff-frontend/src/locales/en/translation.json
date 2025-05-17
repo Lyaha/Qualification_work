@@ -67,7 +67,9 @@
     "view": "View",
     "selected": "Selected",
     "noData": "No data available",
-    "create": "Create"
+    "create": "Create",
+    "unknown": "Unknown",
+    "notSpecified": "Not specified"
   },
   "errors": {
     "userNotFound": "User not found",
@@ -80,7 +82,9 @@
     "submitFailed": "Failed to submit",
     "accessCheckFailed": "Failed to check access",
     "categoryRequired": "Category is required",
-    "requiredField": "This field is required"
+    "requiredField": "This field is required",
+    "invalidLocationCombination": "Invalid location combination",
+    "warehouseRequired": "Warehouse field is required"
   },
   "menu": {
     "name": "Menu",
@@ -115,6 +119,39 @@
     "selectCategory": "Select category",
     "batches": "Product Batches",
     "id": "ID",
-    "updatedAt": "Updated At"
+    "updatedAt": "Updated At",
+    "createPlaceholder": "Enter product name"
+  },
+  "batchLocations": {
+    "id": "ID",
+    "batch": "Batch",
+    "storageZone": "Storage Zone",
+    "box": "Box",
+    "quantity": "Quantity",
+    "createdAt": "Created At",
+    "batchId": "Batch ID",
+    "title": "Batch Storage Locations",
+    "details": "Storage Location Details"
+  },
+  "boxes": {
+    "createPlaceholder": "Enter new box name"
+  },
+  "batches": {
+    "batchNumber": "Batch Number",
+    "product": "Product",
+    "warehouse": "Warehouse",
+    "quantity": "Quantity",
+    "expirationDate": "Expiration Date",
+    "productId": "Product ID",
+    "title": "Batches",
+    "edit": "Edit Batch",
+    "create": "Create Batch",
+    "location": "Location",
+    "receivedAt": "Received At",
+    "warehouseName": "Warehouse Name",
+    "warehouseLocation": "Warehouse Location"
+  },
+  "warehouses": {
+    "createPlaceholder": "Enter warehouse name"
   }
 }

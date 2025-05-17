@@ -67,7 +67,9 @@
     "view": "Переглянути",
     "selected": "Обрано",
     "noData": "Дані відсутні",
-    "create": "Додати"
+    "create": "Додати",
+    "unknown": "Невідомо",
+    "notSpecified": "Не вказано"
   },
   "errors": {
     "userNotFound": "Користувача не знайдено",
@@ -80,7 +82,9 @@
     "submitFailed": "Помилка відправки",
     "accessCheckFailed": "Помилка перевірки доступу",
     "categoryRequired": "Категорія обов'язкова",
-    "requiredField": "Це поле обов'язкове"
+    "requiredField": "Це поле обов'язкове",
+    "invalidLocationCombination": "Неправильне поєднання локацій",
+    "warehouseRequired": "Поле складу обов'язкове"
   },
   "menu": {
     "name": "Меню",
@@ -115,6 +119,39 @@
     "selectCategory": "Виберіть категорію",
     "batches": "Партії продукту",
     "id": "Ідентифікатор",
-    "updatedAt": "Оновлено"
+    "updatedAt": "Оновлено",
+    "createPlaceholder": "Введіть назву продукту"
+  },
+  "batchLocations": {
+    "id": "Ідентифікатор",
+    "batch": "Партія",
+    "storageZone": "Зона зберігання",
+    "box": "Коробка",
+    "quantity": "Кількість",
+    "createdAt": "Створено",
+    "batchId": "ID партії",
+    "title": "Місця зберігання партій",
+    "details": "Деталі місця зберігання"
+  },
+  "boxes": {
+    "createPlaceholder": "Введіть назву нової коробки"
+  },
+  "batches": {
+    "batchNumber": "Номер партії",
+    "product": "Продукт",
+    "warehouse": "Склад",
+    "quantity": "Кількість",
+    "expirationDate": "Термін придатності",
+    "productId": "Ідентифікатор продукту",
+    "title": "Партії продуктів",
+    "edit": "Редагувати партію",
+    "create": "Створити партію",
+    "location": "Локація",
+    "receivedAt": "Отримано",
+    "warehouseName": "Назва складу",
+    "warehouseLocation": "Локація складу"
+  },
+  "warehouses": {
+    "createPlaceholder": "Введіть назву складу"
   }
 }
