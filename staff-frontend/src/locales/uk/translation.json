@@ -6,6 +6,9 @@
     "loading": "Завантаження...",
     "secureLogout": "Безпечний вихід"
   },
+  "modal": {
+    "fastcreate": "Швидке створення"
+  },
   "navigation": {
     "home": "Головна",
     "tasks": "Завдання",

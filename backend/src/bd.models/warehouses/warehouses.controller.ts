@@ -1,8 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
-import { WarehousesService } from './warhouses.service';
+import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { WarehousesService } from './warehouses.service';
 import { Warehouse } from '../entity/warehouse.entity';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
-@Controller('Warehouses')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('access-token')
+@Controller('warehouses')
 export class WarehousesController {
   constructor(private readonly warehousesService: WarehousesService) {}
 

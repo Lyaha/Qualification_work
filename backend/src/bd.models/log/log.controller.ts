@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { LogService } from './log.service';
 import { Log } from '../entity/log.entity';
 
@@ -21,7 +21,7 @@ export class LogController {
     return this.logService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateLogDto: Partial<Log>): Promise<Log> {
     return this.logService.update(id, updateLogDto);
   }

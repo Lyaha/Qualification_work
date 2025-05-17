@@ -106,13 +106,13 @@ VALUES
 ((SELECT id FROM users LIMIT 1 OFFSET 4), 'Створено звіт');
 
 -- Заповнення boxes
-INSERT INTO boxes (name, length, width, height, max_weight) 
+INSERT INTO boxes (name, description, length, width, height, max_weight) 
 VALUES 
-('Мала коробка', 30.0, 20.0, 15.0, 5.0),
-('Середня коробка', 50.0, 35.0, 30.0, 15.0),
-('Велика коробка', 70.0, 50.0, 40.0, 30.0),
-('Коробка для техніки', 100.0, 60.0, 50.0, 50.0),
-('Спецкоробка', 120.0, 80.0, 60.0, 70.0);
+('Мала коробка', 'Для дрібної електроніки', 30.0, 20.0, 15.0, 5.0),
+('Середня коробка', 'Універсальна коробка', 50.0, 35.0, 30.0, 15.0),
+('Велика коробка', 'Для габаритної техніки', 70.0, 50.0, 40.0, 30.0),
+('Коробка для техніки', 'З амортизацією для делікатної техніки', 100.0, 60.0, 50.0, 50.0),
+('Спецкоробка', 'Промислова коробка підвищеної міцності', 120.0, 80.0, 60.0, 70.0);
 
 -- Заповнення storage_zones
 INSERT INTO storage_zones (warehouse_id, location_code, max_weight) 
@@ -133,13 +133,40 @@ VALUES
 ((SELECT id FROM products LIMIT 1 OFFSET 4), (SELECT id FROM storage_zones LIMIT 1 OFFSET 3), (SELECT id FROM storage_zones LIMIT 1 OFFSET 4), 4, 'transfer', (SELECT id FROM users LIMIT 1 OFFSET 4), 'Оптимізація сховища');
 
 -- Заповнення batches
-INSERT INTO batches (product_id, warehouse_id, quantity, expiration_date, location, storage_location) 
+INSERT INTO batches (product_id, warehouse_id, quantity, expiration_date, received_at) 
 VALUES 
-((SELECT id FROM products WHERE name = 'Ноутбук HP'), (SELECT id FROM warehouses WHERE name = 'Склад А'), 100, '2025-12-31', 'Київ, вул. Центральна 1', 'A1-12'),
-((SELECT id FROM products WHERE name = 'iPhone 14'), (SELECT id FROM warehouses WHERE name = 'Склад Б'), 50, '2026-06-30', 'Львів, вул. Головна 5', 'B3-45'),
-((SELECT id FROM products WHERE name = 'Холодильник Samsung'), (SELECT id FROM warehouses WHERE name = 'Склад В'), 30, NULL, 'Одеса, вул. Морська 12', 'C2-78'),
-((SELECT id FROM products WHERE name = 'Монитор Dell'), (SELECT id FROM warehouses WHERE name = 'Склад Г'), 20, '2027-01-01', 'Харків, вул. Промислова 7', 'G5-21'),
-((SELECT id FROM products WHERE name = 'Пральна машина LG'), (SELECT id FROM warehouses WHERE name = 'Склад Д'), 15, NULL, 'Дніпро, вул. Заводська 3', 'D1-33');
+((SELECT id FROM products WHERE name = 'Ноутбук HP'), (SELECT id FROM warehouses WHERE name = 'Склад А'), 100, '2025-12-31', now()),
+((SELECT id FROM products WHERE name = 'iPhone 14'), (SELECT id FROM warehouses WHERE name = 'Склад Б'), 50, '2026-06-30', now()),
+((SELECT id FROM products WHERE name = 'Холодильник Samsung'), (SELECT id FROM warehouses WHERE name = 'Склад В'), 30, NULL, now()),
+((SELECT id FROM products WHERE name = 'Монитор Dell'), (SELECT id FROM warehouses WHERE name = 'Склад Г'), 20, '2027-01-01', now()),
+((SELECT id FROM products WHERE name = 'Пральна машина LG'), (SELECT id FROM warehouses WHERE name = 'Склад Д'), 15, NULL, now());
+
+INSERT INTO batch_locations (batch_id, storage_zone_id, box_id, quantity, created_at)
+VALUES
+((SELECT id FROM batches WHERE product_id = (SELECT id FROM products WHERE name = 'Ноутбук HP') LIMIT 1),
+ (SELECT id FROM storage_zones WHERE location_code = 'A-1'),
+ (SELECT id FROM boxes WHERE name = 'Середня коробка'),
+ 100, now());
+INSERT INTO batch_locations (batch_id, storage_zone_id, box_id, quantity, created_at)
+VALUES
+((SELECT id FROM batches WHERE product_id = (SELECT id FROM products WHERE name = 'iPhone 14') LIMIT 1),
+ (SELECT id FROM storage_zones WHERE location_code = 'B-2'),
+ (SELECT id FROM boxes WHERE name = 'Мала коробка'),
+ 50, now());
+INSERT INTO batch_locations (batch_id, storage_zone_id, box_id, quantity, created_at)
+VALUES
+((SELECT id FROM batches WHERE product_id = (SELECT id FROM products WHERE name = 'Холодильник Samsung') LIMIT 1),
+ NULL, NULL, 30, now());
+INSERT INTO batch_locations (batch_id, storage_zone_id, box_id, quantity, created_at)
+VALUES
+((SELECT id FROM batches WHERE product_id = (SELECT id FROM products WHERE name = 'Монитор Dell') LIMIT 1),
+ (SELECT id FROM storage_zones WHERE location_code = 'D-4'),
+ (SELECT id FROM boxes WHERE name = 'Коробка для техніки'),
+ 20, now());
+INSERT INTO batch_locations (batch_id, storage_zone_id, box_id, quantity, created_at)
+VALUES
+((SELECT id FROM batches WHERE product_id = (SELECT id FROM products WHERE name = 'Пральна машина LG') LIMIT 1),
+ NULL, NULL, 15, now());
 
 -- Заповнення price_history
 INSERT INTO price_history (product_id, old_price, new_price, changed_by) 

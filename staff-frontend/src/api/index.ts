@@ -16,5 +16,8 @@ export * from './entity/storageZone';
 export * from './entity/supplyOrder';
 export * from './entity/supplyOrderItem';
 export * from './entity/task';
+export * from './entity/batchLoacation';
 export * from './users';
 export * from './tasks';
+export * from './batches';
+export * from './batchLocations';

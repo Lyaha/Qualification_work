@@ -22,6 +22,7 @@ import {
   StorageZoneModule,
   SupplierModule,
   TaskModule,
+  BatchLocationModule,
 } from './bd.models';
 import {
   User,
@@ -43,6 +44,7 @@ import {
   Task,
   PriceHistory,
   StorageZone,
+  BatchLocation,
 } from './bd.models/entity';
 import { MenuModule } from './menu/menu.module';
 
@@ -75,6 +77,7 @@ import { MenuModule } from './menu/menu.module';
         PriceHistory,
         StorageZone,
         Task,
+        BatchLocation,
       ],
       synchronize: false, // true тільки в dev-режимі
       autoLoadEntities: true,
@@ -100,6 +103,7 @@ import { MenuModule } from './menu/menu.module';
     SupplierModule,
     TaskModule,
     MenuModule, // Добавляем MenuModule
+    BatchLocationModule,
   ],
   controllers: [AppController],
   providers: [],

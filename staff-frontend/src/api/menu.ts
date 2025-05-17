@@ -10,7 +10,8 @@ export interface MenuItem {
   icon?: string;
   allowedRoles: string[];
   children?: MenuItem[];
-  title?: string; // будет добавляться на фронтенде после локализации
+  title?: string;
+  hidden?: boolean;
 }
 
 export interface AccessResponse {

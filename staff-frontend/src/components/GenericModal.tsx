@@ -3,27 +3,34 @@ import { useToast } from './ui/toaster';
 import { ReactNode, useEffect, useState } from 'react';
 import { NumberInputRoot, NumberInputField } from './ui/number-input';
 import {
+  Box,
   Button,
+  ButtonGroup,
   CloseButton,
   createListCollection,
   Dialog,
+  Flex,
+  IconButton,
   Input,
   Portal,
   Select,
   Stack,
 } from '@chakra-ui/react';
 import FormControl from './ui/form-control';
+import { LuPlus } from 'react-icons/lu';
 
 export type FormField<T> = {
   name: keyof T;
   label: string;
-  type: 'text' | 'number' | 'select' | 'textarea';
+  type: 'text' | 'number' | 'select' | 'textarea' | 'date';
   options?: Array<{ value: string | number; label: string }>;
   required?: boolean;
   placeholder?: string;
   min?: number;
   max?: number;
   step?: number;
+  onCreateNew?: (data: { name: string }) => Promise<{ value: string; label: string }>;
+  fastCreatePlaceholder?: string;
 };
 
 interface GenericFormModalProps<T> {
@@ -53,6 +60,8 @@ export const GenericFormModal = <T extends Record<string, any>>({
   const toast = useToast();
   const [formData, setFormData] = useState<Partial<T>>(initialValues || {});
   const [errors, setErrors] = useState<Record<keyof T, string>>({} as Record<keyof T, string>);
+  const [isQuickCreateOpen, setIsQuickCreateOpen] = useState(false);
+  const [newItemName, setNewItemName] = useState('');
 
   useEffect(() => {
     setFormData(initialValues || {});
@@ -92,7 +101,7 @@ export const GenericFormModal = <T extends Record<string, any>>({
     }
   };
 
-  const renderInput = (field: FormField<T>): Promise<ReactNode> => {
+  const renderInput = (field: FormField<T>): ReactNode => {
     switch (field.type) {
       case 'number':
         return (
@@ -110,7 +119,17 @@ export const GenericFormModal = <T extends Record<string, any>>({
             <NumberInputField placeholder={field.placeholder} />
           </NumberInputRoot>
         );
-
+      case 'date':
+        return (
+          <Input
+            type="date"
+            value={formData[field.name]?.toString() || ''}
+            onChange={(e) => handleChange(field.name, e.target.value)}
+            min={field.min?.toString()}
+            max={field.max?.toString()}
+            placeholder={field.placeholder}
+          />
+        );
       case 'select': {
         const collection = createListCollection({
           items: (field.options || []).map((option) => ({
@@ -118,6 +137,20 @@ export const GenericFormModal = <T extends Record<string, any>>({
             label: option.label,
           })),
         });
+
+        const handleQuickCreate = async () => {
+          if (!field.onCreateNew || !newItemName.trim()) return;
+          try {
+            const newItem = await field.onCreateNew({ name: newItemName.trim() });
+            if (newItem) {
+              handleChange(field.name, newItem.value);
+            }
+            setIsQuickCreateOpen(false);
+            setNewItemName('');
+          } catch (error) {
+            console.error('Quick create error:', error);
+          }
+        };
 
         const rawValue = formData[field.name];
         const currentValue =
@@ -128,36 +161,87 @@ export const GenericFormModal = <T extends Record<string, any>>({
           : ' ';
 
         return (
-          <Select.Root
-            collection={collection}
-            onValueChange={(value) => handleChange(field.name, value)}
-            size="sm"
-            zIndex={1402}
-          >
-            <Select.Control>
-              <Select.Trigger>
-                <Select.ValueText placeholder={isValidValue ? placeholder : field.placeholder} />
-              </Select.Trigger>
-            </Select.Control>
-
-            <Portal>
-              <Select.Positioner
-                style={{
-                  position: 'fixed',
-                  zIndex: 1500,
-                  minWidth: 'var(--width)',
-                }}
+          <Flex gap="2" align="center">
+            <Box flex="1">
+              <Select.Root
+                collection={collection}
+                onValueChange={(value) => handleChange(field.name, value)}
+                size="sm"
+                zIndex={1402}
               >
-                <Select.Content>
-                  {collection.items.map((item) => (
-                    <Select.Item key={item.value} item={item}>
-                      {item.label}
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Positioner>
-            </Portal>
-          </Select.Root>
+                <Select.Control>
+                  <Select.Trigger>
+                    <Select.ValueText
+                      placeholder={isValidValue ? placeholder : field.placeholder}
+                    />
+                  </Select.Trigger>
+                </Select.Control>
+
+                <Portal>
+                  <Select.Positioner
+                    style={{
+                      position: 'fixed',
+                      zIndex: 1500,
+                      minWidth: 'var(--width)',
+                    }}
+                  >
+                    <Select.Content>
+                      {collection.items.map((item) => (
+                        <Select.Item key={item.value} item={item}>
+                          {item.label}
+                        </Select.Item>
+                      ))}
+                    </Select.Content>
+                  </Select.Positioner>
+                </Portal>
+              </Select.Root>
+            </Box>
+
+            {field.onCreateNew && (
+              <IconButton
+                size="sm"
+                aria-label="Quick create"
+                onClick={() => setIsQuickCreateOpen(true)}
+              >
+                <LuPlus />
+              </IconButton>
+            )}
+
+            <Dialog.Root
+              open={isQuickCreateOpen}
+              onOpenChange={(details) => {
+                if (!details.open) setIsQuickCreateOpen(false);
+              }}
+            >
+              <Dialog.Backdrop />
+              <Dialog.Positioner>
+                <Dialog.Content>
+                  <Dialog.Header>{t('modal.fastcreate')}</Dialog.Header>
+                  <Dialog.Body>
+                    <Input
+                      placeholder={t(field.fastCreatePlaceholder || '')}
+                      value={newItemName}
+                      onChange={(e) => setNewItemName(e.target.value)}
+                    />
+                  </Dialog.Body>
+                  <Dialog.Footer>
+                    <ButtonGroup>
+                      <Button variant="outline" onClick={() => setIsQuickCreateOpen(false)}>
+                        {t('common.cancel')}
+                      </Button>
+                      <Button
+                        colorScheme="blue"
+                        onClick={handleQuickCreate}
+                        disabled={!newItemName.trim()}
+                      >
+                        {t('common.create')}
+                      </Button>
+                    </ButtonGroup>
+                  </Dialog.Footer>
+                </Dialog.Content>
+              </Dialog.Positioner>
+            </Dialog.Root>
+          </Flex>
         );
       }
 

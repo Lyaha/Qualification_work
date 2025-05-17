@@ -1,6 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+  OneToMany,
+} from 'typeorm';
 import { Product } from './product.entity';
 import { Warehouse } from './warehouse.entity';
+import { BatchLocation } from './batch-location.entity';
 
 @Entity('batches')
 export class Batch {
@@ -11,14 +20,14 @@ export class Batch {
   @JoinColumn({ name: 'product_id' })
   product!: Product;
 
-  @Column()
+  @Column('uuid')
   product_id!: string;
 
   @ManyToOne(() => Warehouse)
   @JoinColumn({ name: 'warehouse_id' })
   warehouse!: Warehouse;
 
-  @Column()
+  @Column('uuid')
   warehouse_id!: string;
 
   @Column({ type: 'int' })
@@ -27,6 +36,9 @@ export class Batch {
   @Column({ type: 'date', nullable: true })
   expiration_date!: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn()
   received_at!: Date;
+
+  @OneToMany(() => BatchLocation, (location) => location.batch)
+  locations!: BatchLocation[];
 }

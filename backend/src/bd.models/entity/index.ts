@@ -17,3 +17,4 @@ export * from './supply_order.entity';
 export * from './task.entity';
 export * from './user.entity';
 export * from './warehouse.entity';
+export * from './batch-location.entity';

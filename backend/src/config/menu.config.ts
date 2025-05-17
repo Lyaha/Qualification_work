@@ -10,6 +10,7 @@ export interface MenuItem {
   icon?: string;
   allowedRoles: UserRole[];
   children?: MenuItem[];
+  hidden?: boolean;
 }
 
 export const menuConfig: MenuItem[] = [
@@ -39,7 +40,17 @@ export const menuConfig: MenuItem[] = [
           uk: 'Партія',
           en: 'batch',
         },
-        path: '/products/batch',
+        path: '/batch',
+        allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+      },
+      {
+        id: 'product-batches',
+        translations: {
+          uk: 'Партії товару',
+          en: 'Product Batches',
+        },
+        path: '/batches/:productId',
+        hidden: true,
         allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
       },
     ],

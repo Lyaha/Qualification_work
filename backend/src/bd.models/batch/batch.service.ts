@@ -16,7 +16,7 @@ export class BatchService {
   }
 
   findAll(): Promise<Batch[]> {
-    return this.batchsRepository.find();
+    return this.batchsRepository.find({ relations: ['product'] });
   }
 
   async findOne(id: string): Promise<Batch> {
@@ -25,6 +25,19 @@ export class BatchService {
       throw new NotFoundException(`Batch with ID ${id} not found`);
     }
     return batch;
+  }
+
+  async findByProductId(productId: string): Promise<Batch[]> {
+    const batches = await this.batchsRepository.find({
+      where: { product: { id: productId } },
+      relations: ['product'],
+    });
+
+    if (!batches.length) {
+      throw new NotFoundException(`Batches for product ID ${productId} not found`);
+    }
+
+    return batches;
   }
 
   async update(id: string, updateBatchDto: Partial<Batch>): Promise<Batch> {

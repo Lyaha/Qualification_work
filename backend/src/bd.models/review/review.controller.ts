@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { Review } from '../entity/review.entity';
 
@@ -21,7 +21,7 @@ export class ReviewController {
     return this.reviewService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateReviewDto: Partial<Review>): Promise<Review> {
     return this.reviewService.update(id, updateReviewDto);
   }

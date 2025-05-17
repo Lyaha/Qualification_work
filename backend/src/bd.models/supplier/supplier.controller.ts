@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { SupplierService } from './supplier.service';
 import { Supplier } from '../entity/supplier.entity';
 
@@ -21,7 +21,7 @@ export class SupplierController {
     return this.supplierService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateSupplierDto: Partial<Supplier>): Promise<Supplier> {
     return this.supplierService.update(id, updateSupplierDto);
   }

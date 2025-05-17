@@ -14,6 +14,7 @@ import { ToastProvider } from './components/ui/toaster';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 import ProductPage from './pages/ProductPage';
+import BatchesPage from './pages/BatchesPage';
 
 function App() {
   return (
@@ -52,6 +53,26 @@ function App() {
                       <ProtectedRoute>
                         <ProtectedRoleRoute>
                           <ProductPage />
+                        </ProtectedRoleRoute>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/batches/:productId"
+                    element={
+                      <ProtectedRoute>
+                        <ProtectedRoleRoute>
+                          <BatchesPage />
+                        </ProtectedRoleRoute>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/batch"
+                    element={
+                      <ProtectedRoute>
+                        <ProtectedRoleRoute>
+                          <BatchesPage />
                         </ProtectedRoleRoute>
                       </ProtectedRoute>
                     }

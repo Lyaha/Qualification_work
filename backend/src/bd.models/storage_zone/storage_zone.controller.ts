@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { StorageZoneService } from './storage_zone.service';
 import { StorageZone } from '../entity/storage_zone.entity';
 
@@ -21,7 +21,7 @@ export class StorageZoneController {
     return this.storageZoneService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updateStorageZoneDto: Partial<StorageZone>,

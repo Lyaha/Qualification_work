@@ -92,6 +92,11 @@ export * from './users/users.module';
 export * from './users/users.service';
 
 // Warehouses
-export * from './warhouses/warhouses.controller';
-export * from './warhouses/warhouses.module';
-export * from './warhouses/warhouses.service';
+export * from './warehouses/warehouses.controller';
+export * from './warehouses/warehouses.module';
+export * from './warehouses/warehouses.service';
+
+// Batch location
+export * from './batch-location/batch-location.controller';
+export * from './batch-location/batch-location.module';
+export * from './batch-location/batch-location.service';

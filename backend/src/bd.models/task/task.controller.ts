@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { Task, User } from '../entity';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
@@ -32,7 +32,7 @@ export class TaskController {
     return this.taskService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateTaskDto: Partial<Task>): Promise<Task> {
     return this.taskService.update(id, updateTaskDto);
   }

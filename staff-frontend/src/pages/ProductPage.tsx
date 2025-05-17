@@ -8,7 +8,7 @@ import { createProduct, deleteProduct, getProducts, updateProduct } from '../api
 import { FormField, GenericFormModal } from '../components/GenericModal';
 import Layout from '../components/Layout';
 import useVisibilityPolling from '../hooks/useVisibilityPolling';
-import { getCategories } from '../api/categories';
+import { createCategory, getCategories } from '../api/categories';
 import DetailModal from '../components/DetailModal';
 import { useNavigate } from 'react-router-dom';
 
@@ -98,6 +98,11 @@ const ProductPage = () => {
       })),
       required: true,
       placeholder: t('products.selectCategory'),
+      onCreateNew: async (name) => {
+        const newCategory = await createCategory(name);
+        fetchCategories();
+        return { value: newCategory.id, label: newCategory.name };
+      },
     },
   ];
 
@@ -117,7 +122,16 @@ const ProductPage = () => {
   const handleSubmit = async (data: any) => {
     setLoading(true);
     try {
-      const selectedCategory = categories.find((c) => c.id === data.category_entity.value[0]);
+      let selectedCategory = null;
+      if (
+        typeof data.category_entity === 'object' &&
+        data.category_entity !== null &&
+        'id' in data.category_entity
+      ) {
+        selectedCategory = categories.find((c) => c.id === data.category_entity.id);
+      } else {
+        selectedCategory = categories.find((c) => c.id === data.category_entity.value[0]);
+      }
       if (!selectedCategory) {
         throw new Error(t('errors.categoryRequired'));
       }
@@ -162,7 +176,9 @@ const ProductPage = () => {
   };
 
   const handelNavigate = () => {
-    navigate('/batches');
+    if (selectedProduct) {
+      navigate(`/batches/${selectedProduct.id}`);
+    }
   };
 
   const fetchProducts = useCallback(async () => {
@@ -234,6 +250,7 @@ const ProductPage = () => {
         isLoading={loading}
         submitText={selectedProduct ? 'common.save' : 'common.create'}
       />
+
       <DetailModal
         isOpen={OpenDetailModal}
         onClose={onCloseDetailModal}

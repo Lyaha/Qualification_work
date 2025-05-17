@@ -153,6 +153,7 @@ CREATE TABLE logs (
 CREATE TABLE boxes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
+    description TEXT,  -- Добавлено поле для описания
     length DECIMAL(10,2) NOT NULL,
     width DECIMAL(10,2) NOT NULL,
     height DECIMAL(10,2) NOT NULL,
@@ -188,10 +189,23 @@ CREATE TABLE batches (
     warehouse_id UUID NOT NULL REFERENCES warehouses(id),
     quantity INT NOT NULL CHECK (quantity > 0),
     expiration_date DATE,
-    location VARCHAR(255),
-    storage_location VARCHAR(255),
     received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Расположение партий
+CREATE TABLE batch_locations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    batch_id UUID NOT NULL REFERENCES batches(id),
+    storage_zone_id UUID REFERENCES storage_zones(id),
+    box_id UUID REFERENCES boxes(id),
+    quantity INT NOT NULL CHECK (quantity > 0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CHECK (
+        (storage_zone_id IS NULL AND box_id IS NULL) OR
+        (storage_zone_id IS NOT NULL AND box_id IS NOT NULL)
+    )
+);
+
 
 -- Історія цін
 CREATE TABLE price_history (
@@ -227,6 +241,9 @@ CREATE TABLE tasks (
 --CREATE INDEX idx_order_items_order_id ON order_items(order_id);
 --CREATE INDEX idx_discounts_product_id ON discounts(product_id);
 --CREATE INDEX idx_inventory_movements_product_id ON inventory_movements(product_id);
+--CREATE INDEX idx_batch_locations_batch_id ON batch_locations(batch_id);
+--CREATE INDEX idx_batch_locations_storage_zone_id ON batch_locations(storage_zone_id);
+--CREATE INDEX idx_batch_locations_box_id ON batch_locations(box_id);
 
 -- Тригер для автоматичного оновлення updated_at
 CREATE OR REPLACE FUNCTION update_modified_column()

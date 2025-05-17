@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { Category } from '../entity/category.entity';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
@@ -25,7 +25,7 @@ export class CategoryController {
     return this.categoryService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() data: Partial<Category>): Promise<Category> {
     return this.categoryService.update(id, data);
   }

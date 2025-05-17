@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { DiscountService } from './discount.service';
 import { Discount } from '../entity/discount.entity';
 
@@ -21,7 +21,7 @@ export class DiscountController {
     return this.discountService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateDiscountDto: Partial<Discount>): Promise<Discount> {
     return this.discountService.update(id, updateDiscountDto);
   }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { PriceHistoryService } from './price_history.service';
 import { PriceHistory } from '../entity/price_history.entity';
 
@@ -21,7 +21,7 @@ export class PriceHistoryController {
     return this.priceHistoryService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updatePriceHistoryDto: Partial<PriceHistory>,

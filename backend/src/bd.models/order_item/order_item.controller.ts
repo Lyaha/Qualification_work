@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { OrderItemService } from './order_item.service';
 import { OrderItem } from '../entity/order_item.entity';
 
@@ -21,7 +21,7 @@ export class OrderItemController {
     return this.orderItemService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updateOrderItemDto: Partial<OrderItem>,

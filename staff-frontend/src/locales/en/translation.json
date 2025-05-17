@@ -6,6 +6,9 @@
     "loading": "Loading...",
     "secureLogout": "Secure Logout"
   },
+  "modal": {
+    "fastcreate": "Fast create"
+  },
   "navigation": {
     "home": "Home",
     "tasks": "Tasks",

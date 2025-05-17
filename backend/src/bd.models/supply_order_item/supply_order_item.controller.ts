@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { SupplyOrderItemService } from './supply_order_item.service';
 import { SupplyOrderItem } from '../entity/supply_order_item.entity';
 
@@ -21,7 +21,7 @@ export class SupplyOrderItemController {
     return this.supplyOrderItemService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updateSupplyOrderItemDto: Partial<SupplyOrderItem>,
