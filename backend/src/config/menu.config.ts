@@ -38,7 +38,7 @@ export const menuConfig: MenuItem[] = [
         id: 'batch',
         translations: {
           uk: 'Партія',
-          en: 'batch',
+          en: 'Batch',
         },
         path: '/batch',
         allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
