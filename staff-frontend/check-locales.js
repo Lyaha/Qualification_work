@@ -36,7 +36,7 @@ async function checkLocales() {
 
     // Шаг 2: Поиск всех ключей в коде
     const usedKeys = new Set();
-    const keyPattern = /t\(\s*['"`]([^'"`]+?)['"`]\s*[),]/g;
+    const keyPattern = /(?<![\w])t\(\s*['"`]([^'"`]+?)['"`]\s*\)/g;
     
     const files = globSync(SEARCH_PATTERNS);
     console.log(chalk.yellow('Processing files:'), files.length);
@@ -50,6 +50,7 @@ async function checkLocales() {
     });
     console.log(chalk.yellow('Used keys found:'), usedKeys.size);
 
+    // Шаг 3: Поиск ключей которые используются в коде, но не встречается в переводе
     const missingInReference = Array.from(usedKeys).filter(key => !refKeys.includes(key));
 
     if (missingInReference.length > 0) {
@@ -59,7 +60,7 @@ async function checkLocales() {
       console.log(chalk.green(`\nAll used keys exist in ${REFERENCE_LANG} translations`));
     }
 
-    // Шаг 3: Проверка других языков
+    // Шаг 4: Проверка других языков
     const locales = fs.readdirSync(LOCALES_DIR)
       .filter(lang => lang !== REFERENCE_LANG && fs.statSync(path.join(LOCALES_DIR, lang)).isDirectory());
 
@@ -87,7 +88,7 @@ async function checkLocales() {
       }
     });
 
-    // Шаг 4: Поиск неиспользуемых ключей
+    // Шаг 5: Поиск неиспользуемых ключей
     const unused = Array.from(refKeys).filter(key => !usedKeys.has(key));
     if (unused.length > 0) {
       console.log(chalk.blue('\nUnused keys:'));

@@ -121,14 +121,11 @@ const ProductPage = () => {
 
   const handleSubmit = async (data: any) => {
     setLoading(true);
+    console.log(data);
     try {
       let selectedCategory = null;
-      if (
-        typeof data.category_entity === 'object' &&
-        data.category_entity !== null &&
-        'id' in data.category_entity
-      ) {
-        selectedCategory = categories.find((c) => c.id === data.category_entity.id);
+      if (typeof data.category_entity === 'string') {
+        selectedCategory = categories.find((c) => c.id === data.category_entity);
       } else {
         selectedCategory = categories.find((c) => c.id === data.category_entity.value[0]);
       }

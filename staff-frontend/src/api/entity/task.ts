@@ -1,4 +1,5 @@
 export type TaskStatus = 'pending' | 'in_progress' | 'completed';
+export type TaskType = 'order' | 'supply';
 
 export type Task = {
   id: string;
@@ -11,4 +12,5 @@ export type Task = {
   created_at: string;
   completed_at?: string;
   note?: string;
+  taskType?: TaskType;
 };

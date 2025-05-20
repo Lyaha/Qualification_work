@@ -1,3 +1,5 @@
+export type ReviewType = 'product' | 'order';
+
 export type Review = {
   id: string;
   user_id: string;
@@ -6,4 +8,5 @@ export type Review = {
   rating: number;
   comment?: string;
   created_at: string;
+  reviewType: ReviewType;
 };

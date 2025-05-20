@@ -17,11 +17,11 @@ import {
 import { ColumnConfig, GenericTable } from '../components/GenericTable';
 import { FormField, GenericFormModal } from '../components/GenericModal';
 import { Box, Text, Stack, useDisclosure } from '@chakra-ui/react';
-import { getAllStorageZone } from '../api/storageZone';
 import { createBox, getAllBox } from '../api/box';
 import useVisibilityPolling from '../hooks/useVisibilityPolling';
 import Layout from '../components/Layout';
 import DetailModal from '../components/DetailModal';
+import { getAllStorageZones } from '../api/storageZone';
 
 const PAGE_SIZE = 5;
 
@@ -154,7 +154,7 @@ const BatchLocationsPage = () => {
 
   const fetchStorageZones = useCallback(async () => {
     try {
-      const response = await getAllStorageZone();
+      const response = await getAllStorageZones();
       setStorageZones(response);
     } catch (error) {
       toast.showToast({ title: t('errors.loadingFailed'), type: 'error' });

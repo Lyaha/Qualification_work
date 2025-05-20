@@ -1,16 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { ColumnConfig, GenericTable } from '../components/GenericTable';
-import { useToast } from '../components/ui/toaster';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Batch, getAllLocationBatches, getByBatchId, Product } from '../api';
-import {
-  createBatch,
-  deleteBatches,
-  getAllBatches,
-  getBatchesByProduct,
-  updateBatch,
-} from '../api/batches';
+import { Batch, Product } from '../api';
+import { createBatch, getAllBatches, getBatchesByProduct, updateBatch } from '../api/batches';
 import Layout from '../components/Layout';
 import { Box, Text, Stack, Button, useDisclosure } from '@chakra-ui/react';
 import { LuArrowLeft } from 'react-icons/lu';
@@ -21,31 +14,27 @@ import { Warehouse } from '../api/entity/warehouse';
 import { createWarehouses, getWarehouses } from '../api/warehouses';
 import DetailModal from '../components/DetailModal';
 import { createProduct, getProducts } from '../api/products';
+import useCrudOperations from '../hooks/useUnivarsalCRUD';
+import useModalNavigation from '../hooks/useModalNavigation';
+import useFetchData from '../hooks/useUniversalFetchData';
+import useFormHandler from '../hooks/useFormHandler';
+import { GenericDetailView } from '../components/GenericDetailView';
 
 const PAGE_SIZE = 5;
 
 const BatchesPage = () => {
   const { t } = useTranslation();
-  const toast = useToast();
   const { productId } = useParams<{ productId: string }>();
-  const [batches, setBatches] = useState<Batch[]>([]);
-  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [selectedBatch, setSelectedBatch] = useState<Batch | undefined>();
+
   const {
-    open: OpenEditModal,
-    onOpen: onOpenEditModal,
-    onClose: onCloseEditModal,
-  } = useDisclosure();
-  const {
-    open: OpenDetailModal,
-    onOpen: onOpenDetailModal,
-    onClose: onCloseDetailModal,
-  } = useDisclosure();
+    data: batches,
+    loading,
+    refetch: fetchBatches,
+  } = useFetchData<Batch>(productId ? getBatchesByProduct : getAllBatches, productId);
+  const { data: warehouses, refetch: fetchWarehouses } = useFetchData<Warehouse>(getWarehouses);
+  const { data: products, refetch: fetchProducts } = useFetchData<Product>(getProducts);
 
   const columns: ColumnConfig<Batch>[] = [
     {
@@ -126,7 +115,7 @@ const BatchesPage = () => {
           is_active: true,
         };
         const newWarehouse = await createWarehouses(data);
-        fetchWarhouses();
+        fetchWarehouses();
         return { value: newWarehouse.id, label: newWarehouse.name };
       },
       fastCreatePlaceholder: t('warehouses.createPlaceholder'),
@@ -146,151 +135,73 @@ const BatchesPage = () => {
     },
   ];
 
-  const fetchBatches = useCallback(async () => {
-    try {
-      setLoading(true);
-      let response = null;
-      if (productId) {
-        response = await getBatchesByProduct(productId);
-      } else {
-        response = await getAllBatches();
-      }
-      if (response && Array.isArray(response)) {
-        setBatches(response);
-        setTotalItems(response.length);
-      } else {
-        console.error('Неверный формат ответа API:', response);
-        setBatches([]);
-        setTotalItems(0);
-      }
-    } catch (error) {
-      toast.showToast({ title: t('errors.loadingFailed'), type: 'error' });
-    } finally {
-      setLoading(false);
-    }
-  }, [productId, t, toast]);
-
-  const fetchWarhouses = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await getWarehouses();
-      if (response && Array.isArray(response)) {
-        setWarehouses(response);
-      } else {
-        console.error('Неверный формат ответа API:', response);
-        setWarehouses([]);
-      }
-    } catch (error) {
-      toast.showToast({ title: t('errors.loadingFailed'), type: 'error' });
-    } finally {
-      setLoading(false);
-    }
-  }, [t, toast]);
-
-  const fetchProducts = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await getProducts();
-      if (response && Array.isArray(response)) {
-        setProducts(response);
-      } else {
-        console.error('Неверный формат ответа API:', response);
-        setProducts([]);
-      }
-    } catch (error) {
-      toast.showToast({ title: t('errors.loadingFailed'), type: 'error' });
-    } finally {
-      setLoading(false);
-    }
-  }, [t, toast]);
-
-  const handleBulkDelete = async (ids: string[]) => {
-    try {
-      await Promise.all(ids.map((id) => deleteBatches(id)));
-      fetchBatches();
-      toast.showToast({ title: t('common.success'), type: 'success' });
-    } catch (error) {
-      toast.showToast({ title: t('errors.deleteFailed'), type: 'error' });
-    }
-  };
-
   const handleSubmit = async (data: any) => {
-    setLoading(true);
-    try {
-      let selectedWarehouse = null;
-      console.log(data);
-      if (typeof data.warehouse_id === 'string') {
-        selectedWarehouse = warehouses.find((c) => c.id === data.warehouse_id);
-      } else {
-        selectedWarehouse = warehouses.find((c) => c.id === data.warehouse_id.value[0]);
-      }
-      if (!selectedWarehouse) {
-        throw new Error(t('errors.warehouseRequired'));
-      }
-      let batchData = null;
-      if (productId) {
-        batchData = {
-          product_id: productId,
-          quantity: data.quantity,
-          expiration_date: data.expiration_date,
-          warehouse_id: selectedWarehouse.id,
-        };
-      } else {
-        batchData = {
-          product_id: data.product_id,
-          quantity: data.quantity,
-          expiration_date: data.expiration_date,
-          warehouse_id: selectedWarehouse.id,
-        };
-      }
-      if (selectedBatch) {
-        await updateBatch(selectedBatch.id, batchData);
-      } else {
-        await createBatch(batchData);
-      }
-      await fetchBatches();
-      onCloseEditModal();
-      toast.showToast({ title: t('common.success'), type: 'success' });
-    } catch (error) {
-      toast.showToast({ title: t('errors.submitFailed'), type: 'error' });
-    } finally {
-      setLoading(false);
+    let selectedWarehouse = null;
+    if (typeof data.warehouse_id === 'string') {
+      selectedWarehouse = warehouses.find((c) => c.id === data.warehouse_id);
+    } else {
+      selectedWarehouse = warehouses.find((c) => c.id === data.warehouse_id.value[0]);
     }
-  };
-
-  const handleAdd = () => {
-    setSelectedBatch(undefined);
-    onOpenEditModal();
-  };
-
-  const handleEdit = (batches: Batch) => {
-    setSelectedBatch(batches);
-    onOpenEditModal();
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteBatches(id);
-      fetchBatches();
-      toast.showToast({ title: t('common.success'), type: 'success' });
-    } catch (error) {
-      toast.showToast({ title: t('errors.deleteFailed'), type: 'error' });
+    if (!selectedWarehouse) {
+      throw new Error(t('errors.warehouseRequired'));
     }
+    let batchData = null;
+    if (productId) {
+      batchData = {
+        product_id: productId,
+        quantity: data.quantity,
+        expiration_date: data.expiration_date,
+        warehouse_id: selectedWarehouse.id,
+      };
+    } else {
+      let selectedProduct = null;
+      if (typeof data.product_id === 'string') {
+        selectedProduct = products.find((c) => c.id === data.product_id);
+      } else {
+        selectedProduct = products.find((c) => c.id === data.product_id.value[0]);
+      }
+      if (!selectedProduct) {
+        throw new Error(t('errors.productRequired'));
+      }
+      batchData = {
+        product_id: selectedProduct.id,
+        quantity: data.quantity,
+        expiration_date: data.expiration_date,
+        warehouse_id: selectedWarehouse.id,
+      };
+    }
+    await formHandler.handleSubmit(batchData);
+
+    editModal.onClose();
   };
 
-  const handelDetail = (batch: Batch) => {
-    setSelectedBatch(batch);
-    onOpenDetailModal();
-  };
+  const editModal = useDisclosure();
+  const detailModal = useDisclosure();
 
-  const handelNavigate = () => {
-    if (selectedBatch) {
-      navigate(`/batch-location/${selectedBatch.id}`);
+  // Универсальные хуки
+
+  const modalNav = useModalNavigation<Batch>(navigate, detailModal.onOpen, editModal.onOpen);
+
+  // Загрузка данных
+
+  const { handleDelete, handleBulkDelete } = useCrudOperations<Batch>(fetchBatches, '/batch');
+
+  // Форма
+  const formHandler = useFormHandler<Batch>(
+    modalNav.selectedEntity,
+    fetchBatches,
+    createBatch,
+    updateBatch,
+  );
+
+  const handleNavigateToLocations = () => {
+    if (modalNav.selectedEntity) {
+      navigate(`/batch-location/${modalNav.selectedEntity.id}`);
     }
   };
 
   useVisibilityPolling(fetchBatches, 60000);
-  useVisibilityPolling(fetchWarhouses, 60000);
+  useVisibilityPolling(fetchWarehouses, 60000);
 
   return (
     <Layout>
@@ -305,98 +216,75 @@ const BatchesPage = () => {
         title={t('batches.title')}
         items={batches}
         columns={columns}
-        totalItems={totalItems}
+        totalItems={batches.length}
         currentPage={currentPage}
         pageSize={PAGE_SIZE}
         onPageChange={setCurrentPage}
         onDelete={handleDelete}
         onBulkDelete={handleBulkDelete}
-        onAdd={handleAdd}
-        onEdit={handleEdit}
+        onAdd={modalNav.handleAdd}
+        onEdit={modalNav.handleEdit}
         getId={(item) => item.id}
-        isLoading={loading}
         isView={true}
-        onView={handelDetail}
+        onView={modalNav.handleDetail}
       />
 
       <GenericFormModal
-        isOpen={OpenEditModal}
-        onClose={onCloseEditModal}
-        initialValues={selectedBatch}
-        title={selectedBatch ? t('batches.edit') : t('batches.create')}
+        isOpen={editModal.open}
+        onClose={editModal.onClose}
+        initialValues={modalNav.selectedEntity}
+        title={modalNav.selectedEntity ? t('batches.edit') : t('batches.create')}
         fields={batchFields}
         onSubmit={handleSubmit}
-        isLoading={loading}
-        submitText={selectedBatch ? 'common.save' : 'common.create'}
+        submitText={modalNav.selectedEntity ? 'common.save' : 'common.create'}
       />
 
       <DetailModal
-        isOpen={OpenDetailModal}
-        onClose={onCloseDetailModal}
-        title={selectedBatch?.id || ''}
-        additionalButton={<Button onClick={handelNavigate}>{t('batches.location')}</Button>}
+        isOpen={detailModal.open}
+        onClose={detailModal.onClose}
+        title={modalNav.selectedEntity?.id || ''}
+        additionalButton={
+          <Button onClick={handleNavigateToLocations}>{t('batches.location')}</Button>
+        }
       >
-        <Stack gap={3}>
-          {selectedBatch?.product?.name && (
-            <Box>
-              <Text fontWeight="semibold">{t('batches.product')}:</Text>
-              <Text>{selectedBatch.product.name}</Text>
-            </Box>
-          )}
-
-          {selectedBatch?.quantity != null && (
-            <Box>
-              <Text fontWeight="semibold">{t('batches.quantity')}:</Text>
-              <Text>{selectedBatch.quantity}</Text>
-            </Box>
-          )}
-
-          <Box>
-            <Text fontWeight="semibold">{t('batches.expirationDate')}:</Text>
-            <Text>
-              {selectedBatch?.expiration_date
-                ? new Date(selectedBatch.expiration_date).toLocaleDateString('uk-UA', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })
-                : '-'}
-            </Text>
-          </Box>
-
-          <Box>
-            <Text fontWeight="semibold">{t('batches.receivedAt')}:</Text>
-            <Text>
-              {selectedBatch?.received_at
-                ? new Date(selectedBatch.received_at).toLocaleDateString('uk-UA', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })
-                : '-'}
-            </Text>
-          </Box>
-
-          {warehouses && (
-            <>
-              <Box>
-                <Text fontWeight="semibold">{t('batches.warehouseName')}:</Text>
-                <Text>
-                  {warehouses.find((c) => c.id === selectedBatch?.warehouse_id)?.name || '-'}
-                </Text>
-              </Box>
-
-              <Box>
-                <Text fontWeight="semibold">{t('batches.warehouseLocation')}:</Text>
-                <Text>
-                  {warehouses.find((c) => c.id === selectedBatch?.warehouse_id)?.location || '-'}
-                </Text>
-              </Box>
-            </>
-          )}
-        </Stack>
+        <GenericDetailView
+          items={[
+            {
+              label: 'batches.product',
+              value: modalNav.selectedEntity?.product?.name,
+              hideIfEmpty: true,
+            },
+            {
+              label: 'batches.quantity',
+              value: modalNav.selectedEntity?.quantity.toString(),
+              hideIfEmpty: true,
+            },
+            {
+              label: 'batches.expirationDate',
+              value: modalNav.selectedEntity?.expiration_date
+                ? new Date(modalNav.selectedEntity.expiration_date)
+                : null, // Date | null
+              format: (data) => (data ? data.toLocaleString('uk-UA') : '-'),
+            },
+            {
+              label: 'batches.receivedAt',
+              value: modalNav.selectedEntity?.received_at
+                ? new Date(modalNav.selectedEntity.received_at)
+                : null,
+            },
+            {
+              label: 'batches.warehouseName',
+              value:
+                warehouses.find((w) => w.id === modalNav.selectedEntity?.warehouse_id)?.name || '-',
+            },
+            {
+              label: 'batches.warehouseLocation',
+              value:
+                warehouses.find((w) => w.id === modalNav.selectedEntity?.warehouse_id)?.location ||
+                '-',
+            },
+          ]}
+        />
       </DetailModal>
     </Layout>
   );

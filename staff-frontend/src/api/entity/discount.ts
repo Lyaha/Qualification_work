@@ -1,4 +1,5 @@
 export type DiscountType = 'percentage' | 'fixed';
+export type DiscountTarget = 'product' | 'category';
 
 export type Discount = {
   id: string;
@@ -6,6 +7,7 @@ export type Discount = {
   product_id?: string;
   category_id?: string;
   discount_type: DiscountType;
+  targetType?: DiscountTarget;
   value: number;
   start_date: string;
   end_date: string;

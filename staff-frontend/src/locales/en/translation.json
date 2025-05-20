@@ -38,7 +38,26 @@
       "order": "Order: the task is related to a customer order",
       "supply": "Supply: the task is related to a product supply",
       "urgent": "Urgent: the task requires immediate attention"
-    }
+    },
+    "worker": "Worker",
+    "typeFieldName": "Type",
+    "order": "Order",
+    "supply": "Supply",
+    "associatedItem": "Associated Item",
+    "statuses": {
+      "pending": "Pending",
+      "in_progress": "In Progress",
+      "completed": "Completed"
+    },
+    "taskType": "Task Type",
+    "statusField": "Status",
+    "orderItem": "Order Item",
+    "supplyItem": "Supply Item",
+    "note": "Note",
+    "title": "Tasks",
+    "edit": "Edit Task",
+    "create": "Create Task",
+    "task": "Task"
   },
   "forbidden": {
     "title": "Access Denied",
@@ -69,7 +88,11 @@
     "noData": "No data available",
     "create": "Create",
     "unknown": "Unknown",
-    "notSpecified": "Not specified"
+    "notSpecified": "Not specified",
+    "active": "Active",
+    "inactive": "Inactive",
+    "yes": "Yes",
+    "no": "No"
   },
   "errors": {
     "userNotFound": "User not found",
@@ -84,7 +107,18 @@
     "categoryRequired": "Category is required",
     "requiredField": "This field is required",
     "invalidLocationCombination": "Invalid location combination",
-    "warehouseRequired": "Warehouse field is required"
+    "warehouseRequired": "Warehouse field is required",
+    "managerRequired": "Manager field is required",
+    "invalidEmail": "Invalid email format",
+    "invalidPhone": "Invalid phone format",
+    "futureDate": "Date must be in the future",
+    "maxPercentage": "Maximum value is 100%",
+    "invalidEndDate": "Invalid end date",
+    "userRequired": "User is required",
+    "productRequired": "Product is required",
+    "movmentTypeRequired": "Movement type is required",
+    "toZoneIdRequired": "Destination zone is required",
+    "fromZoneIdRequired": "Source zone is required"
   },
   "menu": {
     "name": "Menu",
@@ -134,7 +168,18 @@
     "details": "Storage Location Details"
   },
   "boxes": {
-    "createPlaceholder": "Enter new box name"
+    "createPlaceholder": "Enter new box name",
+    "id": "ID",
+    "name": "Name",
+    "dimensions": "Dimensions",
+    "maxWeight": "Max Weight",
+    "description": "Description",
+    "length": "Length",
+    "width": "Width",
+    "height": "Height",
+    "title": "Boxes",
+    "edit": "Edit Box",
+    "create": "Create Box"
   },
   "batches": {
     "batchNumber": "Batch Number",
@@ -152,6 +197,242 @@
     "warehouseLocation": "Warehouse Location"
   },
   "warehouses": {
-    "createPlaceholder": "Enter warehouse name"
+    "createPlaceholder": "Enter warehouse name",
+    "name": "Name",
+    "location": "Location",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "manager": "Manager",
+    "workingHours": "Working Hours",
+    "namePlaceholder": "Enter warehouse name",
+    "locationPlaceholder": "Enter warehouse location",
+    "workingHoursPlaceholder": "Enter working hours",
+    "title": "Warehouses",
+    "edit": "Edit warehouse",
+    "create": "Create warehouse",
+    "manger": "Manager",
+    "storageZone": "Storage zones"
+  },
+  "storageZones": {
+    "locationCode": "Location code",
+    "warehouse": "Warehouse",
+    "maxWeight": "Max weight (kg)",
+    "maxWeightPlaceholder": "Enter max weight",
+    "title": "Storage zones",
+    "edit": "Edit storage zone",
+    "create": "Create storage zone"
+  },
+  "reports": {
+    "allWarehouses": "All Warehouses",
+    "title": "Reports",
+    "selectWarehouse": "Select Warehouse",
+    "totalSales": "Total Sales",
+    "avgOrder": "Average Order Value",
+    "ordersCount": "Number of Orders",
+    "salesTrend": "Sales Trend",
+    "inventoryLevels": "Inventory Levels",
+    "taskCompletion": "Task Completion",
+    "startDate": "Start Date",
+    "endDate": "End Date"
+  },
+  "users": {
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "roles": {
+      "client": "Client",
+      "warehouse_worker": "Warehouse Worker",
+      "manager": "Manager",
+      "admin": "Admin",
+      "director": "Director"
+    },
+    "status": "Status",
+    "lastLogin": "Last Login",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone",
+    "active": "Active",
+    "title": "Users",
+    "edit": "Edit User",
+    "create": "Create User"
+  },
+  "supplyOrders": {
+    "supplier": "Supplier",
+    "status": "Status",
+    "statuses": {
+      "draft": "Draft",
+      "confirmed": "Confirmed",
+      "delivered": "Delivered",
+      "completed": "Completed"
+    },
+    "expectedDelivery": "Expected Delivery",
+    "createdAt": "Created At",
+    "title": "Supply Orders",
+    "edit": "Edit Order",
+    "create": "Create Order",
+    "order": "Order"
+  },
+  "supplyOrderItems": {
+    "supplyOrder": "Supply Order",
+    "product": "Product",
+    "quantity": "Quantity",
+    "unitPrice": "Unit Price",
+    "total": "Total",
+    "forSupplyOrder": "For Supply Order",
+    "titleForOrder": "Order Items",
+    "title": "Supply Order Items",
+    "edit": "Edit Item",
+    "create": "Create Item",
+    "item": "Item"
+  },
+  "suppliers": {
+    "name": "Name",
+    "contactPerson": "Contact Person",
+    "phone": "Phone",
+    "email": "Email",
+    "title": "Suppliers",
+    "edit": "Edit Supplier",
+    "create": "Create Supplier",
+    "newSupplier": "New Supplier"
+  },
+  "reviews": {
+    "user": "User",
+    "rating": "Rating",
+    "target": "Target",
+    "product": "Product",
+    "order": "Order",
+    "createdAt": "Created At",
+    "reviewType": "Review Type",
+    "comment": "Comment",
+    "title": "Reviews",
+    "edit": "Edit Review",
+    "create": "Create Review",
+    "review": "Review"
+  },
+  "priceHistory": {
+    "product": "Product",
+    "oldPrice": "Old Price",
+    "newPrice": "New Price",
+    "changedBy": "Changed By",
+    "changedAt": "Changed At",
+    "forProduct": "For Product",
+    "titleForProduct": "Product Price History",
+    "title": "Price History",
+    "detailsTitle": "Price Change Details"
+  },
+  "parkingSpots": {
+    "id": "ID",
+    "warehouse": "Warehouse",
+    "status": "Status",
+    "reservedUntil": "Reserved Until",
+    "entityType": "Entity Type",
+    "types": {
+      "available": "Available",
+      "reserved": "Reserved",
+      "occupied": "Occupied"
+    },
+    "referenceId": "Reference ID",
+    "title": "Parking Spots",
+    "edit": "Edit Parking Spot",
+    "create": "Create Parking Spot",
+    "statuses": {
+      "FREE": "Free",
+      "RESERVED": "Reserved",
+      "OCCUPIED": "Occupied"
+    }
+  },
+  "orders": {
+    "client": "Client",
+    "totalAmount": "Total Amount",
+    "status": "Status",
+    "statuses": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "shipped": "Shipped",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "paymentMethod": "Payment Method",
+    "paymentMethods": {
+      "credit_card": "Credit Card",
+      "cash": "Cash",
+      "bank_transfer": "Bank Transfer"
+    },
+    "warehouse": "Warehouse",
+    "createdAt": "Created At",
+    "title": "Orders",
+    "edit": "Edit Order",
+    "create": "Create Order"
+  },
+  "orderItems": {
+    "order": "Order",
+    "product": "Product",
+    "quantity": "Quantity",
+    "unitPrice": "Unit Price",
+    "total": "Total",
+    "forOrder": "For Order",
+    "titleForOrder": "Order Items",
+    "title": "Order Items",
+    "edit": "Edit Item",
+    "create": "Create Item",
+    "item": "Item"
+  },
+  "movements": {
+    "id": "ID",
+    "product": "Product",
+    "type": "Type",
+    "quantity": "Quantity",
+    "user": "User",
+    "fromZone": "From Zone",
+    "toZone": "To Zone",
+    "date": "Date",
+    "responsible": "Responsible",
+    "types": {
+      "incoming": "Incoming",
+      "outgoing": "Outgoing",
+      "transfer": "Transfer"
+    },
+    "note": "Note",
+    "title": "Movements",
+    "edit": "Edit Movement",
+    "create": "Create Movement"
+  },
+  "discounts": {
+    "id": "ID",
+    "name": "Name",
+    "type": "Type",
+    "types": {
+      "PERCENTAGE": "Percentage",
+      "FIXED": "Fixed"
+    },
+    "value": "Value",
+    "period": "Period",
+    "status": "Status",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "target": "Target",
+    "product": "Product",
+    "category": "Category",
+    "minQuantity": "Min Quantity",
+    "stackable": "Stackable",
+    "active": "Active",
+    "title": "Discounts",
+    "edit": "Edit Discount",
+    "create": "Create Discount"
+  },
+  "categories": {
+    "id": "ID",
+    "name": "Name",
+    "parent": "Parent",
+    "parentCategory": "Parent Category",
+    "title": "Categories",
+    "edit": "Edit Category",
+    "create": "Create Category"
+  },
+  "units": {
+    "m": "m",
+    "kg": "kg",
+    "currency": "₴"
   }
 }

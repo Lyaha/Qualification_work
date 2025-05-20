@@ -4,7 +4,7 @@ export type User = {
   id: string;
   first_name: string;
   last_name: string;
-  auth0_id: string;
+  auth0_id?: string;
   email: string;
   role: UserRole;
   phone_number?: string;

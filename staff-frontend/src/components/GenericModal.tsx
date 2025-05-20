@@ -6,10 +6,12 @@ import {
   Box,
   Button,
   ButtonGroup,
+  Checkbox,
   CloseButton,
   createListCollection,
   Dialog,
   Flex,
+  HStack,
   IconButton,
   Input,
   Portal,
@@ -18,19 +20,33 @@ import {
 } from '@chakra-ui/react';
 import FormControl from './ui/form-control';
 import { LuPlus } from 'react-icons/lu';
+import { Radio, RadioGroup } from './ui/radio';
 
 export type FormField<T> = {
   name: keyof T;
   label: string;
-  type: 'text' | 'number' | 'select' | 'textarea' | 'date';
+  type:
+    | 'text'
+    | 'number'
+    | 'select'
+    | 'textarea'
+    | 'date'
+    | 'checkbox'
+    | 'radio-group'
+    | 'tel'
+    | 'email';
   options?: Array<{ value: string | number; label: string }>;
-  required?: boolean;
+  required?: boolean | ((values: Partial<T>) => boolean);
   placeholder?: string;
   min?: number;
   max?: number;
   step?: number;
   onCreateNew?: (data: { name: string }) => Promise<{ value: string; label: string }>;
   fastCreatePlaceholder?: string;
+  checkedLabel?: string;
+  uncheckedLabel?: string;
+  hidden?: boolean | ((values: Partial<T>) => boolean);
+  dependsOn?: (keyof T)[];
 };
 
 interface GenericFormModalProps<T> {
@@ -78,7 +94,7 @@ export const GenericFormModal = <T extends Record<string, any>>({
   const validateForm = () => {
     const newErrors = {} as Record<keyof T, string>;
     fields.forEach((field) => {
-      if (field.required && !formData[field.name]) {
+      if (field.required && !field.hidden && !formData[field.name]) {
         newErrors[field.name] = t('errors.requiredField');
       }
     });
@@ -102,6 +118,12 @@ export const GenericFormModal = <T extends Record<string, any>>({
   };
 
   const renderInput = (field: FormField<T>): ReactNode => {
+    if (
+      field.hidden &&
+      (typeof field.hidden === 'function' ? field.hidden(formData) : field.hidden)
+    ) {
+      return null;
+    }
     switch (field.type) {
       case 'number':
         return (
@@ -129,6 +151,24 @@ export const GenericFormModal = <T extends Record<string, any>>({
             max={field.max?.toString()}
             placeholder={field.placeholder}
           />
+        );
+      case 'checkbox':
+        return (
+          <Flex gap="2" align="center">
+            <Checkbox.Root
+              checked={Boolean(formData[field.name])}
+              onCheckedChange={(checked) => handleChange(field.name, checked.checked)}
+              disabled={isLoading}
+            >
+              <Checkbox.HiddenInput />
+              <Checkbox.Control />
+              {field.checkedLabel || field.uncheckedLabel ? (
+                <Checkbox.Label>
+                  {formData[field.name] ? field.checkedLabel : field.uncheckedLabel}
+                </Checkbox.Label>
+              ) : null}
+            </Checkbox.Root>
+          </Flex>
         );
       case 'select': {
         const collection = createListCollection({
@@ -165,7 +205,7 @@ export const GenericFormModal = <T extends Record<string, any>>({
             <Box flex="1">
               <Select.Root
                 collection={collection}
-                onValueChange={(value) => handleChange(field.name, value)}
+                onValueChange={(value) => handleChange(field.name, value.value[0])}
                 size="sm"
                 zIndex={1402}
               >
@@ -245,13 +285,51 @@ export const GenericFormModal = <T extends Record<string, any>>({
         );
       }
 
-      case 'textarea':
+      case 'textarea': {
         return (
           <Input
             as="textarea"
             value={formData[field.name] || ''}
             onChange={(e) => handleChange(field.name, e.target.value)}
             placeholder={field.placeholder}
+          />
+        );
+      }
+      case 'radio-group':
+        return (
+          <RadioGroup
+            value={formData[field.name]?.toString() || ''}
+            onValueChange={({ value }) => handleChange(field.name, value)}
+          >
+            <HStack padding={4}>
+              {field.options?.map((option) => (
+                <Radio key={option.value} value={option.value.toString()}>
+                  {option.label}
+                </Radio>
+              ))}
+            </HStack>
+          </RadioGroup>
+        );
+
+      case 'tel':
+        return (
+          <Input
+            type="tel"
+            value={formData[field.name] || ''}
+            onChange={(e) => handleChange(field.name, e.target.value)}
+            placeholder={field.placeholder}
+            pattern="[+]{0,1}[0-9\s\-()]{7,20}"
+          />
+        );
+
+      case 'email':
+        return (
+          <Input
+            type="email"
+            value={formData[field.name] || ''}
+            onChange={(e) => handleChange(field.name, e.target.value)}
+            placeholder={field.placeholder}
+            pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
           />
         );
 
