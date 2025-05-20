@@ -7,7 +7,7 @@ CREATE TYPE parking_spot_status AS ENUM ('available', 'reserved', 'occupied');
 CREATE TYPE supply_order_status AS ENUM ('draft', 'confirmed', 'delivered', 'completed');
 CREATE TYPE task_status AS ENUM ('pending', 'in_progress', 'completed');
 
--- Таблиця користувачів
+-- Таблиця користувачів✅
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     first_name VARCHAR(100) NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE users (
     last_login_at TIMESTAMP
 );
 
--- Таблиця складів
+-- Таблиця складів✅
 CREATE TABLE warehouses (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
@@ -32,20 +32,19 @@ CREATE TABLE warehouses (
     is_active BOOLEAN DEFAULT TRUE
 );
 
--- Таблиця категорій
+-- Таблиця категорій✅
 CREATE TABLE categories (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     parent_id UUID REFERENCES categories(id)
 );
 
--- Таблиця товарів
+-- Таблиця товарів✅
 CREATE TABLE products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     description TEXT,
     category_id UUID REFERENCES categories(id),
-    category VARCHAR(100) NOT NULL,
     barcode VARCHAR(50) UNIQUE,
     price_purchase DECIMAL(10,2) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
@@ -53,7 +52,7 @@ CREATE TABLE products (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Таблиця замовлень
+-- Таблиця замовлень✅
 CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     client_id UUID NOT NULL REFERENCES users(id),
@@ -64,7 +63,7 @@ CREATE TABLE orders (
     warehouse_id UUID NOT NULL REFERENCES warehouses(id)
 );
 
--- Деталі замовлень
+-- Деталі замовлень✅
 CREATE TABLE order_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_id UUID NOT NULL REFERENCES orders(id),
@@ -73,7 +72,7 @@ CREATE TABLE order_items (
     unit_price DECIMAL(10,2) NOT NULL
 );
 
--- Відгуки
+-- Відгуки✅
 CREATE TABLE reviews (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id),
@@ -84,7 +83,7 @@ CREATE TABLE reviews (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Знижки
+-- Знижки✅
 CREATE TABLE discounts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
@@ -104,7 +103,7 @@ CREATE TABLE discounts (
     )
 );
 
--- Постачальники
+-- Постачальники✅
 CREATE TABLE suppliers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
@@ -113,7 +112,7 @@ CREATE TABLE suppliers (
     email VARCHAR(255)
 );
 
--- Заявки на поставку
+-- Заявки на поставку✅
 CREATE TABLE supply_orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     supplier_id UUID NOT NULL REFERENCES suppliers(id),
@@ -122,7 +121,7 @@ CREATE TABLE supply_orders (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Деталі заявок на поставку
+-- Деталі заявок на поставку✅
 CREATE TABLE supply_order_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     supply_order_id UUID NOT NULL REFERENCES supply_orders(id),
@@ -131,7 +130,7 @@ CREATE TABLE supply_order_items (
     unit_price DECIMAL(10,2) NOT NULL
 );
 
--- Парковочні місця
+-- Парковочні місця✅
 CREATE TABLE parking_spots (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     warehouse_id UUID NOT NULL REFERENCES warehouses(id),
@@ -149,26 +148,27 @@ CREATE TABLE logs (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Коробки
+-- Коробки✅
 CREATE TABLE boxes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
-    description TEXT,  -- Добавлено поле для описания
+    description TEXT,
     length DECIMAL(10,2) NOT NULL,
     width DECIMAL(10,2) NOT NULL,
     height DECIMAL(10,2) NOT NULL,
     max_weight DECIMAL(10,2) NOT NULL
 );
 
--- Зони зберігання
+-- Зони зберігання✅
 CREATE TABLE storage_zones (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     warehouse_id UUID NOT NULL REFERENCES warehouses(id),
     location_code VARCHAR(50) NOT NULL,
-    max_weight DECIMAL(10,2) NOT NULL
+    max_weight DECIMAL(10,2) NOT NULL,
+    current_weight DECIMAL(10,2) DEFAULT 0
 );
 
--- Переміщення товарів
+-- Переміщення товарів✅
 CREATE TABLE inventory_movements (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     product_id UUID NOT NULL REFERENCES products(id),
@@ -182,17 +182,18 @@ CREATE TABLE inventory_movements (
     note TEXT
 );
 
--- Партії товарів
+-- Партії товарів✅
 CREATE TABLE batches (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     product_id UUID NOT NULL REFERENCES products(id),
     warehouse_id UUID NOT NULL REFERENCES warehouses(id),
     quantity INT NOT NULL CHECK (quantity > 0),
+    current_quantity INT NOT NULL DEFAULT 0 CHECK (current_quantity >= 0),
     expiration_date DATE,
     received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Расположение партий
+-- Расположение партий✅
 CREATE TABLE batch_locations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     batch_id UUID NOT NULL REFERENCES batches(id),
@@ -201,13 +202,13 @@ CREATE TABLE batch_locations (
     quantity INT NOT NULL CHECK (quantity > 0),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CHECK (
-        (storage_zone_id IS NULL AND box_id IS NULL) OR
+        (storage_zone_id IS NOT NULL AND box_id IS NULL) OR
         (storage_zone_id IS NOT NULL AND box_id IS NOT NULL)
     )
 );
 
 
--- Історія цін
+-- Історія цін✅
 CREATE TABLE price_history (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     product_id UUID NOT NULL REFERENCES products(id),
@@ -217,6 +218,7 @@ CREATE TABLE price_history (
     changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Завдання працівників(workers)✅
 CREATE TABLE tasks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     worker_id UUID NOT NULL REFERENCES users(id),
@@ -253,6 +255,198 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION update_order_total()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF (TG_OP = 'DELETE') THEN
+    UPDATE orders 
+    SET total_amount = (
+      SELECT COALESCE(SUM(quantity * unit_price), 0)
+      FROM order_items 
+      WHERE order_id = OLD.order_id
+    )
+    WHERE id = OLD.order_id;
+  ELSE
+    UPDATE orders 
+    SET total_amount = (
+      SELECT COALESCE(SUM(quantity * unit_price), 0)
+      FROM order_items 
+      WHERE order_id = NEW.order_id
+    )
+    WHERE id = NEW.order_id;
+  END IF;
+  RETURN NULL;
+END;
+
+$$ LANGUAGE plpgsql;
+CREATE OR REPLACE FUNCTION reserve_parking_spot_on_order()
+RETURNS TRIGGER AS $$
+DECLARE
+  spot_id UUID;
+BEGIN
+  SELECT id INTO spot_id
+  FROM parking_spots
+  WHERE warehouse_id = NEW.warehouse_id
+    AND status = 'available'
+  LIMIT 1;
+
+  IF spot_id IS NOT NULL THEN
+    UPDATE parking_spots
+    SET 
+      status = 'reserved',
+      reserved_until = NOW() + INTERVAL '1 day',
+      reference_id = NEW.id,
+      entity_type = 'order'
+    WHERE id = spot_id;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION process_inventory_movement()
+RETURNS TRIGGER AS $$
+DECLARE
+    product_weight DECIMAL(10,2);
+    source_zone UUID;
+    target_zone UUID;
+    source_box UUID;
+    target_box UUID;
+BEGIN
+    -- Получаем вес товара
+    SELECT weight INTO product_weight 
+    FROM products WHERE id = NEW.product_id;
+
+    -- Определяем тип перемещения
+    CASE NEW.movement_type
+        WHEN 'incoming' THEN
+            -- Создаем новую партию для поступления
+            INSERT INTO batches (product_id, warehouse_id, quantity, current_quantity)
+            VALUES (NEW.product_id, (SELECT warehouse_id FROM storage_zones WHERE id = NEW.to_zone_id), NEW.quantity, NEW.quantity)
+            RETURNING id INTO NEW.reference_id;
+
+        WHEN 'outgoing' THEN
+            -- Находим партию для списания
+            PERFORM update_batches_on_outgoing(NEW.product_id, NEW.quantity);
+
+        WHEN 'transfer' THEN
+            -- Обрабатываем трансфер между зонами
+            PERFORM process_transfer(
+                NEW.from_zone_id, 
+                NEW.to_zone_id, 
+                NEW.product_id, 
+                NEW.quantity, 
+                product_weight
+            );
+    END CASE;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION validate_source_availability(
+    source_id UUID,
+    product_id UUID,
+    required_quantity INT,
+    is_zone BOOLEAN
+) RETURNS VOID AS $$
+DECLARE
+    available_quantity INT;
+BEGIN
+    IF is_zone THEN
+        SELECT COALESCE(SUM(bl.quantity), 0)
+        INTO available_quantity
+        FROM batch_locations bl
+        JOIN batches b ON bl.batch_id = b.id
+        WHERE bl.storage_zone_id = source_id
+        AND b.product_id = product_id;
+    ELSE
+        SELECT COALESCE(SUM(bl.quantity), 0)
+        INTO available_quantity
+        FROM batch_locations bl
+        JOIN batches b ON bl.batch_id = b.id
+        WHERE bl.box_id = source_id
+        AND b.product_id = product_id;
+    END IF;
+
+    IF available_quantity < required_quantity THEN
+        RAISE EXCEPTION 'Not enough stock. Available: %, Requested: %', 
+            available_quantity, required_quantity;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION update_storage_weight(
+    storage_id UUID, 
+    weight_diff DECIMAL(10,2),
+    is_zone BOOLEAN
+) RETURNS VOID AS $$
+BEGIN
+    IF is_zone THEN
+        UPDATE storage_zones
+        SET current_weight = current_weight + weight_diff
+        WHERE id = storage_id
+        AND current_weight + weight_diff <= max_weight;
+        
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Storage zone % is over capacity', storage_id;
+        END IF;
+    ELSE
+        UPDATE boxes
+        SET current_weight = current_weight + weight_diff
+        WHERE id = storage_id
+        AND current_weight + weight_diff <= max_weight;
+        
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Box % is over capacity', storage_id;
+        END IF;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION process_transfer(
+    from_id UUID,
+    to_id UUID,
+    product_id UUID,
+    quantity INT,
+    product_weight DECIMAL(10,2)
+)
+RETURNS VOID AS $$
+DECLARE
+    from_type BOOLEAN;
+    to_type BOOLEAN;
+BEGIN
+    -- Определяем тип хранилища (зона или коробка)
+    SELECT EXISTS(SELECT 1 FROM storage_zones WHERE id = from_id) INTO from_type;
+    SELECT EXISTS(SELECT 1 FROM storage_zones WHERE id = to_id) INTO to_type;
+
+    -- Проверяем наличие товара в источнике
+    PERFORM validate_source_availability(from_id, product_id, quantity, from_type);
+
+    -- Обновляем вес
+    PERFORM update_storage_weight(from_id, - (quantity * product_weight), from_type);
+    PERFORM update_storage_weight(to_id, quantity * product_weight, to_type);
+
+    -- Обновляем партии
+    PERFORM update_batches_on_transfer(from_id, to_id, product_id, quantity, from_type, to_type);
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+-- Тригери для автоматизації
+CREATE TRIGGER order_total_update
+AFTER INSERT OR UPDATE OR DELETE ON order_items
+FOR EACH ROW EXECUTE FUNCTION update_order_total();
+
+CREATE TRIGGER trigger_reserve_parking_spot
+AFTER INSERT ON orders
+FOR EACH ROW EXECUTE FUNCTION reserve_parking_spot_on_order();
+
+CREATE TRIGGER inventory_movement_processing
+BEFORE INSERT ON inventory_movements
+FOR EACH ROW EXECUTE FUNCTION process_inventory_movement();
 
 -- Додавання тригерів для оновлення часу
 CREATE TRIGGER update_users_modtime

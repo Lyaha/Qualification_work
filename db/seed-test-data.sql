@@ -39,7 +39,7 @@ VALUES
 ((SELECT id FROM users WHERE email = 'client1@test.com'), 25000.00, 'completed', 'card', (SELECT id FROM warehouses WHERE name = 'Склад А')),
 ((SELECT id FROM users WHERE email = 'client1@test.com'), 70000.00, 'pending', 'online', (SELECT id FROM warehouses WHERE name = 'Склад Б')),
 ((SELECT id FROM users WHERE email = 'client1@test.com'), 20000.00, 'confirmed', 'cash', (SELECT id FROM warehouses WHERE name = 'Склад В')),
-((SELECT id FROM users WHERE email = 'client1@test.com'), 15000.00, 'canceled', 'card', (SELECT id FROM warehouses WHERE name = 'Склад Г')),
+((SELECT id FROM users WHERE email = 'client1@test.com'), 14000.00, 'canceled', 'card', (SELECT id FROM warehouses WHERE name = 'Склад Г')),
 ((SELECT id FROM users WHERE email = 'client1@test.com'), 30000.00, 'completed', 'online', (SELECT id FROM warehouses WHERE name = 'Склад Д'));
 
 -- Заповнення order_items
@@ -48,7 +48,7 @@ VALUES
 ((SELECT id FROM orders LIMIT 1 OFFSET 0), (SELECT id FROM products LIMIT 1 OFFSET 0), 1, 25000.00),
 ((SELECT id FROM orders LIMIT 1 OFFSET 1), (SELECT id FROM products LIMIT 1 OFFSET 1), 2, 35000.00),
 ((SELECT id FROM orders LIMIT 1 OFFSET 2), (SELECT id FROM products LIMIT 1 OFFSET 2), 1, 20000.00),
-((SELECT id FROM orders LIMIT 1 OFFSET 3), (SELECT id FROM products LIMIT 1 OFFSET 3), 1, 7000.00),
+((SELECT id FROM orders LIMIT 1 OFFSET 3), (SELECT id FROM products LIMIT 1 OFFSET 3), 2, 7000.00),
 ((SELECT id FROM orders LIMIT 1 OFFSET 4), (SELECT id FROM products LIMIT 1 OFFSET 4), 2, 15000.00);
 
 -- Заповнення reviews
