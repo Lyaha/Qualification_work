@@ -72,6 +72,24 @@ export const menuConfig: MenuItem[] = [
         hidden: true,
         allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
       },
+      {
+        id: 'category',
+        translations: {
+          uk: 'Категорії',
+          en: 'Categories',
+        },
+        path: '/category',
+        allowedRoles: [UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+      },
+      {
+        id: 'discount',
+        translations: {
+          uk: 'Знижки',
+          en: 'Discounts',
+        },
+        path: '/discount',
+        allowedRoles: [UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+      },
     ],
   },
   {
@@ -80,7 +98,7 @@ export const menuConfig: MenuItem[] = [
       uk: 'Завдання',
       en: 'Tasks',
     },
-    path: '/tasks',
+    path: '/task',
     icon: 'tasks',
     allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
   },
@@ -95,13 +113,14 @@ export const menuConfig: MenuItem[] = [
     allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
     children: [
       {
-        id: 'inventory',
+        id: 'storage-zone',
         translations: {
-          uk: 'Інвентар',
-          en: 'Inventory',
+          uk: 'Зони зберігання складу',
+          en: 'Storage Zones Warehouse',
         },
-        path: '/warehouse/inventory',
+        path: '/storage-zone/:warehouse_id',
         allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+        hidden: true,
       },
       {
         id: 'zones',
@@ -109,7 +128,34 @@ export const menuConfig: MenuItem[] = [
           uk: 'Зони зберігання',
           en: 'Storage Zones',
         },
-        path: '/warehouse/zones',
+        path: '/storage-zone/',
+        allowedRoles: [UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+      },
+      {
+        id: 'invetory-movement',
+        translations: {
+          uk: 'Рух товарів',
+          en: 'Inventory Movement',
+        },
+        path: '/movements/',
+        allowedRoles: [UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+      },
+      {
+        id: 'box',
+        translations: {
+          uk: 'Коробки',
+          en: 'Boxes',
+        },
+        path: '/box/',
+        allowedRoles: [UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+      },
+      {
+        id: 'parking',
+        translations: {
+          uk: 'Парковка',
+          en: 'Parking',
+        },
+        path: '/parking-spot',
         allowedRoles: [UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
       },
     ],
@@ -123,16 +169,69 @@ export const menuConfig: MenuItem[] = [
     path: '/orders',
     icon: 'shopping-cart',
     allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+    children: [
+      {
+        id: 'order-item',
+        translations: {
+          uk: 'Елементи замовлень',
+          en: 'Order Items',
+        },
+        path: '/order-item',
+        allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+        children: [
+          {
+            id: 'order-item-details',
+            translations: {
+              uk: 'Деталі замовлення',
+              en: 'Order Details',
+            },
+            path: '/order-item/:orderId',
+            hidden: true,
+            allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'supplies',
     translations: {
       uk: 'Поставки',
-      en: 'Supplies',
+      en: 'Supply Orders',
     },
-    path: '/supplies',
+    path: '/supply-order',
     icon: 'truck',
     allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+    children: [
+      {
+        id: 'suppliers',
+        translations: {
+          uk: 'Постачальники',
+          en: 'Suppliers',
+        },
+        path: '/supplier',
+        allowedRoles: [UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+      },
+      {
+        id: 'supply-order-items-details',
+        translations: {
+          uk: 'Елементи поставки',
+          en: 'Supply Items',
+        },
+        path: '/supply-order-item/:supplyOrderId',
+        hidden: true,
+        allowedRoles: [UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+      },
+      {
+        id: 'supply-order-items',
+        translations: {
+          uk: 'Елементи поставки',
+          en: 'Supply Items',
+        },
+        path: '/supply-order-item',
+        allowedRoles: [UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+      },
+    ],
   },
   {
     id: 'reports',
@@ -143,6 +242,17 @@ export const menuConfig: MenuItem[] = [
     path: '/reports',
     icon: 'chart-bar',
     allowedRoles: [UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+    children: [
+      {
+        id: 'reviews',
+        translations: {
+          uk: 'Відгуки',
+          en: 'Reviews',
+        },
+        path: '/review',
+        allowedRoles: [UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
+      },
+    ],
   },
   {
     id: 'settings',

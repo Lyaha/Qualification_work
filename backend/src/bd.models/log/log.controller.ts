@@ -1,7 +1,11 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
 import { LogService } from './log.service';
 import { Log } from '../entity/log.entity';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('access-token')
 @Controller('log')
 export class LogController {
   constructor(private readonly logService: LogService) {}

@@ -12,7 +12,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User } from '../entity/user.entity';
+import { User, UserRole } from '../entity/user.entity';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { ApiBearerAuth, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
 import { RoleGuard } from '../../auth/roles.guard';
@@ -111,6 +111,12 @@ export class UsersController {
       }
     }
     return this.usersService.update(id, data);
+  }
+
+  @Get('/managers')
+  @ApiOkResponse({ type: [User] })
+  async getManagers(): Promise<User[]> {
+    return this.usersService.findByRole(UserRole.MANAGER);
   }
 
   @Delete('user/:id')

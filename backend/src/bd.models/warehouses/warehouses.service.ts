@@ -11,15 +11,15 @@ export class WarehousesService {
   ) {}
 
   findAll(): Promise<Warehouse[]> {
-    return this.warehousesRepository.find();
+    return this.warehousesRepository.find({ relations: ['manager'] });
   }
 
   async findOne(id: string): Promise<Warehouse> {
-    const user = await this.warehousesRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+    const warehouse = await this.warehousesRepository.findOne({ where: { id } });
+    if (!warehouse) {
+      throw new NotFoundException(`Warehouse with ID ${id} not found`);
     }
-    return user;
+    return warehouse;
   }
 
   async create(data: Partial<Warehouse>): Promise<Warehouse> {

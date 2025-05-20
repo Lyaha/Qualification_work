@@ -1,7 +1,11 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
 import { ParkingSpotService } from './parking_spot.service';
 import { ParkingSpot } from '../entity/parking_spot.entity';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('access-token')
 @Controller('parking-spot')
 export class ParkingSpotController {
   constructor(private readonly parkingSpotService: ParkingSpotService) {}

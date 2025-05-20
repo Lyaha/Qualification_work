@@ -47,6 +47,7 @@ import {
   BatchLocation,
 } from './bd.models/entity';
 import { MenuModule } from './menu/menu.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -104,6 +105,7 @@ import { MenuModule } from './menu/menu.module';
     TaskModule,
     MenuModule, // Добавляем MenuModule
     BatchLocationModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [],
