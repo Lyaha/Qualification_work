@@ -270,7 +270,7 @@ export const menuConfig: MenuItem[] = [
           uk: 'Користувачі',
           en: 'Users',
         },
-        path: '/settings/users',
+        path: '/users',
         allowedRoles: [UserRole.ADMIN, UserRole.DIRECTOR],
       },
       {
@@ -279,17 +279,8 @@ export const menuConfig: MenuItem[] = [
           uk: 'Ролі та права',
           en: 'Roles & Permissions',
         },
-        path: '/settings/roles',
+        path: '/roles',
         allowedRoles: [UserRole.ADMIN, UserRole.DIRECTOR],
-      },
-      {
-        id: 'general',
-        translations: {
-          uk: 'Загальні',
-          en: 'General',
-        },
-        path: '/settings/general',
-        allowedRoles: [UserRole.WORKER, UserRole.MANAGER, UserRole.ADMIN, UserRole.DIRECTOR],
       },
     ],
   },
