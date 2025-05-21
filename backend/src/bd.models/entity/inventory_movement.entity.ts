@@ -11,7 +11,7 @@ export class InventoryMovement {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column()
+  @Column('uuid')
   product_id!: string;
 
   @Column()
@@ -31,4 +31,7 @@ export class InventoryMovement {
 
   @Column({ type: 'timestamp' })
   created_at!: Date;
+
+  @Column('uuid')
+  reference_id!: string;
 }

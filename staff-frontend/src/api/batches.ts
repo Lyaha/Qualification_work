@@ -1,4 +1,5 @@
 import { Batch } from './entity/batch';
+import { Task } from './entity/task';
 import { deleteRequest, getRequest, postRequest, putRequest } from './request';
 
 export const getBatchesByProduct = async (productId: string): Promise<Batch[]> => {

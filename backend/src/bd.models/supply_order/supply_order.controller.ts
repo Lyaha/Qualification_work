@@ -1,7 +1,11 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
 import { SupplyOrderService } from './supply_order.service';
 import { SupplyOrder } from '../entity/supply_order.entity';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('access-token')
 @Controller('supply-order')
 export class SupplyOrderController {
   constructor(private readonly supplyOrderService: SupplyOrderService) {}

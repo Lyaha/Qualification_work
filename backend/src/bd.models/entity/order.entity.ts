@@ -26,4 +26,7 @@ export class Order {
 
   @Column({ type: 'timestamp' })
   created_at!: Date;
+
+  @Column('uuid')
+  warehouse_id!: string;
 }

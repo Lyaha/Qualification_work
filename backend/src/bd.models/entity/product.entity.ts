@@ -39,12 +39,8 @@ export class Product {
   @Column({ type: 'text', nullable: true })
   description!: string;
 
-  @Column()
-  category!: string;
-
-  @ManyToOne(() => Category)
-  @JoinColumn({ name: 'category_id' }) // внешний ключ
-  category_entity!: Category;
+  @Column({ type: 'uuid' })
+  category_id!: string;
 
   @Column({ unique: true, nullable: true, length: 50 })
   barcode!: string;

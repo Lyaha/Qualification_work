@@ -27,12 +27,15 @@ import {
 import { CiEdit } from 'react-icons/ci';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+type DisableableAction = 'add' | 'edit' | 'delete' | 'bulkDelete';
 
 export type ColumnConfig<T> = {
   header: string;
   accessor: keyof T | ((item: T) => React.ReactNode);
   width?: string | number;
   align?: 'left' | 'center' | 'right';
+  format?: (value: any) => React.ReactNode; // Форматирование значения
+  hidden?: boolean; // Скрытие колонки
 };
 
 type GenericTableProps<T> = {
@@ -43,15 +46,16 @@ type GenericTableProps<T> = {
   currentPage: number;
   pageSize: number;
   onPageChange: (page: number) => void;
-  onDelete: (id: string) => void;
-  onBulkDelete: (ids: string[]) => void;
-  onAdd: () => void;
-  onEdit: (item: T) => void;
+  onDelete?: (id: string) => void;
+  onBulkDelete?: (ids: string[]) => void;
+  onAdd?: () => void;
+  onEdit?: (item: T) => void;
   getId: (item: T) => string;
   isLoading?: boolean;
   isView?: boolean;
   onView?: (item: T) => void;
   additionalActions?: (item: T) => React.ReactNode;
+  disableActions?: DisableableAction[];
 };
 
 type SortDirection = 'asc' | 'desc' | null;
@@ -73,9 +77,16 @@ export const GenericTable = <T,>({
   isView = false,
   onView,
   additionalActions,
+  disableActions = [],
 }: GenericTableProps<T>) => {
   const { t } = useTranslation();
   const [selection, setSelection] = useState<string[]>([]);
+  const showAdd = !disableActions.includes('add');
+  const showEdit = !disableActions.includes('edit');
+  const showDelete = !disableActions.includes('delete');
+  const showBulkDelete = !disableActions.includes('bulkDelete');
+
+  const visibleColumns = columns.filter((column) => !column.hidden);
 
   const hasSelection = selection.length > 0;
   const indeterminate = hasSelection && selection.length < items.length;
@@ -180,9 +191,11 @@ export const GenericTable = <T,>({
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </Box>
-        <Button colorScheme="green" onClick={onAdd}>
-          <LuPlus /> {t('common.add')}
-        </Button>
+        {showAdd && (
+          <Button colorScheme="green" onClick={onAdd}>
+            <LuPlus /> {t('common.add')}
+          </Button>
+        )}
       </Flex>
 
       <Table.ScrollArea borderWidth="1px" overflowX="auto">
@@ -199,7 +212,7 @@ export const GenericTable = <T,>({
                   <Checkbox.Control />
                 </Checkbox.Root>
               </Table.ColumnHeader>
-              {columns.map((column, index) => (
+              {visibleColumns.map((column, index) => (
                 <Table.ColumnHeader key={index} width={column.width} textAlign={column.align}>
                   <Flex
                     key={index}
@@ -249,11 +262,13 @@ export const GenericTable = <T,>({
                         <Checkbox.Control />
                       </Checkbox.Root>
                     </Table.Cell>
-                    {columns.map((column, colIndex) => (
+                    {visibleColumns.map((column, colIndex) => (
                       <Table.Cell key={colIndex} textAlign={column.align}>
                         {typeof column.accessor === 'function'
                           ? column.accessor(item)
-                          : (item as any)[column.accessor]}
+                          : column.format
+                            ? column.format((item as any)[column.accessor])
+                            : (item as any)[column.accessor]}
                       </Table.Cell>
                     ))}
                     <Table.Cell>
@@ -263,16 +278,20 @@ export const GenericTable = <T,>({
                             <LuEye />
                           </IconButton>
                         )}
-                        <IconButton aria-label={t('common.edit')} onClick={() => onEdit(item)}>
-                          <CiEdit />
-                        </IconButton>
-                        <IconButton
-                          aria-label={t('common.delete')}
-                          colorScheme="red"
-                          onClick={() => onDelete(getId(item))}
-                        >
-                          <LuTrash2 />
-                        </IconButton>
+                        {showEdit && onEdit && (
+                          <IconButton aria-label={t('common.edit')} onClick={() => onEdit(item)}>
+                            <CiEdit />
+                          </IconButton>
+                        )}
+                        {showDelete && onDelete && (
+                          <IconButton
+                            aria-label={t('common.delete')}
+                            colorScheme="red"
+                            onClick={() => onDelete(getId(item))}
+                          >
+                            <LuTrash2 />
+                          </IconButton>
+                        )}
                         {additionalActions && additionalActions(item)}
                       </ButtonGroup>
                     </Table.Cell>
@@ -322,7 +341,7 @@ export const GenericTable = <T,>({
         </ButtonGroup>
       </Pagination.Root>
 
-      <ActionBar.Root open={hasSelection}>
+      <ActionBar.Root open={hasSelection && showBulkDelete}>
         <Portal>
           <ActionBar.Positioner>
             <ActionBar.Content>
@@ -330,14 +349,16 @@ export const GenericTable = <T,>({
                 {selection.length} {t('common.selected')}
               </ActionBar.SelectionTrigger>
               <ActionBar.Separator />
-              <Button
-                variant="outline"
-                size="sm"
-                colorScheme="red"
-                onClick={() => onBulkDelete(selection)}
-              >
-                <LuTrash2 /> {t('common.delete')} <Kbd ml="2">⌫</Kbd>
-              </Button>
+              {onBulkDelete && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  colorScheme="red"
+                  onClick={() => onBulkDelete(selection)}
+                >
+                  <LuTrash2 /> {t('common.delete')} <Kbd ml="2">⌫</Kbd>
+                </Button>
+              )}
             </ActionBar.Content>
           </ActionBar.Positioner>
         </Portal>

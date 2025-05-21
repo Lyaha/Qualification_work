@@ -1,5 +1,5 @@
 import { deleteRequest, getRequest, postRequest, putRequest } from './request';
-import { BatchLocation } from './entity/batchLoacation';
+import { BatchLocation } from './entity/batchLocation';
 
 export const getByBatchId = async (batchId: string): Promise<BatchLocation[]> => {
   return await getRequest(`/batch-locations/batch/${batchId}`);

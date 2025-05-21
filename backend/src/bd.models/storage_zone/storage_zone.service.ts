@@ -16,7 +16,7 @@ export class StorageZoneService {
   }
 
   findAll(): Promise<StorageZone[]> {
-    return this.storageZonesRepository.find();
+    return this.storageZonesRepository.find({ relations: ['warehouse'] });
   }
 
   async findOne(id: string): Promise<StorageZone> {
@@ -36,5 +36,12 @@ export class StorageZoneService {
   async remove(id: string): Promise<void> {
     const storageZone = await this.findOne(id);
     await this.storageZonesRepository.remove(storageZone);
+  }
+
+  async findByWarehouseId(warehouseId: string): Promise<StorageZone[]> {
+    return this.storageZonesRepository.find({
+      where: { warehouse: { id: warehouseId } },
+      relations: ['warehouse'],
+    });
   }
 }

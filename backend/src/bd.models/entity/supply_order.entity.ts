@@ -25,6 +25,9 @@ export class SupplyOrder {
   })
   status!: SupplyOrderStatus;
 
+  @Column('uuid')
+  warehouse_id!: string;
+
   @Column({ type: 'date' })
   expected_delivery_date!: Date;
 

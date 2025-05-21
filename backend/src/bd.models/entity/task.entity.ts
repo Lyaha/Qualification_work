@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 't
 import { User } from './user.entity';
 import { OrderItem } from './order_item.entity';
 import { SupplyOrderItem } from './supply_order_item.entity';
+import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
 
 export enum TaskStatus {
   PENDING = 'pending',
@@ -52,4 +53,17 @@ export class Task {
 
   @Column({ type: 'text', nullable: true })
   note!: string;
+}
+
+export class CompleteTaskDto {
+  @IsUUID()
+  batchId!: string;
+
+  @IsInt()
+  @Min(1)
+  quantity!: number;
+
+  @IsOptional()
+  @IsUUID()
+  workerId?: string;
 }

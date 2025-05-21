@@ -38,7 +38,26 @@
       "order": "Замовлення: завдання пов'язане з замовленням клієнта",
       "supply": "Поставка: завдання пов'язане з поставкою товару",
       "urgent": "Терміново: завдання потребує негайної уваги"
-    }
+    },
+    "worker": "Працівник",
+    "typeFieldName": "Тип",
+    "order": "Замовлення",
+    "supply": "Поставка",
+    "associatedItem": "Пов'язаний елемент",
+    "statuses": {
+      "pending": "В очікуванні",
+      "in_progress": "В процесі",
+      "completed": "Завершено"
+    },
+    "taskType": "Тип завдання",
+    "statusField": "Статус",
+    "orderItem": "Елемент замовлення",
+    "supplyItem": "Елемент поставки",
+    "note": "Примітка",
+    "title": "Завдання",
+    "edit": "Редагувати завдання",
+    "create": "Створити завдання",
+    "task": "Завдання"
   },
   "forbidden": {
     "title": "Доступ заборонено",
@@ -69,7 +88,11 @@
     "noData": "Дані відсутні",
     "create": "Додати",
     "unknown": "Невідомо",
-    "notSpecified": "Не вказано"
+    "notSpecified": "Не вказано",
+    "active": "Активний",
+    "inactive": "Неактивний",
+    "yes": "Так",
+    "no": "Ні"
   },
   "errors": {
     "userNotFound": "Користувача не знайдено",
@@ -84,7 +107,18 @@
     "categoryRequired": "Категорія обов'язкова",
     "requiredField": "Це поле обов'язкове",
     "invalidLocationCombination": "Неправильне поєднання локацій",
-    "warehouseRequired": "Поле складу обов'язкове"
+    "warehouseRequired": "Поле складу обов'язкове",
+    "managerRequired": "Потрібно вибрати менеджера",
+    "invalidEmail": "Невірний формат email",
+    "invalidPhone": "Невірний формат телефону",
+    "futureDate": "Дата має бути у майбутньому",
+    "maxPercentage": "Максимальне значення - 100%",
+    "invalidEndDate": "Дата завершення некоректна",
+    "userRequired": "Користувач обов'язковий",
+    "productRequired": "Продукт обов'язковий",
+    "movmentTypeRequired": "Тип операції обов'язковий",
+    "toZoneIdRequired": "Зона призначення обов'язкова",
+    "fromZoneIdRequired": "Зона відправлення обов'язкова"
   },
   "menu": {
     "name": "Меню",
@@ -134,7 +168,18 @@
     "details": "Деталі місця зберігання"
   },
   "boxes": {
-    "createPlaceholder": "Введіть назву нової коробки"
+    "createPlaceholder": "Введіть назву нової коробки",
+    "id": "ID",
+    "name": "Назва",
+    "dimensions": "Габарити",
+    "maxWeight": "Макс. вага",
+    "description": "Опис",
+    "length": "Довжина",
+    "width": "Ширина",
+    "height": "Висота",
+    "title": "Коробки",
+    "edit": "Редагувати коробку",
+    "create": "Створити коробку"
   },
   "batches": {
     "batchNumber": "Номер партії",
@@ -152,6 +197,242 @@
     "warehouseLocation": "Локація складу"
   },
   "warehouses": {
-    "createPlaceholder": "Введіть назву складу"
+    "createPlaceholder": "Введіть назву складу",
+    "name": "Назва",
+    "location": "Локація",
+    "status": "Статус",
+    "active": "Активний",
+    "inactive": "Неактивний",
+    "manager": "Менеджер",
+    "workingHours": "Години роботи",
+    "namePlaceholder": "Введіть назву складу",
+    "locationPlaceholder": "Введіть локацію складу",
+    "workingHoursPlaceholder": "Введіть години роботи",
+    "title": "Склади",
+    "edit": "Редагувати склад",
+    "create": "Створити склад",
+    "manger": "Менеджер",
+    "storageZone": "Зони зберігання"
+  },
+  "storageZones": {
+    "locationCode": "Код розташування",
+    "warehouse": "Склад",
+    "maxWeight": "Максимальна вага (кг)",
+    "maxWeightPlaceholder": "Введіть максимальну вагу",
+    "title": "Зони зберігання",
+    "edit": "Редагувати зону зберігання",
+    "create": "Створити зону зберігання"
+  },
+  "reports": {
+    "allWarehouses": "Усі склади",
+    "title": "Звіти",
+    "selectWarehouse": "Оберіть склад",
+    "totalSales": "Загальний обсяг продажів",
+    "avgOrder": "Середнє значення замовлення",
+    "ordersCount": "Кількість замовлень",
+    "salesTrend": "Динаміка продажів",
+    "inventoryLevels": "Рівні запасів",
+    "taskCompletion": "Виконання завдань",
+    "startDate": "Дата початку",
+    "endDate": "Дата завершення"
+  },
+  "users": {
+    "name": "Ім'я",
+    "email": "Email",
+    "role": "Роль",
+    "roles": {
+      "client": "Клієнт",
+      "warehouse_worker": "Складський працівник",
+      "manager": "Менеджер",
+      "admin": "Адміністратор",
+      "director": "Директор"
+    },
+    "status": "Статус",
+    "lastLogin": "Останній вхід",
+    "firstName": "Ім'я",
+    "lastName": "Прізвище",
+    "phone": "Телефон",
+    "active": "Активний",
+    "title": "Користувачі",
+    "edit": "Редагувати користувача",
+    "create": "Створити користувача"
+  },
+  "supplyOrders": {
+    "supplier": "Постачальник",
+    "status": "Статус",
+    "statuses": {
+      "draft": "Чернетка",
+      "confirmed": "Підтверджено",
+      "delivered": "Доставлено",
+      "completed": "Завершено"
+    },
+    "expectedDelivery": "Очікувана доставка",
+    "createdAt": "Створено",
+    "title": "Замовлення поставок",
+    "edit": "Редагувати замовлення",
+    "create": "Створити замовлення",
+    "order": "Замовлення"
+  },
+  "supplyOrderItems": {
+    "supplyOrder": "Замовлення поставки",
+    "product": "Продукт",
+    "quantity": "Кількість",
+    "unitPrice": "Ціна за одиницю",
+    "total": "Всього",
+    "forSupplyOrder": "Для замовлення поставки",
+    "titleForOrder": "Елементи замовлення",
+    "title": "Елементи поставок",
+    "edit": "Редагувати елемент",
+    "create": "Створити елемент",
+    "item": "Елемент"
+  },
+  "suppliers": {
+    "name": "Назва",
+    "contactPerson": "Контактна особа",
+    "phone": "Телефон",
+    "email": "Email",
+    "title": "Постачальники",
+    "edit": "Редагувати постачальника",
+    "create": "Створити постачальника",
+    "newSupplier": "Новий постачальник"
+  },
+  "reviews": {
+    "user": "Користувач",
+    "rating": "Рейтинг",
+    "target": "Об'єкт",
+    "product": "Продукт",
+    "order": "Замовлення",
+    "createdAt": "Створено",
+    "reviewType": "Тип відгуку",
+    "comment": "Коментар",
+    "title": "Відгуки",
+    "edit": "Редагувати відгук",
+    "create": "Створити відгук",
+    "review": "Відгук"
+  },
+  "priceHistory": {
+    "product": "Продукт",
+    "oldPrice": "Стара ціна",
+    "newPrice": "Нова ціна",
+    "changedBy": "Змінено",
+    "changedAt": "Дата зміни",
+    "forProduct": "Для продукту",
+    "titleForProduct": "Історія цін продукту",
+    "title": "Історія цін",
+    "detailsTitle": "Деталі зміни ціни"
+  },
+  "parkingSpots": {
+    "id": "ID",
+    "warehouse": "Склад",
+    "status": "Статус",
+    "reservedUntil": "Заброньовано до",
+    "entityType": "Тип об'єкта",
+    "types": {
+      "available": "Вільний",
+      "reserved": "Заброньований",
+      "occupied": "Зайнятий"
+    },
+    "referenceId": "Референсний ID",
+    "title": "Паркомісця",
+    "edit": "Редагувати паркомісце",
+    "create": "Створити паркомісце",
+    "statuses": {
+      "FREE": "Вільний",
+      "RESERVED": "Заброньований",
+      "OCCUPIED": "Зайнятий"
+    }
+  },
+  "orders": {
+    "client": "Клієнт",
+    "totalAmount": "Загальна сума",
+    "status": "Статус",
+    "statuses": {
+      "pending": "В обробці",
+      "confirmed": "Підтверджено",
+      "shipped": "Відправлено",
+      "completed": "Завершено",
+      "cancelled": "Скасовано"
+    },
+    "paymentMethod": "Спосіб оплати",
+    "paymentMethods": {
+      "credit_card": "Кредитна карта",
+      "cash": "Готівка",
+      "bank_transfer": "Банківський переказ"
+    },
+    "warehouse": "Склад",
+    "createdAt": "Створено",
+    "title": "Замовлення",
+    "edit": "Редагувати замовлення",
+    "create": "Створити замовлення"
+  },
+  "orderItems": {
+    "order": "Замовлення",
+    "product": "Продукт",
+    "quantity": "Кількість",
+    "unitPrice": "Ціна за одиницю",
+    "total": "Всього",
+    "forOrder": "Для замовлення",
+    "titleForOrder": "Елементи замовлення",
+    "title": "Елементи замовлень",
+    "edit": "Редагувати елемент",
+    "create": "Створити елемент",
+    "item": "Елемент"
+  },
+  "movements": {
+    "id": "ID",
+    "product": "Продукт",
+    "type": "Тип",
+    "quantity": "Кількість",
+    "user": "Користувач",
+    "fromZone": "Звідки",
+    "toZone": "Куди",
+    "date": "Дата",
+    "responsible": "Відповідальний",
+    "types": {
+      "incoming": "Надходження",
+      "outgoing": "Відвантаження",
+      "transfer": "Переміщення"
+    },
+    "note": "Примітка",
+    "title": "Переміщення",
+    "edit": "Редагувати переміщення",
+    "create": "Створити переміщення"
+  },
+  "discounts": {
+    "id": "ID",
+    "name": "Назва",
+    "type": "Тип",
+    "types": {
+      "PERCENTAGE": "Процентна",
+      "FIXED": "Фіксована"
+    },
+    "value": "Значення",
+    "period": "Період",
+    "status": "Статус",
+    "startDate": "Дата початку",
+    "endDate": "Дата завершення",
+    "target": "Ціль",
+    "product": "Продукт",
+    "category": "Категорія",
+    "minQuantity": "Мін. кількість",
+    "stackable": "Комбінована",
+    "active": "Активна",
+    "title": "Знижки",
+    "edit": "Редагувати знижку",
+    "create": "Створити знижку"
+  },
+  "categories": {
+    "id": "ID",
+    "name": "Назва",
+    "parent": "Батьківська",
+    "parentCategory": "Батьківська категорія",
+    "title": "Категорії",
+    "edit": "Редагувати категорію",
+    "create": "Створити категорію"
+  },
+  "units": {
+    "m": "м",
+    "kg": "кг",
+    "currency": "₴"
   }
 }

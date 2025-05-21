@@ -37,4 +37,11 @@ export class StorageZoneController {
   remove(@Param('id') id: string): Promise<void> {
     return this.storageZoneService.remove(id);
   }
+
+  @Get('/by-warehouse/:warehouseId')
+  async getStorageZonesByWarehouse(
+    @Param('warehouseId') warehouseId: string,
+  ): Promise<StorageZone[]> {
+    return this.storageZoneService.findByWarehouseId(warehouseId);
+  }
 }

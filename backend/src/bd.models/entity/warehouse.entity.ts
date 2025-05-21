@@ -18,4 +18,13 @@ export class Warehouse {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'manager_id' })
   manager!: User;
+
+  @Column('uuid')
+  manager_id!: string;
+
+  @Column('uuid')
+  warehouse_id!: string;
+
+  @Column()
+  is_active!: boolean;
 }
