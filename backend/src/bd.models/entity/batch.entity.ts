@@ -33,6 +33,9 @@ export class Batch {
   @Column({ type: 'int' })
   quantity!: number;
 
+  @Column({ type: 'int', default: 0 })
+  current_quantity!: number;
+
   @Column({ type: 'date', nullable: true })
   expiration_date!: Date;
 

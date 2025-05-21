@@ -80,12 +80,11 @@ const BatchesPage = () => {
             })),
             required: true,
             onCreateNew: async (name: any) => {
-              const cat = products[products.length - 1]?.category_entity;
+              const cat = products[products.length - 1]?.category_id;
               const data = {
                 name: name.name,
                 description: 'Fast create',
                 category_id: cat,
-                category: cat.name,
                 price_purchase: 100,
                 price: 99,
                 weight: 1,

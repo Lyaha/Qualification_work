@@ -1,46 +1,165 @@
-import { Box, Heading, Grid, Text } from '@chakra-ui/react';
+import { Box, Heading, Grid, Text, Button, useDisclosure, Collapsible } from '@chakra-ui/react';
 import Layout from '../components/Layout';
-import TaskCard from '../components/TaskCard';
-import TaskLegend from '../components/TaskLegend';
+import TaskCard, { ItemTaskCard } from '../components/TaskCard';
+import TaskDialog from '../components/TaskDialog';
+import ManagerTaskView from '../components/ManagerTaskView';
 import { useCallback, useEffect, useState } from 'react';
-import { Task } from '../api';
+import {
+  Task,
+  Batch,
+  User,
+  completeTask,
+  getBatchesForTask,
+  getProduct,
+  getOrderItem,
+  getSupplyOrderItem,
+  getSupplyOrder,
+  getSupplier,
+} from '../api';
 import useMyTasks from '../hooks/useTaskUser';
-import useVisibilityPolling from '../hooks/useVisibilityPolling';
 import { useToast } from '../components/ui/toaster';
 import { useTranslation } from 'react-i18next';
+import { useAllTasks } from '../hooks/useAllTasks';
+import { useWarehouseWorkers } from '../hooks/useWarehouseWorkers';
+import { useUser } from '../context/UserContext';
+
+const transformTaskToItem = async (task: Task): Promise<ItemTaskCard> => {
+  // Запросы к API для получения дополнительных данных
+  if (!task.order_item_id && !task.supply_order_item_id) {
+    throw new Error(`Selected Task not have order item and supply item`);
+  }
+  let response1;
+  if (task.order_item_id) {
+    response1 = await getOrderItem(task.order_item_id);
+  } else if (task.supply_order_item_id) {
+    response1 = await getSupplyOrderItem(task.supply_order_item_id);
+  }
+  if (!response1) {
+    throw new Error(`Selected Task not have order item and supply item`);
+  }
+  const productData = await getProduct(response1.product_id);
+  if (!task.order_item_id && !task.supply_order_item_id) {
+    throw new Error(`Selected Task not have order item and supply item`);
+  }
+  let response2;
+  let response3;
+  if (task.supply_order_item_id) {
+    response2 = await getSupplyOrderItem(task.supply_order_item_id);
+  }
+  if (response2) {
+    response3 = await getSupplyOrder(response2.supply_order_id);
+  }
+  const clientSupplierData = response3 ? await getSupplier(response3.supplier_id) : undefined;
+
+  return {
+    ...task,
+    deadline: new Date(task.deadline),
+    type: task.order_item_id ? 'order' : 'supply',
+    product: productData.name,
+    ...clientSupplierData,
+  };
+};
 
 const StartPage = () => {
-  const [tasks, setTasks] = useState<Task[] | null>(null);
-  const { handleSearch, error, loading } = useMyTasks();
+  const { user } = useUser();
+  const [loadingPage, setLoading] = useState<boolean>(false);
+  const [selectedTask, setSelectedTask] = useState<ItemTaskCard | null>(null);
+  const [batches, setBatches] = useState<Batch[]>([]);
+  const { open, onOpen, onClose } = useDisclosure();
+  const [showArchive, setShowArchive] = useState(false);
   const [toastVisibly, setToastVisibly] = useState(false);
   const toaster = useToast();
   const { t } = useTranslation();
 
-  const fetchTaskData = useCallback(async () => {
-    const result = await handleSearch();
-    if (result) {
-      setTasks(result);
-    }
-  }, [handleSearch]);
+  // Состояния для преобразованных задач
+  const [myTasks, setMyTasks] = useState<ItemTaskCard[]>([]);
+  const [allTasks, setAllTasks] = useState<ItemTaskCard[]>([]);
+
+  // Получение и преобразование данных
+  const { tasks: rawMyTasks, error, loading, handleSearch } = useMyTasks();
+  const { tasks: rawAllTasks, refresh: fetchAllTasks } = useAllTasks();
+  const { workers, refresh: fetchWorkers } = useWarehouseWorkers();
 
   useEffect(() => {
-    if (error && !toastVisibly) {
-      setToastVisibly(true);
-      toaster.showToast({
-        title: t('common.error'),
-        description: error,
-        type: 'error',
-        duration: 5000,
-      });
-    }
-    if (!error) {
-      setToastVisibly(false);
-    }
-  }, [error, toaster, toastVisibly, t]);
+    const transformTasks = async () => {
+      if (rawMyTasks) {
+        const transformed = await Promise.all(rawMyTasks.map(transformTaskToItem));
+        setMyTasks(transformed);
+      }
+    };
+    transformTasks();
+    fetchWorkers();
+  }, [rawMyTasks]);
 
-  useVisibilityPolling(fetchTaskData, 5000);
+  useEffect(() => {
+    const transformTasks = async () => {
+      if (rawAllTasks) {
+        const transformed = await Promise.all(rawAllTasks.map(transformTaskToItem));
+        setAllTasks(transformed);
+      }
+    };
+    transformTasks();
+    fetchWorkers();
+  }, [rawAllTasks]);
 
-  if (loading && !tasks) {
+  // Фильтрация задач
+  const activeTasks = myTasks.filter((t) => t.status !== 'completed');
+  const archivedTasks = myTasks.filter((t) => t.status === 'completed');
+  const unassignedTasks = allTasks.filter((t) => !t.worker_id);
+  const inProgressTasks = allTasks.filter((t) => t.status === 'in_progress');
+  const adminArchivedTasks = allTasks.filter((t) => t.status === 'completed');
+
+  // Обработчик клика по задаче
+  const handleTaskClick = async (task: ItemTaskCard) => {
+    console.log('Ok');
+    setSelectedTask(task);
+    console.log(task);
+    fetchBatchesForTask(task);
+    onOpen();
+  };
+
+  const fetchBatchesForTask = useCallback(
+    async (taskProp: ItemTaskCard) => {
+      try {
+        setLoading(true);
+        if (!taskProp) {
+          console.log(`Selected Task its null`);
+          throw new Error(`Selected Task its null`);
+        }
+        const task = rawAllTasks.find((t) => t.id === taskProp.id);
+        if (!task) {
+          console.log(`Selected Task its null 2`);
+          throw new Error(`Selected Task its null`);
+        }
+        const response = await getBatchesForTask(task.id);
+        setBatches(response);
+      } catch (error) {
+        toaster.showToast({ title: t('errors.loadingFailed'), type: 'error' });
+      } finally {
+        setLoading(false);
+      }
+    },
+    [t, toaster, rawAllTasks],
+  );
+
+  const handleCompleteTask = async (data: {
+    batchId: string;
+    quantity: number;
+    workerId?: string;
+  }) => {
+    try {
+      await completeTask(selectedTask!.id, data);
+      onClose();
+      user?.role === 'warehouse_worker' ? handleSearch() : fetchAllTasks();
+    } catch (error) {
+      if (error && !toastVisibly) {
+        setToastVisibly(true);
+        ({ title: t('errors.loadingFailed'), type: 'error' });
+      }
+    }
+  };
+
+  if (loading || loadingPage) {
     return (
       <Layout>
         <Text>{t('common.loading')}</Text>
@@ -51,25 +170,47 @@ const StartPage = () => {
   return (
     <Layout>
       <Box p={4}>
-        <Heading mb={6}>{t('tasks.currentTasks')}</Heading>
-        <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }} gap={4}>
-          {tasks?.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={{
-                id: task.id,
-                type: task.order_item_id ? 'order' : 'supply',
-                product: t('tasks.unknownProduct'),
-                quantity: task.quantity,
-                deadline: new Date(task.deadline),
-                status: task.status,
-                note: task.note,
-              }}
-            />
-          ))}
-        </Grid>
+        {user?.role === 'warehouse_worker' ? (
+          <>
+            <Heading mb={6}>{t('tasks.currentTasks')}</Heading>
+            <Grid>
+              {activeTasks.map((task) => (
+                <TaskCard key={task.id} task={task} onClick={() => handleTaskClick(task)} />
+              ))}
+            </Grid>
+
+            <Button mt={4} onClick={() => setShowArchive(!showArchive)}>
+              {t(showArchive ? 'tasks.hideArchive' : 'tasks.showArchive')}
+            </Button>
+
+            <Collapsible.Root open={showArchive}>
+              <Grid mt={4} gap={6}>
+                {archivedTasks.map((task) => (
+                  <TaskCard key={task.id} task={task} />
+                ))}
+              </Grid>
+            </Collapsible.Root>
+          </>
+        ) : (
+          <ManagerTaskView
+            unassignedTasks={unassignedTasks}
+            inProgressTasks={inProgressTasks}
+            archivedTasks={adminArchivedTasks}
+            workers={workers}
+            onTaskClick={handleTaskClick}
+          />
+        )}
       </Box>
-      <TaskLegend />
+
+      <TaskDialog
+        isOpen={open}
+        onClose={onClose}
+        task={selectedTask}
+        batches={batches}
+        workers={workers}
+        onSubmit={handleCompleteTask}
+        userRole={user?.role}
+      />
     </Layout>
   );
 };

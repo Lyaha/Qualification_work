@@ -4,8 +4,8 @@ export type Product = {
   id: string;
   name: string;
   description?: string;
-  category: string;
-  category_entity: Category;
+  category_id: string;
+  category_entity?: Category;
   barcode?: string;
   price_purchase: number;
   price: number;
@@ -16,8 +16,8 @@ export type Product = {
 export type CustomEditAddProduct = {
   name: string;
   description?: string;
-  category_id: Category;
-  category?: string;
+  category_id: string;
+  category?: Category;
   barcode?: string;
   price_purchase: number;
   price: number;

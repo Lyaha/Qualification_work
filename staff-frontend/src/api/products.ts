@@ -15,7 +15,10 @@ export const createProduct = async (
   return postRequest<Product>('/products', product);
 };
 
-export const updateProduct = async (id: string, product: Partial<Product>): Promise<Product> => {
+export const updateProduct = async (
+  id: string,
+  product: Partial<CustomEditAddProduct>,
+): Promise<Product> => {
   return putRequest<Product>(`/products/${id}`, product);
 };
 

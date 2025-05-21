@@ -37,7 +37,10 @@ const ProductPage = () => {
 
   const columns: ColumnConfig<Product>[] = [
     { header: t('products.name'), accessor: 'name' },
-    { header: t('products.category'), accessor: 'category' },
+    {
+      header: t('products.category'),
+      accessor: (item) => categories.find((c) => c.id === item.category_id)?.name,
+    },
     { header: t('products.purchasePrice'), accessor: 'price_purchase' },
     { header: t('products.price'), accessor: 'price' },
   ];
@@ -89,7 +92,7 @@ const ProductPage = () => {
       placeholder: t('products.weightPlaceholder'),
     },
     {
-      name: 'category_entity',
+      name: 'category_id',
       label: t('products.category'),
       type: 'select',
       options: categories.map((c) => ({
@@ -140,8 +143,8 @@ const ProductPage = () => {
         price_purchase: data.price_purchase,
         price: data.price,
         weight: data.weight,
-        category_id: selectedCategory,
-        category: selectedCategory.name,
+        category_id: selectedCategory.id,
+        category: selectedCategory,
       };
       if (selectedProduct) {
         await updateProduct(selectedProduct.id, productData);
@@ -271,7 +274,9 @@ const ProductPage = () => {
 
           <Box>
             <Text fontWeight="semibold">{t('products.category')}:</Text>
-            <Text>{selectedProduct?.category || '-'}</Text>
+            <Text>
+              {categories.find((c) => c.id === selectedProduct?.category_id)?.name || '-'}
+            </Text>
           </Box>
 
           <Box>

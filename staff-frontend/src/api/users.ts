@@ -32,3 +32,9 @@ export const updateUser = async (id: string, user: Partial<User>): Promise<User>
 export const deleteUser = async (id: string): Promise<void> => {
   return deleteRequest(`/users/${id}`);
 };
+
+export const getWarehouseWorkers = async (warehouseId?: string): Promise<User[]> => {
+  const url = warehouseId ? `/users/workers?warehouse_id=${warehouseId}` : '/users/workers';
+
+  return getRequest<User[]>(url);
+};

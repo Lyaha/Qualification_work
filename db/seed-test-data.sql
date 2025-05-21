@@ -5,15 +5,27 @@ VALUES
 (gen_random_uuid(), 'testname2', 'testlastname2', 'auth0|user2worker',  'worker1@test.com',  'warehouse_worker','+3802222222', TRUE, now(), now()),
 (gen_random_uuid(), 'testname3', 'testlastname3', 'auth0|user3manager', 'manager1@test.com', 'manager',         '+3803333333', TRUE, now(), now()),
 (gen_random_uuid(), 'testname4', 'testlastname4', 'auth0|user4admin',   'admin1@test.com',   'admin',           '+3804444444', TRUE, now(), now()),
-(gen_random_uuid(), 'testname5', 'testlastname5', 'auth0|user5director','director1@test.com','director',        '+3805555555', TRUE, now(), now());
+(gen_random_uuid(), 'testname5', 'testlastname5', 'auth0|user5manager', 'manager2@test.com', 'manager',         '+3805555555', TRUE, now(), now()),
+(gen_random_uuid(), 'testname6', 'testlastname6', 'auth0|user6manager', 'manager3@test.com', 'manager',         '+3806666666', TRUE, now(), now()),
+(gen_random_uuid(), 'testname7', 'testlastname7', 'auth0|user7manager', 'manager4@test.com', 'manager',         '+3807777777', TRUE, now(), now()),
+(gen_random_uuid(), 'testname8', 'testlastname8', 'auth0|user8manager', 'manager5@test.com', 'manager',         '+3808888888', TRUE, now(), now()),
+(gen_random_uuid(), 'testname9', 'testlastname9', 'auth0|user9director','director1@test.com','director',        '+3809999999', TRUE, now(), now());
 -- Заповнення warehouses
-INSERT INTO warehouses (name, location, working_hours) 
+INSERT INTO warehouses (name, location, working_hours, manager_id) 
 VALUES 
-('Склад А', 'Київ, вул. Центральна 1', '08:00-20:00'),
-('Склад Б', 'Львів, вул. Головна 5', '09:00-18:00'),
-('Склад В', 'Одеса, вул. Морська 12', '10:00-22:00'),
-('Склад Г', 'Харків, вул. Промислова 7', '00:00-23:59'),
-('Склад Д', 'Дніпро, вул. Заводська 3', '07:00-19:00');
+('Склад А', 'Київ, вул. Центральна 1', '08:00-20:00', (SELECT id FROM users WHERE first_name = 'testname3')),
+('Склад Б', 'Львів, вул. Головна 5', '09:00-18:00', (SELECT id FROM users WHERE first_name = 'testname5')),
+('Склад В', 'Одеса, вул. Морська 12', '10:00-22:00', (SELECT id FROM users WHERE first_name = 'testname6')),
+('Склад Г', 'Харків, вул. Промислова 7', '00:00-23:59', (SELECT id FROM users WHERE first_name = 'testname7')),
+('Склад Д', 'Дніпро, вул. Заводська 3', '07:00-19:00', (SELECT id FROM users WHERE first_name = 'testname8'));
+
+INSERT INTO user_warehouses (id, user_id, warehouse_id, assigned_at)
+VALUES 
+  (gen_random_uuid(), (SELECT id FROM users WHERE first_name = 'testname2'), (SELECT id FROM warehouses WHERE name = 'Склад А'), now()),
+  (gen_random_uuid(), (SELECT id FROM users WHERE first_name = 'testname2'), (SELECT id FROM warehouses WHERE name = 'Склад Б'), now()),
+  (gen_random_uuid(), (SELECT id FROM users WHERE first_name = 'testname2'), (SELECT id FROM warehouses WHERE name = 'Склад В'), now()),
+  (gen_random_uuid(), (SELECT id FROM users WHERE first_name = 'testname2'), (SELECT id FROM warehouses WHERE name = 'Склад Г'), now()),
+  (gen_random_uuid(), (SELECT id FROM users WHERE first_name = 'testname2'), (SELECT id FROM warehouses WHERE name = 'Склад Д'), now());
 
 -- Заповнення categories
 INSERT INTO categories (name, parent_id) 
@@ -25,13 +37,13 @@ VALUES
 ('Холодильники', (SELECT id FROM categories WHERE name = 'Побутова техніка'));
 
 -- Заповнення products
-INSERT INTO products (name, description, category_id, barcode, price_purchase, price, weight, category) 
+INSERT INTO products (name, description, category_id, barcode, price_purchase, price, weight) 
 VALUES 
-('Ноутбук HP', '15.6", Core i5', (SELECT id FROM categories WHERE name = 'Ноутбуки'), '111111', 20000.00, 25000.00, 2.1, 'Ноутбуки'),
-('iPhone 14', '128GB, Space Gray', (SELECT id FROM categories WHERE name = 'Смартфони'), '222222', 30000.00, 35000.00, 0.2, 'Смартфони'),
-('Холодильник Samsung', '350L, No Frost', (SELECT id FROM categories WHERE name = 'Холодильники'), '333333', 15000.00, 20000.00, 50.0, 'Холодильники'),
-('Монитор Dell', '24", Full HD', (SELECT id FROM categories WHERE name = 'Електроніка'), '444444', 5000.00, 7000.00, 3.5, 'Електроніка'),
-('Пральна машина LG', '8кг, Inverter', (SELECT id FROM categories WHERE name = 'Побутова техніка'), '555555', 12000.00, 15000.00, 40.0, 'Побутова техніка');
+('Ноутбук HP', '15.6", Core i5', (SELECT id FROM categories WHERE name = 'Ноутбуки'), '111111', 20000.00, 25000.00, 2.1),
+('iPhone 14', '128GB, Space Gray', (SELECT id FROM categories WHERE name = 'Смартфони'), '222222', 30000.00, 35000.00, 0.2),
+('Холодильник Samsung', '350L, No Frost', (SELECT id FROM categories WHERE name = 'Холодильники'), '333333', 15000.00, 20000.00, 50.0),
+('Монитор Dell', '24", Full HD', (SELECT id FROM categories WHERE name = 'Електроніка'), '444444', 5000.00, 7000.00, 3.5),
+('Пральна машина LG', '8кг, Inverter', (SELECT id FROM categories WHERE name = 'Побутова техніка'), '555555', 12000.00, 15000.00, 40.0);
 
 -- Заповнення orders
 INSERT INTO orders (client_id, total_amount, status, payment_method, warehouse_id) 
@@ -79,13 +91,13 @@ VALUES
 ('SmartDevices Co', 'Анна Коваленко', '+3806056789', 'smart@devices.com');
 
 -- Заповнення supply_orders
-INSERT INTO supply_orders (supplier_id, status, expected_delivery_date) 
+INSERT INTO supply_orders (supplier_id, status, expected_delivery_date, warehouse_id) 
 VALUES 
-((SELECT id FROM suppliers LIMIT 1 OFFSET 0), 'delivered', '2024-01-15'),
-((SELECT id FROM suppliers LIMIT 1 OFFSET 1), 'confirmed', '2024-02-20'),
-((SELECT id FROM suppliers LIMIT 1 OFFSET 2), 'draft', '2024-03-25'),
-((SELECT id FROM suppliers LIMIT 1 OFFSET 3), 'confirmed', '2024-04-10'),
-((SELECT id FROM suppliers LIMIT 1 OFFSET 4), 'delivered', '2024-05-05');
+((SELECT id FROM suppliers LIMIT 1 OFFSET 0), 'delivered', '2024-01-15', (SELECT id FROM warehouses WHERE name = 'Склад А')),
+((SELECT id FROM suppliers LIMIT 1 OFFSET 1), 'confirmed', '2024-02-20', (SELECT id FROM warehouses WHERE name = 'Склад Б')),
+((SELECT id FROM suppliers LIMIT 1 OFFSET 2), 'draft', '2024-03-25', (SELECT id FROM warehouses WHERE name = 'Склад В')),
+((SELECT id FROM suppliers LIMIT 1 OFFSET 3), 'confirmed', '2024-04-10', (SELECT id FROM warehouses WHERE name = 'Склад Г')),
+((SELECT id FROM suppliers LIMIT 1 OFFSET 4), 'delivered', '2024-05-05', (SELECT id FROM warehouses WHERE name = 'Склад Д'));
 
 -- Заповнення parking_spots
 INSERT INTO parking_spots (warehouse_id, status, reserved_until) 
@@ -123,15 +135,6 @@ VALUES
 ((SELECT id FROM warehouses LIMIT 1 OFFSET 3), 'D-4', 2500.0),
 ((SELECT id FROM warehouses LIMIT 1 OFFSET 4), 'E-5', 3000.0);
 
--- Заповнення inventory_movements
-INSERT INTO inventory_movements (product_id, from_zone_id, to_zone_id, quantity, movement_type, user_id, note) 
-VALUES 
-((SELECT id FROM products LIMIT 1 OFFSET 0), NULL, (SELECT id FROM storage_zones LIMIT 1 OFFSET 0), 10, 'incoming', (SELECT id FROM users LIMIT 1 OFFSET 1), 'Первинне надходження'),
-((SELECT id FROM products LIMIT 1 OFFSET 1), (SELECT id FROM storage_zones LIMIT 1 OFFSET 0), (SELECT id FROM storage_zones LIMIT 1 OFFSET 1), 5, 'transfer', (SELECT id FROM users LIMIT 1 OFFSET 2), 'Переміщення між зонами'),
-((SELECT id FROM products LIMIT 1 OFFSET 2), NULL, (SELECT id FROM storage_zones LIMIT 1 OFFSET 2), 3, 'incoming', (SELECT id FROM users LIMIT 1 OFFSET 1), 'Нова партія'),
-((SELECT id FROM products LIMIT 1 OFFSET 3), (SELECT id FROM storage_zones LIMIT 1 OFFSET 2), NULL, 2, 'outgoing', (SELECT id FROM users LIMIT 1 OFFSET 3), 'Відвантаження клієнту'),
-((SELECT id FROM products LIMIT 1 OFFSET 4), (SELECT id FROM storage_zones LIMIT 1 OFFSET 3), (SELECT id FROM storage_zones LIMIT 1 OFFSET 4), 4, 'transfer', (SELECT id FROM users LIMIT 1 OFFSET 4), 'Оптимізація сховища');
-
 -- Заповнення batches
 INSERT INTO batches (product_id, warehouse_id, quantity, expiration_date, received_at) 
 VALUES 
@@ -140,33 +143,45 @@ VALUES
 ((SELECT id FROM products WHERE name = 'Холодильник Samsung'), (SELECT id FROM warehouses WHERE name = 'Склад В'), 30, NULL, now()),
 ((SELECT id FROM products WHERE name = 'Монитор Dell'), (SELECT id FROM warehouses WHERE name = 'Склад Г'), 20, '2027-01-01', now()),
 ((SELECT id FROM products WHERE name = 'Пральна машина LG'), (SELECT id FROM warehouses WHERE name = 'Склад Д'), 15, NULL, now());
+UPDATE batches SET current_quantity = quantity;
 
+-- Заповнення batch_locations
 INSERT INTO batch_locations (batch_id, storage_zone_id, box_id, quantity, created_at)
 VALUES
 ((SELECT id FROM batches WHERE product_id = (SELECT id FROM products WHERE name = 'Ноутбук HP') LIMIT 1),
  (SELECT id FROM storage_zones WHERE location_code = 'A-1'),
- (SELECT id FROM boxes WHERE name = 'Середня коробка'),
- 100, now());
+ (SELECT id FROM boxes WHERE name = 'Спецкоробка'),
+ 30, now());
+
 INSERT INTO batch_locations (batch_id, storage_zone_id, box_id, quantity, created_at)
 VALUES
 ((SELECT id FROM batches WHERE product_id = (SELECT id FROM products WHERE name = 'iPhone 14') LIMIT 1),
- (SELECT id FROM storage_zones WHERE location_code = 'B-2'),
- (SELECT id FROM boxes WHERE name = 'Мала коробка'),
- 50, now());
+ (SELECT id FROM storage_zones WHERE location_code = 'A-1'),
+ (SELECT id FROM boxes WHERE name = 'Середня коробка'),
+ 5, now());
+
 INSERT INTO batch_locations (batch_id, storage_zone_id, box_id, quantity, created_at)
 VALUES
 ((SELECT id FROM batches WHERE product_id = (SELECT id FROM products WHERE name = 'Холодильник Samsung') LIMIT 1),
- NULL, NULL, 30, now());
+ (SELECT id FROM storage_zones WHERE location_code = 'C-3'),
+ NULL, 
+ 30, 
+ now());
+
 INSERT INTO batch_locations (batch_id, storage_zone_id, box_id, quantity, created_at)
 VALUES
 ((SELECT id FROM batches WHERE product_id = (SELECT id FROM products WHERE name = 'Монитор Dell') LIMIT 1),
- (SELECT id FROM storage_zones WHERE location_code = 'D-4'),
+ (SELECT id FROM storage_zones WHERE location_code = 'C-3'),
  (SELECT id FROM boxes WHERE name = 'Коробка для техніки'),
- 20, now());
+ 14, now());
+
 INSERT INTO batch_locations (batch_id, storage_zone_id, box_id, quantity, created_at)
 VALUES
 ((SELECT id FROM batches WHERE product_id = (SELECT id FROM products WHERE name = 'Пральна машина LG') LIMIT 1),
- NULL, NULL, 15, now());
+ (SELECT id FROM storage_zones WHERE location_code = 'D-4'),
+ NULL, 
+ 15, 
+ now());
 
 -- Заповнення price_history
 INSERT INTO price_history (product_id, old_price, new_price, changed_by) 
@@ -185,11 +200,47 @@ VALUES
 ((SELECT id FROM supply_orders LIMIT 1 OFFSET 3), (SELECT id FROM products WHERE name = 'Монитор Dell'), 25, 5000.00),
 ((SELECT id FROM supply_orders LIMIT 1 OFFSET 4), (SELECT id FROM products WHERE name = 'Пральна машина LG'), 15, 12000.00);
 
+-- Заповнення inventory_movements
+INSERT INTO inventory_movements (product_id, from_zone_id, to_zone_id, quantity, movement_type, user_id, note) 
+VALUES 
+((SELECT id FROM products WHERE name = 'Ноутбук HP'), NULL, (SELECT id FROM storage_zones WHERE location_code = 'A-1'), 10, 'incoming', (SELECT id FROM users LIMIT 1 OFFSET 1), 'Первинне надходження'),
+((SELECT id FROM products WHERE name = 'iPhone 14'), NULL, (SELECT id FROM storage_zones WHERE location_code = 'A-1'), 5, 'incoming', (SELECT id FROM users LIMIT 1 OFFSET 1), 'Надходження iPhone'),
+((SELECT id FROM products WHERE name = 'Холодильник Samsung'), NULL, (SELECT id FROM storage_zones WHERE location_code = 'C-3'), 3, 'incoming', (SELECT id FROM users LIMIT 1 OFFSET 1), 'Нова партія'),
+((SELECT id FROM products WHERE name = 'Монитор Dell'), NULL, (SELECT id FROM storage_zones WHERE location_code = 'C-3'), 2, 'incoming', (SELECT id FROM users LIMIT 1 OFFSET 1), 'Надходження моніторів'),
+((SELECT id FROM products WHERE name = 'Пральна машина LG'), NULL, (SELECT id FROM storage_zones WHERE location_code = 'D-4'), 4, 'incoming', (SELECT id FROM users LIMIT 1 OFFSET 1), 'Надходження пральних машин');
+
+INSERT INTO inventory_movements (product_id, from_zone_id, to_zone_id, quantity, movement_type, user_id, note) 
+VALUES 
+((SELECT id FROM products WHERE name = 'iPhone 14'), (SELECT id FROM storage_zones WHERE location_code = 'A-1'), (SELECT id FROM storage_zones WHERE location_code = 'B-2'), 5, 'transfer', (SELECT id FROM users LIMIT 1 OFFSET 2), 'Переміщення між зонами'),
+((SELECT id FROM products WHERE name = 'Пральна машина LG'), (SELECT id FROM storage_zones WHERE location_code = 'D-4'), (SELECT id FROM storage_zones WHERE location_code = 'E-5'), 4, 'transfer', (SELECT id FROM users LIMIT 1 OFFSET 4), 'Оптимізація сховища');
+
 -- Заповнення tasks
 INSERT INTO tasks (worker_id, order_item_id, supply_order_item_id, quantity, deadline, status, note) 
 VALUES
-((SELECT id FROM users WHERE email = 'worker1@test.com'), (SELECT id FROM order_items LIMIT 1 OFFSET 0), NULL, 1, '2025-05-10 14:00:00', 'pending', 'Підготувати ноутбук до відправки'),
-((SELECT id FROM users WHERE email = 'worker1@test.com'), (SELECT id FROM order_items LIMIT 1 OFFSET 1), NULL, 2, '2024-02-25 16:30:00', 'in_progress', 'Комплектація замовлення смартфонів'),
-((SELECT id FROM users WHERE email = 'worker1@test.com'), NULL, (SELECT id FROM supply_order_items LIMIT 1 OFFSET 2), 10, '2024-03-30 09:15:00', 'completed', 'Прийняти партію холодильників'),
-((SELECT id FROM users WHERE email = 'worker1@test.com'), NULL, (SELECT id FROM supply_order_items LIMIT 1 OFFSET 3), 25, '2024-04-15 11:45:00', 'pending', 'Розвантаження моніторів'),
-((SELECT id FROM users WHERE email = 'worker1@test.com'), NULL, (SELECT id FROM supply_order_items LIMIT 1 OFFSET 4), 15, '2024-05-10 13:20:00', 'in_progress', 'Перевірка пральних машин при прийомці');
+(
+  (SELECT id FROM users WHERE email = 'worker1@test.com'), 
+  (SELECT id FROM order_items WHERE order_id IS NOT NULL LIMIT 1), 
+  NULL, 
+  1, 
+  '2025-05-10 14:00:00', 
+  'pending', 
+  'Підготувати ноутбук до відправки'
+),
+(
+  (SELECT id FROM users WHERE email = 'worker1@test.com'), 
+  (SELECT id FROM order_items WHERE order_id IS NOT NULL LIMIT 1 OFFSET 1), 
+  NULL, 
+  2, 
+  '2024-02-25 16:30:00', 
+  'in_progress', 
+  'Комплектація замовлення смартфонів'
+),
+(
+  (SELECT id FROM users WHERE email = 'worker1@test.com'), 
+  NULL, 
+  (SELECT id FROM supply_order_items WHERE supply_order_id IS NOT NULL LIMIT 1), 
+  10, 
+  '2024-03-30 09:15:00', 
+  'completed', 
+  'Прийняти партію холодильників'
+);

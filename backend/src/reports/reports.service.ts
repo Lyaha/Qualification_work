@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
-import { Batch, Order, OrderItem, Product, Task } from '../bd.models/entity';
+import { Batch, Category, Order, OrderItem, Product, Task } from '../bd.models/entity';
 import { groupByDate, sumTotal, groupByStatus, Sale } from './utils/groupers';
 
 @Injectable()
 export class ReportsService {
   constructor(
-    @InjectRepository(Order)
-    private readonly ordersRepository: Repository<Order>,
+    @InjectRepository(Category)
+    private readonly categoryRepositore: Repository<Category>,
 
     @InjectRepository(OrderItem)
     private readonly orderItemRepository: Repository<OrderItem>,
@@ -86,9 +86,10 @@ export class ReportsService {
       );
 
       const products = await this.productRepository.find();
+      const category = await this.categoryRepositore.find();
 
       return products.map((product) => ({
-        category: product.category,
+        category: category.find((c) => c.id === product.category_id),
         quantity: totalsMap.get(product.id) || 0,
       }));
     } catch (error) {

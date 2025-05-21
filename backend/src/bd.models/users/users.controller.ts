@@ -113,6 +113,12 @@ export class UsersController {
     return this.usersService.update(id, data);
   }
 
+  @Get('/workers')
+  @ApiOkResponse({ type: [User] })
+  async getWorkers(): Promise<User[]> {
+    return this.usersService.findByRole(UserRole.WORKER);
+  }
+
   @Get('/managers')
   @ApiOkResponse({ type: [User] })
   async getManagers(): Promise<User[]> {

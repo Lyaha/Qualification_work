@@ -31,6 +31,14 @@ CREATE TABLE warehouses (
     manager_id UUID REFERENCES users(id),
     is_active BOOLEAN DEFAULT TRUE
 );
+-- Таблиця прив’язки warehouse_worker до складів (many-to-many)
+CREATE TABLE user_warehouses (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    warehouse_id UUID NOT NULL REFERENCES warehouses(id) ON DELETE CASCADE,
+    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, warehouse_id)
+);
 
 -- Таблиця категорій✅
 CREATE TABLE categories (
@@ -60,7 +68,8 @@ CREATE TABLE orders (
     status order_status NOT NULL,
     payment_method VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    warehouse_id UUID NOT NULL REFERENCES warehouses(id)
+    warehouse_id UUID NOT NULL REFERENCES warehouses(id),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Деталі замовлень✅
@@ -118,7 +127,8 @@ CREATE TABLE supply_orders (
     supplier_id UUID NOT NULL REFERENCES suppliers(id),
     status supply_order_status NOT NULL,
     expected_delivery_date DATE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    warehouse_id UUID REFERENCES warehouses(id)
 );
 
 -- Деталі заявок на поставку✅
@@ -156,7 +166,8 @@ CREATE TABLE boxes (
     length DECIMAL(10,2) NOT NULL,
     width DECIMAL(10,2) NOT NULL,
     height DECIMAL(10,2) NOT NULL,
-    max_weight DECIMAL(10,2) NOT NULL
+    max_weight DECIMAL(10,2) NOT NULL,
+    current_weight DECIMAL(10,2) DEFAULT 0
 );
 
 -- Зони зберігання✅
@@ -246,6 +257,7 @@ CREATE TABLE tasks (
 --CREATE INDEX idx_batch_locations_batch_id ON batch_locations(batch_id);
 --CREATE INDEX idx_batch_locations_storage_zone_id ON batch_locations(storage_zone_id);
 --CREATE INDEX idx_batch_locations_box_id ON batch_locations(box_id);
+CREATE INDEX idx_batches_product_warehouse ON batches(product_id, warehouse_id);
 
 -- Тригер для автоматичного оновлення updated_at
 CREATE OR REPLACE FUNCTION update_modified_column()
@@ -261,25 +273,29 @@ RETURNS TRIGGER AS $$
 BEGIN
   IF (TG_OP = 'DELETE') THEN
     UPDATE orders 
-    SET total_amount = (
-      SELECT COALESCE(SUM(quantity * unit_price), 0)
-      FROM order_items 
-      WHERE order_id = OLD.order_id
-    )
+    SET 
+      total_amount = (
+        SELECT COALESCE(SUM(quantity * unit_price), 0)
+        FROM order_items 
+        WHERE order_id = OLD.order_id
+      ),
+      updated_at = NOW()
     WHERE id = OLD.order_id;
   ELSE
     UPDATE orders 
-    SET total_amount = (
-      SELECT COALESCE(SUM(quantity * unit_price), 0)
-      FROM order_items 
-      WHERE order_id = NEW.order_id
-    )
+    SET 
+      total_amount = (
+        SELECT COALESCE(SUM(quantity * unit_price), 0)
+        FROM order_items 
+        WHERE order_id = NEW.order_id
+      ),
+      updated_at = NOW()
     WHERE id = NEW.order_id;
   END IF;
   RETURN NULL;
 END;
-
 $$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION reserve_parking_spot_on_order()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -302,6 +318,18 @@ BEGIN
   END IF;
 
   RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION update_batches_on_outgoing(
+    product_id UUID,
+    quantity_to_remove INT
+) RETURNS VOID AS $$
+BEGIN
+    UPDATE batches b
+    SET current_quantity = current_quantity - quantity_to_remove
+    WHERE b.product_id = update_batches_on_outgoing.product_id
+    AND b.current_quantity >= quantity_to_remove;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -346,29 +374,19 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION validate_source_availability(
-    source_id UUID,
+    source_zone_id UUID,
     product_id UUID,
-    required_quantity INT,
-    is_zone BOOLEAN
+    required_quantity INT
 ) RETURNS VOID AS $$
 DECLARE
     available_quantity INT;
 BEGIN
-    IF is_zone THEN
-        SELECT COALESCE(SUM(bl.quantity), 0)
-        INTO available_quantity
-        FROM batch_locations bl
-        JOIN batches b ON bl.batch_id = b.id
-        WHERE bl.storage_zone_id = source_id
-        AND b.product_id = product_id;
-    ELSE
-        SELECT COALESCE(SUM(bl.quantity), 0)
-        INTO available_quantity
-        FROM batch_locations bl
-        JOIN batches b ON bl.batch_id = b.id
-        WHERE bl.box_id = source_id
-        AND b.product_id = product_id;
-    END IF;
+    SELECT COALESCE(SUM(bl.quantity), 0)
+    INTO available_quantity
+    FROM batch_locations bl
+    JOIN batches b ON bl.batch_id = b.id
+    WHERE bl.storage_zone_id = source_zone_id
+    AND b.product_id = validate_source_availability.product_id;
 
     IF available_quantity < required_quantity THEN
         RAISE EXCEPTION 'Not enough stock. Available: %, Requested: %', 
@@ -378,28 +396,30 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_storage_weight(
-    storage_id UUID, 
-    weight_diff DECIMAL(10,2),
-    is_zone BOOLEAN
+    storage_zone_id UUID,
+    box_id UUID,
+    weight_diff DECIMAL(10,2)
 ) RETURNS VOID AS $$
 BEGIN
-    IF is_zone THEN
-        UPDATE storage_zones
-        SET current_weight = current_weight + weight_diff
-        WHERE id = storage_id
-        AND current_weight + weight_diff <= max_weight;
-        
-        IF NOT FOUND THEN
-            RAISE EXCEPTION 'Storage zone % is over capacity', storage_id;
-        END IF;
-    ELSE
+    -- Всегда обновляем зону
+    UPDATE storage_zones
+    SET current_weight = current_weight + weight_diff
+    WHERE id = storage_zone_id
+    AND current_weight + weight_diff <= max_weight;
+    
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Storage zone % is over capacity', storage_zone_id;
+    END IF;
+
+    -- Если указана коробка, обновляем и ее
+    IF box_id IS NOT NULL THEN
         UPDATE boxes
         SET current_weight = current_weight + weight_diff
-        WHERE id = storage_id
+        WHERE id = box_id
         AND current_weight + weight_diff <= max_weight;
         
         IF NOT FOUND THEN
-            RAISE EXCEPTION 'Box % is over capacity', storage_id;
+            RAISE EXCEPTION 'Box % is over capacity', box_id;
         END IF;
     END IF;
 END;
@@ -410,32 +430,132 @@ CREATE OR REPLACE FUNCTION process_transfer(
     to_id UUID,
     product_id UUID,
     quantity INT,
-    product_weight DECIMAL(10,2)
-)
-RETURNS VOID AS $$
+    product_weight DECIMAL
+) RETURNS VOID AS $$
 DECLARE
-    from_type BOOLEAN;
-    to_type BOOLEAN;
+    from_box_id UUID;
+    to_box_id UUID;
 BEGIN
-    -- Определяем тип хранилища (зона или коробка)
-    SELECT EXISTS(SELECT 1 FROM storage_zones WHERE id = from_id) INTO from_type;
-    SELECT EXISTS(SELECT 1 FROM storage_zones WHERE id = to_id) INTO to_type;
+    -- Получаем ID коробок из batch_locations
+    SELECT box_id INTO from_box_id 
+    FROM batch_locations 
+    WHERE storage_zone_id = from_id 
+    LIMIT 1;
+
+    SELECT box_id INTO to_box_id 
+    FROM batch_locations 
+    WHERE storage_zone_id = to_id 
+    LIMIT 1;
 
     -- Проверяем наличие товара в источнике
-    PERFORM validate_source_availability(from_id, product_id, quantity, from_type);
+    PERFORM validate_source_availability(
+        from_id, 
+        product_id, 
+        quantity
+    );
 
     -- Обновляем вес
-    PERFORM update_storage_weight(from_id, - (quantity * product_weight), from_type);
-    PERFORM update_storage_weight(to_id, quantity * product_weight, to_type);
+    PERFORM update_storage_weight(
+        from_id, 
+        from_box_id, 
+        - (quantity * product_weight)
+    );
 
-    -- Обновляем партии
-    PERFORM update_batches_on_transfer(from_id, to_id, product_id, quantity, from_type, to_type);
+    PERFORM update_storage_weight(
+        to_id, 
+        to_box_id, 
+        quantity * product_weight
+    );
+
+    -- Обновляем расположение партий
+    UPDATE batch_locations
+    SET 
+        storage_zone_id = to_id,
+        box_id = to_box_id
+    WHERE storage_zone_id = from_id
+    AND batch_id IN (
+        SELECT id FROM batches 
+        WHERE batches.product_id = process_transfer.product_id
+    );
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION batch_location_weight()
+RETURNS TRIGGER AS $$
+DECLARE
+    product_weight DECIMAL(10,2);
+BEGIN
+    -- Получаем вес товара
+    SELECT weight INTO product_weight 
+    FROM products 
+    WHERE id = (SELECT product_id FROM batches WHERE id = COALESCE(NEW.batch_id, OLD.batch_id));
 
+    -- Обрабатываем разные операции
+    CASE TG_OP
+        WHEN 'INSERT' THEN
+            PERFORM update_storage_weight(
+                NEW.storage_zone_id,
+                NEW.box_id,
+                NEW.quantity * product_weight
+            );
+        
+        WHEN 'UPDATE' THEN
+            -- Удаляем старый вес
+            PERFORM update_storage_weight(
+                OLD.storage_zone_id,
+                OLD.box_id,
+                -OLD.quantity * product_weight
+            );
+            
+            -- Добавляем новый вес
+            PERFORM update_storage_weight(
+                NEW.storage_zone_id,
+                NEW.box_id,
+                NEW.quantity * product_weight
+            );
+        
+        WHEN 'DELETE' THEN
+            PERFORM update_storage_weight(
+                OLD.storage_zone_id,
+                OLD.box_id,
+                -OLD.quantity * product_weight
+            );
+    END CASE;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION check_warehouse_worker_role()
+RETURNS TRIGGER AS $$
+DECLARE
+  user_role user_role;
+BEGIN
+  SELECT role INTO user_role
+  FROM users
+  WHERE id = NEW.user_id;
+
+  IF user_role != 'warehouse_worker' THEN
+    RAISE EXCEPTION 'Only warehouse workers can be assigned to warehouses';
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
 -- Тригери для автоматизації
+CREATE TRIGGER check_warehouse_worker_before_insert
+BEFORE INSERT ON user_warehouses
+FOR EACH ROW EXECUTE FUNCTION check_warehouse_worker_role();
+
+CREATE TRIGGER check_warehouse_worker_before_update
+BEFORE UPDATE ON user_warehouses
+FOR EACH ROW EXECUTE FUNCTION check_warehouse_worker_role();
+
+CREATE TRIGGER batch_location_weight_trigger
+AFTER INSERT OR UPDATE OR DELETE ON batch_locations
+FOR EACH ROW EXECUTE FUNCTION batch_location_weight();
+
 CREATE TRIGGER order_total_update
 AFTER INSERT OR UPDATE OR DELETE ON order_items
 FOR EACH ROW EXECUTE FUNCTION update_order_total();

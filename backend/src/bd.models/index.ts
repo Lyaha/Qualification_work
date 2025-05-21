@@ -91,6 +91,11 @@ export * from './users/users.controller';
 export * from './users/users.module';
 export * from './users/users.service';
 
+//user-warehouse
+export * from './user_warehouse/user_warehouse.controller';
+export * from './user_warehouse/user_warehouse.module';
+export * from './user_warehouse/user_warehouse.service';
+
 // Warehouses
 export * from './warehouses/warehouses.controller';
 export * from './warehouses/warehouses.module';
