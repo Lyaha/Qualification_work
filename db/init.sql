@@ -31,7 +31,7 @@ CREATE TABLE warehouses (
     manager_id UUID REFERENCES users(id),
     is_active BOOLEAN DEFAULT TRUE
 );
--- Таблиця прив’язки warehouse_worker до складів (many-to-many)
+-- Таблиця прив’язки warehouse_worker до складів (many-to-many)✅
 CREATE TABLE user_warehouses (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
