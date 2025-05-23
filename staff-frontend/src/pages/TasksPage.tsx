@@ -68,7 +68,7 @@ const TasksPage = () => {
       header: t('tasks.associatedItem'),
       accessor: (item) => {
         if (item.order_item_id) {
-          console.log(orderItems, '  ', item.order_item_id);
+          //console.log(orderItems, '  ', item.order_item_id);
           const orderItem = orderItems.find((oi) => oi.id === item.order_item_id);
           return `${t('orders.order')} #${orderItem?.id}`;
         }

@@ -22,9 +22,6 @@ export class Warehouse {
   @Column('uuid')
   manager_id!: string;
 
-  @Column('uuid')
-  warehouse_id!: string;
-
   @Column()
   is_active!: boolean;
 }

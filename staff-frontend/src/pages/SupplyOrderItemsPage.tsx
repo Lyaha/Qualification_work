@@ -57,8 +57,8 @@ const SupplyOrderItemsPage = () => {
   );
   const modalNav = useModalNavigation<SupplyOrderItem>(
     navigate,
-    editModal.onOpen,
     detailModal.onOpen,
+    editModal.onOpen,
   );
   const formHandler = useFormHandler<SupplyOrderItem>(
     modalNav.selectedEntity,
@@ -85,12 +85,12 @@ const SupplyOrderItemsPage = () => {
     },
     {
       header: t('supplyOrderItems.unitPrice'),
-      accessor: (item) => `${item.unit_price.toFixed(2)} ${t('units.currency')}`,
+      accessor: (item) => `${item.unit_price} ${t('units.currency')}`,
       align: 'right',
     },
     {
       header: t('supplyOrderItems.total'),
-      accessor: (item) => `${(item.quantity * item.unit_price).toFixed(2)} ${t('units.currency')}`,
+      accessor: (item) => `${item.quantity * item.unit_price} ${t('units.currency')}`,
       align: 'right',
     },
   ];

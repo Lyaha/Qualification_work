@@ -23,6 +23,7 @@ const MenuItemComponent = ({ item }: { item: MenuItem }) => {
           if (item.children) {
             setIsOpen(!isOpen);
           } else {
+            //console.log(item.path);
             navigate(item.path);
           }
         }}
@@ -30,6 +31,7 @@ const MenuItemComponent = ({ item }: { item: MenuItem }) => {
         <Flex
           align="center"
           onClick={() => {
+            //console.log(item.path);
             navigate(item.path);
           }}
         >

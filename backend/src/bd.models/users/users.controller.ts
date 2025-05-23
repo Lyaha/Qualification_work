@@ -125,6 +125,12 @@ export class UsersController {
     return this.usersService.findByRole(UserRole.MANAGER);
   }
 
+  @Get('/clients')
+  @ApiOkResponse({ type: [User] })
+  async getCients(): Promise<User[]> {
+    return this.usersService.findByRole(UserRole.CLIENT);
+  }
+
   @Delete('user/:id')
   async remove(@Param('id') id: string, @CurrentUser() currentUser: User): Promise<void> {
     const targetUser = await this.usersService.findOne(id);

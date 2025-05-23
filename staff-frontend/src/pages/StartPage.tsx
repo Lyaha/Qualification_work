@@ -111,9 +111,7 @@ const StartPage = () => {
 
   // Обработчик клика по задаче
   const handleTaskClick = async (task: ItemTaskCard) => {
-    console.log('Ok');
     setSelectedTask(task);
-    console.log(task);
     fetchBatchesForTask(task);
     onOpen();
   };
@@ -123,12 +121,10 @@ const StartPage = () => {
       try {
         setLoading(true);
         if (!taskProp) {
-          console.log(`Selected Task its null`);
           throw new Error(`Selected Task its null`);
         }
         const task = rawAllTasks.find((t) => t.id === taskProp.id);
         if (!task) {
-          console.log(`Selected Task its null 2`);
           throw new Error(`Selected Task its null`);
         }
         const response = await getBatchesForTask(task.id);

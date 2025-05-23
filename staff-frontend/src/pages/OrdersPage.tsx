@@ -62,7 +62,7 @@ const OrdersPage = () => {
     {
       header: t('orders.totalAmount'),
       accessor: 'total_amount',
-      format: (value) => `$${value.toFixed(2)}`,
+      format: (value) => `${value}  ${t('units.currency')}`,
       align: 'right',
     },
     {
@@ -206,7 +206,7 @@ const OrdersPage = () => {
             {
               label: 'orders.totalAmount',
               value: modalNav.selectedEntity?.total_amount as number | undefined,
-              format: (value) => `${Number(value).toFixed(2)}  ${t('unit.currecny')}`,
+              format: (value) => `${Number(value).toFixed(2)}  ${t('units.currency')}`,
             },
             {
               label: 'orders.status',

@@ -77,12 +77,12 @@ const OrderItemsPage = () => {
     {
       header: t('orderItems.unitPrice'),
       accessor: 'unit_price',
-      format: (value) => `${value.toFixed(2)}  ${t('unit.currecny')}`,
+      format: (value) => `${value}  ${t('units.currency')}`,
       align: 'right',
     },
     {
       header: t('orderItems.total'),
-      accessor: (item) => `${(item.quantity * item.unit_price).toFixed(2)}  ${t('unit.currecny')}`,
+      accessor: (item) => `${item.quantity * item.unit_price}  ${t('units.currency')}`,
       align: 'right',
     },
   ];
@@ -209,7 +209,7 @@ const OrderItemsPage = () => {
             {
               label: 'orderItems.unitPrice',
               value: modalNav.selectedEntity?.unit_price as number | undefined,
-              format: (value) => `${Number(value).toFixed(2)} ${t('unit.currecny')}`,
+              format: (value) => `${Number(value).toFixed(2)} ${t('units.currency')}`,
             },
             {
               label: 'orderItems.total',

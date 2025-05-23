@@ -114,7 +114,7 @@ const WarehousesPage = () => {
         manager_id: selectedManager?.id,
         is_active: data.is_active,
       };
-      console.log(warehouseData);
+      //console.log(warehouseData);
       if (selectedWarehouse) {
         await updateWarehouses(selectedWarehouse.id, warehouseData);
       } else {

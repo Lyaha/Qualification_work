@@ -18,4 +18,7 @@ export class StorageZone {
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   max_weight!: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  current_weight!: number;
 }

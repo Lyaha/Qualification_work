@@ -352,7 +352,14 @@ BEGIN
             -- Создаем новую партию для поступления
             INSERT INTO batches (product_id, warehouse_id, quantity, current_quantity)
             VALUES (NEW.product_id, (SELECT warehouse_id FROM storage_zones WHERE id = NEW.to_zone_id), NEW.quantity, NEW.quantity)
-            RETURNING id INTO NEW.reference_id;
+            RETURNING id INTO new_batch_id;
+
+            -- Сохраняем reference_id (id новой партии) в перемещении
+            NEW.reference_id := new_batch_id;
+
+            -- Сразу создаем запись в batch_locations
+            INSERT INTO batch_locations (batch_id, storage_zone_id, quantity)
+            VALUES (new_batch_id, NEW.to_zone_id, NEW.quantity);
 
         WHEN 'outgoing' THEN
             -- Находим партию для списания

@@ -115,12 +115,12 @@ const PriceHistoryPage = () => {
             {
               label: 'priceHistory.oldPrice',
               value: modalNav.selectedEntity?.old_price,
-              format: (value) => `${Number(value).toFixed(2)}  ${t('unit.currecny')}`,
+              format: (value) => `${Number(value).toFixed(2)}  ${t('units.currency')}`,
             },
             {
               label: 'priceHistory.newPrice',
               value: modalNav.selectedEntity?.new_price,
-              format: (value) => `${Number(value).toFixed(2)}  ${t('unit.currecny')}`,
+              format: (value) => `${Number(value).toFixed(2)}  ${t('units.currency')}`,
             },
             {
               label: 'priceHistory.priceChange',

@@ -124,18 +124,18 @@ const ProductPage = () => {
 
   const handleSubmit = async (data: any) => {
     setLoading(true);
-    console.log(data);
+    //console.log(data);
     try {
       let selectedCategory = null;
-      if (typeof data.category_entity === 'string') {
-        selectedCategory = categories.find((c) => c.id === data.category_entity);
+      if (typeof data.category_id === 'string') {
+        selectedCategory = categories.find((c) => c.id === data.category_id);
       } else {
-        selectedCategory = categories.find((c) => c.id === data.category_entity.value[0]);
+        selectedCategory = categories.find((c) => c.id === data.category_id.value[0]);
       }
       if (!selectedCategory) {
         throw new Error(t('errors.categoryRequired'));
       }
-
+      //console.log(data);
       const productData = {
         name: data.name,
         description: data.description,

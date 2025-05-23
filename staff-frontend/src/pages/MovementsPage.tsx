@@ -54,8 +54,8 @@ const MovementsPage = () => {
   );
   const modalNav = useModalNavigation<InventoryMovement>(
     navigate,
-    editModal.onOpen,
     detailModal.onOpen,
+    editModal.onOpen,
   );
   const formHandler = useFormHandler<InventoryMovement>(
     modalNav.selectedEntity,
@@ -139,6 +139,8 @@ const MovementsPage = () => {
       options: zones.map((z) => ({ value: z.id, label: z.location_code })),
       required: (values: Partial<InventoryMovement>) =>
         values.movement_type === 'transfer' || values.movement_type === 'outgoing',
+      dependsOn: ['movement_type'],
+      hidden: (values) => values.movement_type === 'incoming',
     },
     {
       name: 'to_zone_id',
@@ -147,6 +149,8 @@ const MovementsPage = () => {
       options: zones.map((z) => ({ value: z.id, label: z.location_code })),
       required: (values) =>
         values.movement_type === 'transfer' || values.movement_type === 'incoming',
+      dependsOn: ['movement_type'],
+      hidden: (values) => values.movement_type === 'outgoing',
     },
     {
       name: 'quantity',
@@ -170,7 +174,7 @@ const MovementsPage = () => {
       selectedUser = users.find((u) => u.id === data.user_id.value[0]);
     }
     if (!selectedUser) {
-      console.log('empty');
+      //console.log('empty');
       throw new Error(t('errors.userRequired'));
     }
 
@@ -181,55 +185,43 @@ const MovementsPage = () => {
       selectedProduct = products.find((p) => p.id === data.product_id.value[0]);
     }
     if (!selectedProduct) {
-      console.log('empty');
+      //console.log('empty');
       throw new Error(t('errors.productRequired'));
     }
 
     let selectedMovmentType = null;
-    console.log(data.movement_type, '  ', typeof data.movement_type);
     if (typeof data.movement_type === 'string') {
       selectedMovmentType = data.movement_type;
     } else {
       selectedMovmentType = data.movement_type.value[0];
     }
     if (!selectedMovmentType) {
-      console.log('empty');
+      //console.log('empty');
       throw new Error(t('errors.movmentTypeRequired'));
     }
 
+    //console.log(data);
+
     let selectedToZoneId = null;
-    if (typeof data.to_zone_id === 'string') {
+    if (data.to_zone_id) {
       selectedToZoneId = zones.find((z) => z.id === data.to_zone_id);
-    } else {
-      selectedToZoneId = zones.find((z) => z.id === data.to_zone_id.value[0]);
     }
-    if (!selectedToZoneId) {
-      console.log('empty');
-      throw new Error(t('errors.toZoneIdRequired'));
-    }
-
     let selectedFromZoneId = null;
-    if (typeof data.from_zone_id === 'string') {
+    if (data.from_zone_id) {
       selectedFromZoneId = zones.find((z) => z.id === data.from_zone_id);
-    } else {
-      selectedFromZoneId = zones.find((z) => z.id === data.from_zone_id.value[0]);
     }
-    if (!selectedFromZoneId) {
-      console.log('empty');
-      throw new Error(t('errors.fromZoneIdRequired'));
-    }
-
+    //console.log(data);
     const batchData = {
       product_id: selectedProduct.id,
-      from_zone_id: selectedFromZoneId.id,
-      to_zone_id: selectedToZoneId.id,
+      from_zone_id: selectedFromZoneId?.id ?? undefined,
+      to_zone_id: selectedToZoneId?.id ?? undefined,
       quantity: data.quantity,
       movement_type: selectedMovmentType as MovementType,
       user_id: selectedUser.id,
       created_at: new Date().toISOString(),
       note: data.note,
     };
-    console.log(batchData);
+    //console.log(batchData);
     await formHandler.handleSubmit(batchData);
     editModal.onClose();
   };
