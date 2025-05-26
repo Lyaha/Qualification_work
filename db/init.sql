@@ -167,7 +167,6 @@ CREATE TABLE boxes (
     width DECIMAL(10,2) NOT NULL,
     height DECIMAL(10,2) NOT NULL,
     max_weight DECIMAL(10,2) NOT NULL,
-    current_weight DECIMAL(10,2) DEFAULT 0
 );
 
 -- Зони зберігання✅
@@ -336,43 +335,68 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION process_inventory_movement()
 RETURNS TRIGGER AS $$
 DECLARE
-    product_weight DECIMAL(10,2);
-    source_zone UUID;
-    target_zone UUID;
-    source_box UUID;
-    target_box UUID;
+    prod_weight DECIMAL(10,2);
+    new_batch_id UUID;
+    v_warehouse_id UUID;
 BEGIN
-    -- Получаем вес товара
-    SELECT weight INTO product_weight 
-    FROM products WHERE id = NEW.product_id;
+    -- Получаем вес продукта
+    SELECT weight INTO prod_weight
+    FROM products
+    WHERE id = NEW.product_id;
 
-    -- Определяем тип перемещения
     CASE NEW.movement_type
         WHEN 'incoming' THEN
-            -- Создаем новую партию для поступления
-            INSERT INTO batches (product_id, warehouse_id, quantity, current_quantity)
-            VALUES (NEW.product_id, (SELECT warehouse_id FROM storage_zones WHERE id = NEW.to_zone_id), NEW.quantity, NEW.quantity)
+            -- Получаем warehouse_id из зоны хранения
+            SELECT warehouse_id INTO v_warehouse_id 
+            FROM storage_zones WHERE id = NEW.to_zone_id;
+            
+            -- Создаем новую партию
+            INSERT INTO batches (
+                product_id, 
+                warehouse_id, 
+                quantity, 
+                current_quantity, 
+                received_at
+            )
+            VALUES (
+                NEW.product_id, 
+                v_warehouse_id, 
+                NEW.quantity, 
+                NEW.quantity, 
+                NOW()
+            )
             RETURNING id INTO new_batch_id;
 
-            -- Сохраняем reference_id (id новой партии) в перемещении
+            -- Обновляем ссылку в движении
             NEW.reference_id := new_batch_id;
 
-            -- Сразу создаем запись в batch_locations
-            INSERT INTO batch_locations (batch_id, storage_zone_id, quantity)
-            VALUES (new_batch_id, NEW.to_zone_id, NEW.quantity);
-
-        WHEN 'outgoing' THEN
-            -- Находим партию для списания
-            PERFORM update_batches_on_outgoing(NEW.product_id, NEW.quantity);
+            -- Создаем запись в batch_locations
+            INSERT INTO batch_locations (
+                batch_id, 
+                storage_zone_id, 
+                quantity
+            )
+            VALUES (
+                new_batch_id, 
+                NEW.to_zone_id, 
+                NEW.quantity
+            );
 
         WHEN 'transfer' THEN
-            -- Обрабатываем трансфер между зонами
-            PERFORM process_transfer(
+            -- Исправленный блок
+            PERFORM validate_source_availability(
                 NEW.from_zone_id, 
-                NEW.to_zone_id, 
                 NEW.product_id, 
-                NEW.quantity, 
-                product_weight
+                NEW.quantity
+            );
+
+            -- Обновление расположения
+            UPDATE batch_locations
+            SET storage_zone_id = NEW.to_zone_id
+            WHERE storage_zone_id = NEW.from_zone_id
+            AND batch_id IN (
+                SELECT id FROM batches 
+                WHERE product_id = NEW.product_id
             );
     END CASE;
 
@@ -403,30 +427,31 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_storage_weight(
-    storage_zone_id UUID,
-    box_id UUID,
+    zone_id UUID, 
+    box_id UUID, 
     weight_diff DECIMAL(10,2)
-) RETURNS VOID AS $$
+)
+RETURNS VOID AS $$
 BEGIN
-    -- Всегда обновляем зону
-    UPDATE storage_zones
-    SET current_weight = current_weight + weight_diff
-    WHERE id = storage_zone_id
-    AND current_weight + weight_diff <= max_weight;
-    
-    IF NOT FOUND THEN
-        RAISE EXCEPTION 'Storage zone % is over capacity', storage_zone_id;
+    IF zone_id IS NOT NULL THEN
+        UPDATE storage_zones
+        SET current_weight = current_weight + weight_diff
+        WHERE id = zone_id
+        AND current_weight + weight_diff BETWEEN 0 AND max_weight;
+
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Zone % weight out of bounds', zone_id;
+        END IF;
     END IF;
 
-    -- Если указана коробка, обновляем и ее
     IF box_id IS NOT NULL THEN
         UPDATE boxes
         SET current_weight = current_weight + weight_diff
         WHERE id = box_id
-        AND current_weight + weight_diff <= max_weight;
-        
+        AND current_weight + weight_diff BETWEEN 0 AND max_weight;
+
         IF NOT FOUND THEN
-            RAISE EXCEPTION 'Box % is over capacity', box_id;
+            RAISE EXCEPTION 'Box % weight out of bounds', box_id;
         END IF;
     END IF;
 END;
@@ -440,96 +465,118 @@ CREATE OR REPLACE FUNCTION process_transfer(
     product_weight DECIMAL
 ) RETURNS VOID AS $$
 DECLARE
-    from_box_id UUID;
-    to_box_id UUID;
+    total_weight DECIMAL := quantity * product_weight;
 BEGIN
-    -- Получаем ID коробок из batch_locations
-    SELECT box_id INTO from_box_id 
-    FROM batch_locations 
-    WHERE storage_zone_id = from_id 
-    LIMIT 1;
+    PERFORM validate_source_availability(from_id, product_id, quantity);
+    
+    -- Проверка места в целевой зоне
+    IF (SELECT (current_weight + total_weight) > max_weight 
+        FROM storage_zones WHERE id = to_id) THEN
+        RAISE EXCEPTION 'Not enough space in target zone %', to_id;
+    END IF;
 
-    SELECT box_id INTO to_box_id 
-    FROM batch_locations 
-    WHERE storage_zone_id = to_id 
-    LIMIT 1;
+    -- Обновление весов
+    PERFORM update_storage_weight(from_id, NULL, -total_weight);
+    PERFORM update_storage_weight(to_id, NULL, total_weight);
 
-    -- Проверяем наличие товара в источнике
-    PERFORM validate_source_availability(
-        from_id, 
-        product_id, 
-        quantity
-    );
-
-    -- Обновляем вес
-    PERFORM update_storage_weight(
-        from_id, 
-        from_box_id, 
-        - (quantity * product_weight)
-    );
-
-    PERFORM update_storage_weight(
-        to_id, 
-        to_box_id, 
-        quantity * product_weight
-    );
-
-    -- Обновляем расположение партий
+    -- Обновление расположения
     UPDATE batch_locations
-    SET 
-        storage_zone_id = to_id,
-        box_id = to_box_id
+    SET storage_zone_id = to_id
     WHERE storage_zone_id = from_id
     AND batch_id IN (
         SELECT id FROM batches 
-        WHERE batches.product_id = process_transfer.product_id
+        WHERE product_id = process_transfer.product_id
     );
 END;
 $$ LANGUAGE plpgsql;
 
+-- 1. Триггер для обновления весов
 CREATE OR REPLACE FUNCTION batch_location_weight()
 RETURNS TRIGGER AS $$
 DECLARE
-    product_weight DECIMAL(10,2);
+    prod_weight DECIMAL(10,2);
+    zone_max DECIMAL(10,2);
+    box_max DECIMAL(10,2);
 BEGIN
-    -- Получаем вес товара
-    SELECT weight INTO product_weight 
-    FROM products 
-    WHERE id = (SELECT product_id FROM batches WHERE id = COALESCE(NEW.batch_id, OLD.batch_id));
+    -- Получаем вес продукта
+    SELECT p.weight INTO prod_weight
+    FROM products p
+    JOIN batches b ON b.product_id = p.id
+    WHERE b.id = COALESCE(NEW.batch_id, OLD.batch_id);
 
-    -- Обрабатываем разные операции
+    -- Обработка для разных операций
     CASE TG_OP
         WHEN 'INSERT' THEN
-            PERFORM update_storage_weight(
-                NEW.storage_zone_id,
-                NEW.box_id,
-                NEW.quantity * product_weight
-            );
-        
-        WHEN 'UPDATE' THEN
-            -- Удаляем старый вес
-            PERFORM update_storage_weight(
-                OLD.storage_zone_id,
-                OLD.box_id,
-                -OLD.quantity * product_weight
-            );
+            -- Проверка зоны
+            SELECT max_weight INTO zone_max 
+            FROM storage_zones 
+            WHERE id = NEW.storage_zone_id;
             
-            -- Добавляем новый вес
-            PERFORM update_storage_weight(
-                NEW.storage_zone_id,
-                NEW.box_id,
-                NEW.quantity * product_weight
-            );
-        
-        WHEN 'DELETE' THEN
-            PERFORM update_storage_weight(
-                OLD.storage_zone_id,
-                OLD.box_id,
-                -OLD.quantity * product_weight
-            );
-    END CASE;
+            IF (NEW.quantity * prod_weight) > zone_max THEN
+                RAISE EXCEPTION 'Zone % capacity exceeded. Max: %, Required: %',
+                    NEW.storage_zone_id, 
+                    zone_max,
+                    NEW.quantity * prod_weight;
+            END IF;
 
-    RETURN NEW;
+            -- Обновление веса зоны
+            UPDATE storage_zones
+            SET current_weight = current_weight + (NEW.quantity * prod_weight)
+            WHERE id = NEW.storage_zone_id;
+
+            -- Обновление коробки при наличии
+            IF NEW.box_id IS NOT NULL THEN
+                SELECT max_weight INTO box_max 
+                FROM boxes 
+                WHERE id = NEW.box_id;
+                
+                IF (NEW.quantity * prod_weight) > box_max THEN
+                    RAISE EXCEPTION 'Box % capacity exceeded. Max: %, Required: %',
+                        NEW.box_id, 
+                        box_max,
+                        NEW.quantity * prod_weight;
+                END IF;
+
+                UPDATE boxes
+                SET current_weight = current_weight + (NEW.quantity * prod_weight)
+                WHERE id = NEW.box_id;
+            END IF;
+
+        WHEN 'UPDATE' THEN
+            -- Откат старого веса
+            UPDATE storage_zones
+            SET current_weight = current_weight - (OLD.quantity * prod_weight)
+            WHERE id = OLD.storage_zone_id;
+
+            IF OLD.box_id IS NOT NULL THEN
+                UPDATE boxes
+                SET current_weight = current_weight - (OLD.quantity * prod_weight)
+                WHERE id = OLD.box_id;
+            END IF;
+
+            -- Применение нового веса
+            UPDATE storage_zones
+            SET current_weight = current_weight + (NEW.quantity * prod_weight)
+            WHERE id = NEW.storage_zone_id;
+
+            IF NEW.box_id IS NOT NULL THEN
+                UPDATE boxes
+                SET current_weight = current_weight + (NEW.quantity * prod_weight)
+                WHERE id = NEW.box_id;
+            END IF;
+
+        WHEN 'DELETE' THEN
+            UPDATE storage_zones
+            SET current_weight = current_weight - (OLD.quantity * prod_weight)
+            WHERE id = OLD.storage_zone_id;
+
+            IF OLD.box_id IS NOT NULL THEN
+                UPDATE boxes
+                SET current_weight = current_weight - (OLD.quantity * prod_weight)
+                WHERE id = OLD.box_id;
+            END IF;
+    END CASE;
+    RETURN CASE TG_OP WHEN 'DELETE' THEN OLD ELSE NEW END;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -550,10 +597,73 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION log_price_history()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF OLD.price <> NEW.price THEN
+        INSERT INTO price_history (product_id, old_price, new_price, changed_by)
+        VALUES (OLD.id, OLD.price, NEW.price, NEW.id);
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION create_movement_from_batch_location()
+RETURNS TRIGGER AS $$
+DECLARE
+    system_user_id UUID;  -- Объявляем переменную здесь
+    context_var TEXT;
+BEGIN
+    -- Получаем ID первого пользователя
+    SELECT id INTO system_user_id
+    FROM users
+    ORDER BY created_at
+    LIMIT 1;
+
+    IF system_user_id IS NULL THEN
+        RAISE EXCEPTION 'No users found in system';
+    END IF;
+
+    -- Проверяем контекст вызова
+    GET DIAGNOSTICS context_var = PG_CONTEXT;
+    IF context_var NOT LIKE '%process_inventory_movement%' THEN
+        INSERT INTO inventory_movements (
+            product_id,
+            to_zone_id,
+            quantity,
+            movement_type,
+            user_id,
+            reference_id,
+            created_at
+        )
+        SELECT
+            b.product_id,
+            NEW.storage_zone_id,
+            NEW.quantity,
+            'incoming',
+            system_user_id,  -- Используем объявленную переменную
+            NEW.batch_id,
+            NOW()
+        FROM batches b
+        WHERE b.id = NEW.batch_id;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Тригери для автоматизації
 CREATE TRIGGER check_warehouse_worker_before_insert
 BEFORE INSERT ON user_warehouses
 FOR EACH ROW EXECUTE FUNCTION check_warehouse_worker_role();
+
+CREATE TRIGGER trigger_log_price_history
+AFTER UPDATE OF price ON products
+FOR EACH ROW EXECUTE FUNCTION log_price_history();
+
+CREATE TRIGGER trigger_create_movement_from_batch_location
+AFTER INSERT ON batch_locations
+FOR EACH ROW 
+EXECUTE FUNCTION create_movement_from_batch_location();
 
 CREATE TRIGGER check_warehouse_worker_before_update
 BEFORE UPDATE ON user_warehouses
@@ -587,3 +697,25 @@ FOR EACH ROW EXECUTE FUNCTION update_modified_column();
 CREATE TRIGGER update_orders_modtime
 BEFORE UPDATE ON orders
 FOR EACH ROW EXECUTE FUNCTION update_modified_column();
+
+CREATE TABLE storage_weight_history (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    zone_id UUID NOT NULL REFERENCES storage_zones(id),
+    old_weight DECIMAL(10,2),
+    new_weight DECIMAL(10,2),
+    changed_by UUID REFERENCES users(id),
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE OR REPLACE FUNCTION log_storage_weight_changes()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO storage_weight_history(zone_id, old_weight, new_weight)
+    VALUES (OLD.id, OLD.current_weight, NEW.current_weight);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER track_storage_weight_changes
+AFTER UPDATE ON storage_zones
+FOR EACH ROW EXECUTE FUNCTION log_storage_weight_changes();
