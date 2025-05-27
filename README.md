@@ -67,6 +67,112 @@ The goal of the project is to develop universal software for accounting for good
 
 
 
+## Frontend Architecture
+
+### Core Technologies
+- **React 18**: Modern UI library with concurrent rendering support
+- **TypeScript**: Static typing for enhanced code reliability
+- **Chakra UI**: Component library with accessibility and customization focus
+- **i18next**: Internationalization framework
+
+### Key Features
+
+#### 1. Components Architecture
+- **Generic Components**:
+  - `GenericTable`: Reusable table with sorting, filtering, and pagination
+  - `GenericFormModal`: Universal form handling component
+  - `GenericDetailView`: Standardized detail view layout
+  - `Layout`: Consistent page structure with responsive design
+
+#### 2. Page Organization
+- **Module-based Structure**:
+  - Products Management
+  - Warehouse Operations
+  - Order Processing
+  - Inventory Management
+  - User Administration
+
+#### 3. State Management
+- **Custom Hooks**:
+  - `useVisibilityPolling`: Real-time data updates
+  - `useCrudOperations`: Universal CRUD operations
+  - `useFormHandler`: Form state and validation
+  - `useModalNavigation`: Modal window control
+
+#### 4. Authentication & Authorization
+- **Auth0 Integration**:
+  - Secure authentication flow
+  - Role-based access control
+  - Protected routes
+  - Token management
+
+#### 5. Data Flow
+- **API Integration**:
+  - Axios for HTTP requests
+  - Request interceptors
+  - Error handling
+  - Response caching
+
+#### 6. UI/UX Features
+- **Responsive Design**:
+  - Mobile-first approach
+  - Adaptive layouts
+  - Dynamic component rendering
+
+- **Theme System**:
+  - Light/Dark mode support
+  - Custom color schemes
+  - Consistent styling
+
+- **Accessibility**:
+  - ARIA attributes
+  - Keyboard navigation
+  - Screen reader support
+
+#### 7. Performance Optimizations
+- **Code Splitting**:
+  - Lazy loading of routes
+  - Dynamic imports
+  - Component code splitting
+
+- **Rendering Optimizations**:
+  - Memo and useMemo usage
+  - Virtual scrolling for large lists
+  - Debounced search inputs
+
+- **Asset Management**:
+  - Optimized image loading
+  - Font preloading
+  - Resource prioritization
+
+### Code Organization
+
+```text
+src/
+├── components/          # Reusable UI components
+├── pages/              # Route components
+├── hooks/              # Custom React hooks
+├── api/                # API integration
+├── context/            # React context providers
+├── utils/              # Helper functions
+├── types/              # TypeScript definitions
+├── i18n/               # Internationalization
+└── theme/              # UI theming
+```
+
+### Development Practices
+- **Code Quality**:
+  - ESLint configuration
+  - Prettier formatting
+  - TypeScript strict mode
+  - Unit testing with Jest
+
+- **Git Workflow**:
+  - Feature branch workflow
+  - Pull request reviews
+  - Conventional commits
+  - Automated CI/CD
+
 ## Implementation Details
 
 ### Architecture Solutions
