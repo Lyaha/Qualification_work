@@ -149,15 +149,14 @@ The goal of the project is to develop universal software for accounting for good
 
 ```text
 src/
-├── components/          # Reusable UI components
+├── components/         # Reusable UI components
 ├── pages/              # Route components
 ├── hooks/              # Custom React hooks
 ├── api/                # API integration
 ├── context/            # React context providers
 ├── utils/              # Helper functions
 ├── types/              # TypeScript definitions
-├── i18n/               # Internationalization
-└── theme/              # UI theming
+└── locales/            # Internationalization
 ```
 
 ### Development Practices
