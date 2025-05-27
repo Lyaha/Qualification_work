@@ -172,6 +172,194 @@ src/
   - Conventional commits
   - Automated CI/CD
 
+## Backend Architecture
+
+### Core Technologies
+- **NestJS**: Enterprise Node.js framework leveraging TypeScript
+- **TypeORM**: ORM for database interactions
+- **PostgreSQL**: Primary database
+- **Auth0**: Authentication and authorization service
+- **Swagger/OpenAPI**: API documentation
+
+### Key Features
+
+#### 1. Module Architecture
+- **Domain-Driven Structure**:
+  ```text
+  src/
+  ├── bd.models/              # Domain models & business logic
+  │   ├── entity/             # Database entities
+  │   ├── warehouses/         # Warehouse management
+  │   ├── products/           # Product management
+  │   ├── orders/             # Order processing
+  │   └── tasks/              # Task management
+  ├── auth/                   # Authentication logic
+  ├── guards/                 # Authorization guards
+  ├── reports/                # Reporting services
+  └── menu/                   # Menu configuration
+  ```
+
+#### 2. Database Integration
+- **Entity Framework**:
+  - Strong typing with TypeORM decorators
+  - Relationship mapping (One-to-Many, Many-to-Many)
+  - Migration management
+  - Transaction support
+
+- **Query Optimization**:
+  - Eager/Lazy loading strategies
+  - Query builder implementation
+  - Custom repository methods
+  - Index utilization
+
+#### 3. Security Implementation
+- **Authentication Layer**:
+  - JWT token validation
+  - Auth0 integration
+  - Token refresh mechanism
+  - Session management
+
+- **Authorization System**:
+  - Role-based access control (RBAC)
+  - Custom guards per endpoint
+  - Permission validation
+  - Resource ownership checks
+
+#### 4. Business Logic Handling
+- **Service Layer Pattern**:
+  - Business rule encapsulation
+  - Validation logic
+  - Error handling
+  - Event processing
+
+- **Transaction Management**:
+  - ACID compliance
+  - Distributed transactions
+  - Rollback mechanisms
+  - Concurrency control
+
+#### 5. API Design
+- **RESTful Endpoints**:
+  - Resource-based routing
+  - Standard HTTP methods
+  - Status code implementation
+  - Response formatting
+
+- **API Documentation**:
+  - OpenAPI/Swagger integration
+  - Endpoint documentation
+  - Schema definitions
+  - Authentication details
+
+#### 6. Data Processing
+- **Batch Operations**:
+  - Bulk data handling
+  - Queue processing
+  - Background tasks
+  - Data synchronization
+
+- **Real-time Updates**:
+  - WebSocket implementation
+  - Event-driven architecture
+  - Push notifications
+  - State synchronization
+
+#### 7. Error Handling & Logging
+- **Exception Filters**:
+  - Global error handling
+  - Custom exception types
+  - Error response formatting
+  - Status code mapping
+
+- **Logging System**:
+  - Transaction logging
+  - Error tracking
+  - Audit trail
+  - Performance monitoring
+
+### Core Services
+
+#### 1. WarehousesService
+```typescript
+Key features:
+- Warehouse CRUD operations
+- Storage zone management
+- Capacity tracking
+- Worker assignment
+```
+
+#### 2. TaskService
+```typescript
+Key features:
+- Task assignment algorithm
+- Priority management
+- Status tracking
+- Completion handling
+```
+
+#### 3. InventoryService
+```typescript
+Key features:
+- Stock management
+- Movement tracking
+- Location optimization
+- Weight calculation
+```
+
+#### 4. ReportsService
+```typescript
+Key features:
+- Data aggregation
+- Custom report generation
+- Performance metrics
+- Inventory analysis
+```
+
+### Performance Optimizations
+
+#### 1. Database Level
+- **Query Optimization**:
+  - Prepared statements
+  - Index utilization
+  - Join optimization
+  - Cache implementation
+
+#### 2. Application Level
+- **Caching Strategy**:
+  - Response caching
+  - Query result caching
+  - In-memory data store
+  - Cache invalidation
+
+#### 3. Resource Management
+- **Connection Pooling**:
+  - Database connection management
+  - Resource allocation
+  - Connection recycling
+  - Timeout handling
+
+### Development & Testing
+
+#### 1. Testing Strategy
+- **Unit Testing**:
+  - Service testing
+  - Controller testing
+  - Mock implementations
+  - Test coverage
+
+- **Integration Testing**:
+  - API endpoint testing
+  - Database integration
+  - Authentication flow
+  - Error scenarios
+
+#### 2. Development Tools
+- **Code Quality**:
+  - ESLint configuration
+  - Prettier formatting
+  - Husky pre-commit hooks
+  - SonarQube analysis
+
 ## Implementation Details
 
 ### Architecture Solutions
