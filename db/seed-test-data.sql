@@ -45,6 +45,15 @@ VALUES
 ('Монитор Dell', '24", Full HD', (SELECT id FROM categories WHERE name = 'Електроніка'), '444444', 5000.00, 7000.00, 3.5),
 ('Пральна машина LG', '8кг, Inverter', (SELECT id FROM categories WHERE name = 'Побутова техніка'), '555555', 12000.00, 15000.00, 40.0);
 
+-- Заповнення storage_zones
+INSERT INTO storage_zones (warehouse_id, location_code, max_weight) 
+VALUES 
+((SELECT id FROM warehouses LIMIT 1 OFFSET 0), 'A-1', 7000.0),
+((SELECT id FROM warehouses LIMIT 1 OFFSET 1), 'B-2', 6500.0),
+((SELECT id FROM warehouses LIMIT 1 OFFSET 2), 'C-3', 8000.0),
+((SELECT id FROM warehouses LIMIT 1 OFFSET 3), 'D-4', 9500.0),
+((SELECT id FROM warehouses LIMIT 1 OFFSET 4), 'E-5', 8000.0);
+
 -- Заповнення orders
 INSERT INTO orders (client_id, total_amount, status, payment_method, warehouse_id) 
 VALUES 
@@ -57,20 +66,20 @@ VALUES
 -- Заповнення order_items
 INSERT INTO order_items (order_id, product_id, quantity, unit_price) 
 VALUES 
-((SELECT id FROM orders LIMIT 1 OFFSET 0), (SELECT id FROM products LIMIT 1 OFFSET 0), 1, 25000.00),
-((SELECT id FROM orders LIMIT 1 OFFSET 1), (SELECT id FROM products LIMIT 1 OFFSET 1), 2, 35000.00),
-((SELECT id FROM orders LIMIT 1 OFFSET 2), (SELECT id FROM products LIMIT 1 OFFSET 2), 1, 20000.00),
-((SELECT id FROM orders LIMIT 1 OFFSET 3), (SELECT id FROM products LIMIT 1 OFFSET 3), 2, 7000.00),
-((SELECT id FROM orders LIMIT 1 OFFSET 4), (SELECT id FROM products LIMIT 1 OFFSET 4), 2, 15000.00);
+((SELECT id FROM orders LIMIT 1 OFFSET 0), (SELECT id FROM products WHERE name = 'Ноутбук HP'), 1, 25000.00),
+((SELECT id FROM orders LIMIT 1 OFFSET 1), (SELECT id FROM products WHERE name = 'iPhone 14'), 2, 35000.00),
+((SELECT id FROM orders LIMIT 1 OFFSET 2), (SELECT id FROM products WHERE name = 'Холодильник Samsung'), 1, 20000.00),
+((SELECT id FROM orders LIMIT 1 OFFSET 3), (SELECT id FROM products WHERE name = 'Монитор Dell'), 2, 7000.00),
+((SELECT id FROM orders LIMIT 1 OFFSET 4), (SELECT id FROM products WHERE name = 'Пральна машина LG'), 2, 15000.00);
 
 -- Заповнення reviews
 INSERT INTO reviews (user_id, product_id, order_id, rating, comment) 
 VALUES 
-((SELECT id FROM users WHERE email = 'client1@test.com'), (SELECT id FROM products LIMIT 1 OFFSET 0), (SELECT id FROM orders LIMIT 1 OFFSET 0), 5, 'Чудовий ноутбук!'),
-((SELECT id FROM users WHERE email = 'client1@test.com'), (SELECT id FROM products LIMIT 1 OFFSET 1), (SELECT id FROM orders LIMIT 1 OFFSET 1), 4, 'Добре, але дорого'),
-((SELECT id FROM users WHERE email = 'client1@test.com'), (SELECT id FROM products LIMIT 1 OFFSET 2), (SELECT id FROM orders LIMIT 1 OFFSET 2), 3, 'Середній холодильник'),
-((SELECT id FROM users WHERE email = 'client1@test.com'), (SELECT id FROM products LIMIT 1 OFFSET 3), (SELECT id FROM orders LIMIT 1 OFFSET 3), 5, 'Ідеальний монітор'),
-((SELECT id FROM users WHERE email = 'client1@test.com'), (SELECT id FROM products LIMIT 1 OFFSET 4), (SELECT id FROM orders LIMIT 1 OFFSET 4), 4, 'Працює тихо');
+((SELECT id FROM users WHERE email = 'client1@test.com'), (SELECT id FROM products WHERE name = 'Ноутбук HP'), (SELECT id FROM orders LIMIT 1 OFFSET 0), 5, 'Чудовий ноутбук!'),
+((SELECT id FROM users WHERE email = 'client1@test.com'), (SELECT id FROM products WHERE name = 'iPhone 14'), (SELECT id FROM orders LIMIT 1 OFFSET 1), 4, 'Добре, але дорого'),
+((SELECT id FROM users WHERE email = 'client1@test.com'), (SELECT id FROM products WHERE name = 'Холодильник Samsung'), (SELECT id FROM orders LIMIT 1 OFFSET 2), 3, 'Середній холодильник'),
+((SELECT id FROM users WHERE email = 'client1@test.com'), (SELECT id FROM products WHERE name = 'Монитор Dell'), (SELECT id FROM orders LIMIT 1 OFFSET 3), 5, 'Ідеальний монітор'),
+((SELECT id FROM users WHERE email = 'client1@test.com'), (SELECT id FROM products WHERE name = 'Пральна машина LG'), (SELECT id FROM orders LIMIT 1 OFFSET 4), 4, 'Працює тихо');
 
 -- Заповнення discounts
 INSERT INTO discounts (name, product_id, category_id, discount_type, value, start_date, end_date) 
@@ -126,15 +135,6 @@ VALUES
 ('Коробка для техніки', 'З амортизацією для делікатної техніки', 100.0, 60.0, 50.0, 50.0),
 ('Спецкоробка', 'Промислова коробка підвищеної міцності', 120.0, 80.0, 60.0, 70.0);
 
--- Заповнення storage_zones
-INSERT INTO storage_zones (warehouse_id, location_code, max_weight) 
-VALUES 
-((SELECT id FROM warehouses LIMIT 1 OFFSET 0), 'A-1', 1000.0),
-((SELECT id FROM warehouses LIMIT 1 OFFSET 1), 'B-2', 1500.0),
-((SELECT id FROM warehouses LIMIT 1 OFFSET 2), 'C-3', 2000.0),
-((SELECT id FROM warehouses LIMIT 1 OFFSET 3), 'D-4', 2500.0),
-((SELECT id FROM warehouses LIMIT 1 OFFSET 4), 'E-5', 3000.0);
-
 -- Заповнення batches
 INSERT INTO batches (product_id, warehouse_id, quantity, expiration_date, received_at) 
 VALUES 
@@ -181,16 +181,16 @@ VALUES
  (SELECT id FROM storage_zones WHERE location_code = 'D-4'),
  NULL, 
  15, 
- now());
+ now()); --15*40=600
 
 -- Заповнення price_history
 INSERT INTO price_history (product_id, old_price, new_price, changed_by) 
 VALUES 
-((SELECT id FROM products LIMIT 1 OFFSET 0), 24000.00, 25000.00, (SELECT id FROM users LIMIT 1 OFFSET 3)),
-((SELECT id FROM products LIMIT 1 OFFSET 1), 34000.00, 35000.00, (SELECT id FROM users LIMIT 1 OFFSET 3)),
-((SELECT id FROM products LIMIT 1 OFFSET 2), 19000.00, 20000.00, (SELECT id FROM users LIMIT 1 OFFSET 3)),
-((SELECT id FROM products LIMIT 1 OFFSET 3), 6500.00, 7000.00, (SELECT id FROM users LIMIT 1 OFFSET 3)),
-((SELECT id FROM products LIMIT 1 OFFSET 4), 14000.00, 15000.00, (SELECT id FROM users LIMIT 1 OFFSET 3));
+((SELECT id FROM products WHERE name = 'Ноутбук HP'), 24000.00, 25000.00, (SELECT id FROM users LIMIT 1 OFFSET 3)),
+((SELECT id FROM products WHERE name = 'iPhone 14'), 34000.00, 35000.00, (SELECT id FROM users LIMIT 1 OFFSET 3)),
+((SELECT id FROM products WHERE name = 'Холодильник Samsung'), 19000.00, 20000.00, (SELECT id FROM users LIMIT 1 OFFSET 3)),
+((SELECT id FROM products WHERE name = 'Монитор Dell'), 6500.00, 7000.00, (SELECT id FROM users LIMIT 1 OFFSET 3)),
+((SELECT id FROM products WHERE name = 'Пральна машина LG'), 14000.00, 15000.00, (SELECT id FROM users LIMIT 1 OFFSET 3));
 
 INSERT INTO supply_order_items (supply_order_id, product_id, quantity, unit_price) 
 VALUES
@@ -207,12 +207,12 @@ VALUES
 ((SELECT id FROM products WHERE name = 'iPhone 14'), NULL, (SELECT id FROM storage_zones WHERE location_code = 'A-1'), 5, 'incoming', (SELECT id FROM users LIMIT 1 OFFSET 1), 'Надходження iPhone'),
 ((SELECT id FROM products WHERE name = 'Холодильник Samsung'), NULL, (SELECT id FROM storage_zones WHERE location_code = 'C-3'), 3, 'incoming', (SELECT id FROM users LIMIT 1 OFFSET 1), 'Нова партія'),
 ((SELECT id FROM products WHERE name = 'Монитор Dell'), NULL, (SELECT id FROM storage_zones WHERE location_code = 'C-3'), 2, 'incoming', (SELECT id FROM users LIMIT 1 OFFSET 1), 'Надходження моніторів'),
-((SELECT id FROM products WHERE name = 'Пральна машина LG'), NULL, (SELECT id FROM storage_zones WHERE location_code = 'D-4'), 4, 'incoming', (SELECT id FROM users LIMIT 1 OFFSET 1), 'Надходження пральних машин');
+((SELECT id FROM products WHERE name = 'Пральна машина LG'), NULL, (SELECT id FROM storage_zones WHERE location_code = 'D-4'), 4, 'incoming', (SELECT id FROM users LIMIT 1 OFFSET 1), 'Надходження пральних машин'); --4*40=160
 
 INSERT INTO inventory_movements (product_id, from_zone_id, to_zone_id, quantity, movement_type, user_id, note) 
 VALUES 
 ((SELECT id FROM products WHERE name = 'iPhone 14'), (SELECT id FROM storage_zones WHERE location_code = 'A-1'), (SELECT id FROM storage_zones WHERE location_code = 'B-2'), 5, 'transfer', (SELECT id FROM users LIMIT 1 OFFSET 2), 'Переміщення між зонами'),
-((SELECT id FROM products WHERE name = 'Пральна машина LG'), (SELECT id FROM storage_zones WHERE location_code = 'D-4'), (SELECT id FROM storage_zones WHERE location_code = 'E-5'), 4, 'transfer', (SELECT id FROM users LIMIT 1 OFFSET 4), 'Оптимізація сховища');
+((SELECT id FROM products WHERE name = 'Пральна машина LG'), (SELECT id FROM storage_zones WHERE location_code = 'D-4'), (SELECT id FROM storage_zones WHERE location_code = 'E-5'), 4, 'transfer', (SELECT id FROM users LIMIT 1 OFFSET 4), 'Оптимізація сховища');--4*40=-160
 
 -- Заповнення tasks
 INSERT INTO tasks (worker_id, order_item_id, supply_order_item_id, quantity, deadline, status, note) 
