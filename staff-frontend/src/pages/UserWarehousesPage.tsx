@@ -93,7 +93,7 @@ const UserWarehousesPage = () => {
 
   const handleSubmit = async (data: Partial<UserWarehouse>) => {
     if (!data.user_id || !data.warehouse_id) {
-      throw new Error(t('error.fieldsRequired'));
+      throw new Error(t('errors.fieldsRequired'));
     }
 
     await formHandler.handleSubmit({

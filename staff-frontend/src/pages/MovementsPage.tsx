@@ -78,6 +78,7 @@ const MovementsPage = () => {
     {
       header: t('movements.type'),
       accessor: 'movement_type',
+      format: (value) => t(`movements.types.${value}`),
     },
     {
       header: t('movements.quantity'),

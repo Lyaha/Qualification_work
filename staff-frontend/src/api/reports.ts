@@ -15,8 +15,12 @@ export const getReportsSale = async (data: PropsReportsSale): Promise<Discount[]
   );
 };
 
-export const getReportsInventory = async (): Promise<Product[]> => {
-  return await getRequest(`/reports/inventory`);
+export const getReportsInventory = async () => {
+  const response = await getRequest<any[]>('/reports/inventory');
+  return response.map((item) => ({
+    ...item,
+    category: item.category.name, // используем имя категории вместо id
+  }));
 };
 
 export const getReportsTask = async (): Promise<Task[]> => {

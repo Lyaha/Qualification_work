@@ -170,7 +170,7 @@ const ReportsPage = () => {
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={inventoryData}>
                 <XAxis dataKey="category" />
-                <YAxis />a
+                <YAxis />
                 <Tooltip contentStyle={{ backgroundColor: bg_tooltip }} />
                 <Line type="monotone" dataKey="quantity" stroke={lineColor} />
               </LineChart>

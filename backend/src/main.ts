@@ -5,7 +5,10 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  app.enableCors({
+    origin: [process.env.FRONTEND_STAFF_URL, process.env.FRONTEND_CLIENT_URL],
+    credentials: true,
+  });
   const config = new DocumentBuilder()
     .setTitle('Warehouse Management System API')
     .setDescription(

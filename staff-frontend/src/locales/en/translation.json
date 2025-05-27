@@ -47,7 +47,8 @@
     "statuses": {
       "pending": "Pending",
       "in_progress": "In Progress",
-      "completed": "Completed"
+      "completed": "Completed",
+      "confirmed": "Confirmed"
     },
     "taskType": "Task Type",
     "statusField": "Status",
@@ -57,7 +58,15 @@
     "title": "Tasks",
     "edit": "Edit Task",
     "create": "Create Task",
-    "task": "Task"
+    "task": "Task",
+    "completeTask": "Complete Task",
+    "assignWorker": "Assign Worker",
+    "selectWorker": "Select Worker",
+    "selectBatch": "Select Batch",
+    "completeAction": "Complete Action",
+    "unassigned": "Unassigned",
+    "inProgress": "In Progress",
+    "archive": "Archive"
   },
   "forbidden": {
     "title": "Access Denied",
@@ -118,7 +127,15 @@
     "productRequired": "Product is required",
     "movmentTypeRequired": "Movement type is required",
     "toZoneIdRequired": "Destination zone is required",
-    "fromZoneIdRequired": "Source zone is required"
+    "fromZoneIdRequired": "Source zone is required",
+    "fieldsRequired": "All required fields must be filled",
+    "requiredFieldsMissing": "Required fields are missing",
+    "supplierIdRequired": "Supplier ID is required",
+    "statusRequired": "Status is required",
+    "expectedDeliveryDateRequired": "Expected delivery date is required",
+    "supplyOrderIdRequired": "Supply order ID is required",
+    "supplierNameRequired": "Supplier name is required",
+    "requiredFunctionMissing": "Required function is missing"
   },
   "menu": {
     "name": "Menu",
@@ -351,7 +368,7 @@
       "confirmed": "Confirmed",
       "shipped": "Shipped",
       "completed": "Completed",
-      "cancelled": "Cancelled"
+      "canceled": "Canceled"
     },
     "paymentMethod": "Payment Method",
     "paymentMethods": {
@@ -403,6 +420,8 @@
     "name": "Name",
     "type": "Type",
     "types": {
+      "percentage": "Percentage",
+      "fixed": "Fixed",
       "PERCENTAGE": "Percentage",
       "FIXED": "Fixed"
     },
@@ -434,5 +453,14 @@
     "m": "m",
     "kg": "kg",
     "currency": "₴"
+  },
+  "userWarehouses": {
+    "user": "User",
+    "warehouse": "Warehouse",
+    "assignedAt": "Assigned At",
+    "title": "Warehouse Assignments",
+    "edit": "Edit Assignment",
+    "create": "Create Assignment",
+    "assignment": "Assignment"
   }
 }

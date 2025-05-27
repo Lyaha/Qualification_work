@@ -47,7 +47,8 @@
     "statuses": {
       "pending": "В очікуванні",
       "in_progress": "В процесі",
-      "completed": "Завершено"
+      "completed": "Завершено",
+      "confirmed": "Підтверджено"
     },
     "taskType": "Тип завдання",
     "statusField": "Статус",
@@ -57,7 +58,15 @@
     "title": "Завдання",
     "edit": "Редагувати завдання",
     "create": "Створити завдання",
-    "task": "Завдання"
+    "task": "Завдання",
+    "completeTask": "Завершити завдання",
+    "assignWorker": "Призначити працівника",
+    "selectWorker": "Вибрати працівника",
+    "selectBatch": "Вибрати партію",
+    "completeAction": "Завершити дію",
+    "unassigned": "Не призначено",
+    "inProgress": "В процесі",
+    "archive": "Архів"
   },
   "forbidden": {
     "title": "Доступ заборонено",
@@ -118,7 +127,15 @@
     "productRequired": "Продукт обов'язковий",
     "movmentTypeRequired": "Тип операції обов'язковий",
     "toZoneIdRequired": "Зона призначення обов'язкова",
-    "fromZoneIdRequired": "Зона відправлення обов'язкова"
+    "fromZoneIdRequired": "Зона відправлення обов'язкова",
+    "fieldsRequired": "Всі обов'язкові поля повинні бути заповнені",
+    "requiredFieldsMissing": "Не заповнені обов'язкові поля",
+    "supplierIdRequired": "Постачальник обов'язковий",
+    "statusRequired": "Статус обов'язковий",
+    "expectedDeliveryDateRequired": "Дата очікуваної доставки обов'язкова",
+    "supplyOrderIdRequired": "ID замовлення поставки обов'язковий",
+    "supplierNameRequired": "Назва постачальника обов'язкова",
+    "requiredFunctionMissing": "Не знайдено обов'язкову функцію"
   },
   "menu": {
     "name": "Меню",
@@ -351,7 +368,7 @@
       "confirmed": "Підтверджено",
       "shipped": "Відправлено",
       "completed": "Завершено",
-      "cancelled": "Скасовано"
+      "canceled": "Скасовано"
     },
     "paymentMethod": "Спосіб оплати",
     "paymentMethods": {
@@ -403,7 +420,9 @@
     "name": "Назва",
     "type": "Тип",
     "types": {
-      "PERCENTAGE": "Процентна",
+      "percentage": "Відсоткова",
+      "fixed": "Фіксована",
+      "PERCENTAGE": "Відсоткова",
       "FIXED": "Фіксована"
     },
     "value": "Значення",
@@ -434,5 +453,14 @@
     "m": "м",
     "kg": "кг",
     "currency": "₴"
+  },
+  "userWarehouses": {
+    "user": "Користувач",
+    "warehouse": "Склад",
+    "assignedAt": "Дата призначення",
+    "title": "Призначення складів",
+    "edit": "Редагувати призначення",
+    "create": "Створити призначення",
+    "assignment": "Призначення"
   }
 }

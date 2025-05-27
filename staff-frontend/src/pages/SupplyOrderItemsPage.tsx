@@ -137,10 +137,10 @@ const SupplyOrderItemsPage = () => {
     }
 
     if (!data.supply_order_id) {
-      throw new Error(t('error.supplyOrderIdRequired'));
+      throw new Error(t('errors.supplyOrderIdRequired'));
     }
     if (!data.product_id) {
-      throw new Error(t('error.productRequired'));
+      throw new Error(t('errors.productRequired'));
     }
     const processedData = {
       product_id: data.product_id,

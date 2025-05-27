@@ -89,7 +89,7 @@ const CategoriesPage = () => {
       }
     }
     if (!data.name) {
-      throw new Error(t('error.requiredFieldsMissing'));
+      throw new Error(t('errors.requiredFieldsMissing'));
     }
     await formHandler.handleSubmit({
       name: data.name,

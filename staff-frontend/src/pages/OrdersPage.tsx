@@ -137,7 +137,7 @@ const OrdersPage = () => {
 
   const handleSubmit = async (data: Partial<Order>) => {
     if (!data.status || !data.client_id || !data.warehouse_id || !data.total_amount) {
-      throw new Error(t('error.requiredFieldsMissing'));
+      throw new Error(t('errors.requiredFieldsMissing'));
     }
     await formHandler.handleSubmit({
       created_at: data.created_at ?? new Date().toISOString(),

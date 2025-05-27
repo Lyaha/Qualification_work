@@ -64,6 +64,7 @@ const ParkingSpotsPage = () => {
     {
       header: t('parkingSpots.status'),
       accessor: 'status',
+      format: (value) => t(`parkingSpots.types.${value}`),
     },
     {
       header: t('parkingSpots.reservedUntil'),

@@ -15,7 +15,7 @@ const useModalNavigation = <T extends Entity>(
   const { t } = useTranslation();
   const handleAdd = () => {
     if (!onOpenEdit) {
-      throw new Error(t('error.requiredFunctionMissing'));
+      throw new Error(t('errors.requiredFunctionMissing'));
     }
     setSelectedEntity(undefined);
     onOpenEdit();
@@ -23,7 +23,7 @@ const useModalNavigation = <T extends Entity>(
 
   const handleEdit = (entity: T) => {
     if (!onOpenEdit) {
-      throw new Error(t('error.requiredFunctionMissing'));
+      throw new Error(t('errors.requiredFunctionMissing'));
     }
     setSelectedEntity(entity);
     onOpenEdit();

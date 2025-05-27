@@ -11,11 +11,14 @@ export class OrderItem {
   @JoinColumn({ name: 'order_id' }) // Укажите имя внешнего ключа
   order!: Order;
 
+  @Column('uuid')
+  order_id!: string;
+
   @ManyToOne(() => Product)
   @JoinColumn({ name: 'product_id' }) // Укажите имя внешнего ключа
   product!: Product;
 
-  @Column()
+  @Column('uuid')
   product_id!: string;
 
   @Column()

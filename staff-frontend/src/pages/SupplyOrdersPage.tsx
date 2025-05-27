@@ -62,7 +62,7 @@ const SupplyOrdersPage = () => {
     {
       header: t('supplyOrders.status'),
       accessor: 'status',
-      format: (value) => t(`supplysupplyOrders.statuses.${value}`),
+      format: (value) => t(`supplyOrders.statuses.${value}`),
     },
     {
       header: t('supplyOrders.expectedDelivery'),
@@ -106,14 +106,14 @@ const SupplyOrdersPage = () => {
 
   const handleSubmit = async (data: Partial<SupplyOrder>) => {
     if (!data.supplier_id) {
-      throw new Error(t('error.supplierIdRequired'));
+      throw new Error(t('errors.supplierIdRequired'));
     }
     if (!data.status) {
-      throw new Error(t('error.statusRequired'));
+      throw new Error(t('errors.statusRequired'));
     }
 
     if (!data.expected_delivery_date) {
-      throw new Error(t('error.expectedDeliveryDateRequired'));
+      throw new Error(t('errors.expectedDeliveryDateRequired'));
     }
 
     await formHandler.handleSubmit({
@@ -175,7 +175,7 @@ const SupplyOrdersPage = () => {
             {
               label: 'supplyOrders.status',
               value: modalNav.selectedEntity?.status,
-              format: (value) => t(`supplysupplyOrders.statuses.${value}`),
+              format: (value) => t(`supplyOrders.statuses.${value}`),
             },
             {
               label: 'supplyOrders.expectedDelivery',

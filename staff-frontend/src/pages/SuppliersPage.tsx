@@ -91,7 +91,7 @@ const SuppliersPage = () => {
 
   const handleSubmit = async (data: Partial<Supplier>) => {
     if (!data.name) {
-      throw new Error(t('error.supplierNameRequired'));
+      throw new Error(t('errors.supplierNameRequired'));
     }
     await formHandler.handleSubmit({
       ...data,

@@ -8,6 +8,15 @@ export class Review {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
+  @Column('uuid')
+  user_id!: string;
+
+  @Column('uuid')
+  order_id!: string;
+
+  @Column('uuid')
+  product_id!: string;
+
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' }) // Укажите имя внешнего ключа
   user!: User;

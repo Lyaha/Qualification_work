@@ -108,7 +108,7 @@ const UsersPage = () => {
 
   const handleSubmit = async (data: Partial<User>) => {
     if (!data.email || !data.first_name || !data.last_name || !data.role) {
-      throw new Error(t('error.requiredFieldsMissing'));
+      throw new Error(t('errors.requiredFieldsMissing'));
     }
     await formHandler.handleSubmit({
       updated_at: data.updated_at ?? new Date().toISOString(),

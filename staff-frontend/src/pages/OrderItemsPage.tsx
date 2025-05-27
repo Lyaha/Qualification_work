@@ -94,7 +94,7 @@ const OrderItemsPage = () => {
       type: 'select',
       options: orders.map((o) => ({
         value: o.id,
-        label: `${t('orders.order')} #${o.id.slice(0, 8)}`,
+        label: `Order #${o.id.slice(0, 8)}`,
       })),
       required: true,
       hidden: !!orderId,
@@ -129,7 +129,7 @@ const OrderItemsPage = () => {
       data.order_id = orderId;
     }
     if (!data.product_id || !data.order_id) {
-      throw new Error(t('error.requiredFieldsMissing'));
+      throw new Error(t('errors.requiredFieldsMissing'));
     }
     const processedData = {
       product_id: data.product_id,
