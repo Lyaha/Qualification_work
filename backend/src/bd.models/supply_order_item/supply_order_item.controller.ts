@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nes
 import { SupplyOrderItemService } from './supply_order_item.service';
 import { SupplyOrderItem } from '../entity/supply_order_item.entity';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CreateSupplyOrderItemDto } from '../dto/supply-order-item.dto';
 
+@ApiTags('Supply Order Items')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')
 @Controller('supply-order-item')
@@ -11,11 +13,15 @@ export class SupplyOrderItemController {
   constructor(private readonly supplyOrderItemService: SupplyOrderItemService) {}
 
   @Post()
-  create(@Body() createSupplyOrderItemDto: Partial<SupplyOrderItem>): Promise<SupplyOrderItem> {
-    return this.supplyOrderItemService.create(createSupplyOrderItemDto);
+  @ApiOperation({ summary: 'Create new supply order item' })
+  @ApiResponse({ status: 201, description: 'Supply order item created successfully' })
+  create(@Body() createDto: CreateSupplyOrderItemDto): Promise<SupplyOrderItem> {
+    return this.supplyOrderItemService.create(createDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all supply order items' })
+  @ApiResponse({ status: 200, description: 'List of supply order items' })
   findAll(): Promise<SupplyOrderItem[]> {
     return this.supplyOrderItemService.findAll();
   }

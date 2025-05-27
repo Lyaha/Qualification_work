@@ -2,19 +2,29 @@ import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nes
 import { TaskService } from './task.service';
 import { Batch, CompleteTaskDto, Task, User } from '../entity';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../auth/current-user.decorator';
+import { CreateTaskDto } from '../dto/task.dto';
 
+@ApiTags('Tasks')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')
 @Controller('task')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
+  @Post()
+  @ApiOperation({ summary: 'Create new task' })
+  @ApiResponse({ status: 201, type: Task })
+  create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
+    return this.taskService.create(createTaskDto);
+  }
+
   @Get('/my')
+  @ApiOperation({ summary: 'Get my tasks' })
+  @ApiResponse({ status: 200, type: [Task] })
   findMyTasks(@CurrentUser() currentUser: User): Promise<Task[]> {
-    const task = this.taskService.findByField('worker_id', currentUser.id);
-    return task;
+    return this.taskService.findByField('worker_id', currentUser.id);
   }
 
   @Put('/complete/:id')
@@ -29,11 +39,6 @@ export class TaskController {
   @Get(':id/batches')
   async getBatchesForTask(@Param('id') id: string, @CurrentUser() user: User): Promise<Batch[]> {
     return this.taskService.getBatchesForTask(id, user);
-  }
-
-  @Post()
-  create(@Body() createTaskDto: Partial<Task>): Promise<Task> {
-    return this.taskService.create(createTaskDto);
   }
 
   @Get()

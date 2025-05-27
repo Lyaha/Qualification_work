@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nes
 import { SupplierService } from './supplier.service';
 import { Supplier } from '../entity/supplier.entity';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CreateSupplierDto } from '../dto/supplier.dto';
 
+@ApiTags('Suppliers')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')
 @Controller('supplier')
@@ -11,11 +13,15 @@ export class SupplierController {
   constructor(private readonly supplierService: SupplierService) {}
 
   @Post()
-  create(@Body() createSupplierDto: Partial<Supplier>): Promise<Supplier> {
-    return this.supplierService.create(createSupplierDto);
+  @ApiOperation({ summary: 'Create new supplier' })
+  @ApiResponse({ status: 201, type: Supplier })
+  create(@Body() createDto: CreateSupplierDto): Promise<Supplier> {
+    return this.supplierService.create(createDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all suppliers' })
+  @ApiResponse({ status: 200, type: [Supplier] })
   findAll(): Promise<Supplier[]> {
     return this.supplierService.findAll();
   }

@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nes
 import { OrderItemService } from './order_item.service';
 import { OrderItem } from '../entity/order_item.entity';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CreateOrderItemDto } from '../dto/order-item.dto';
 
+@ApiTags('Order Items')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')
 @Controller('order-item')
@@ -11,11 +13,15 @@ export class OrderItemController {
   constructor(private readonly orderItemService: OrderItemService) {}
 
   @Post()
-  create(@Body() createOrderItemDto: Partial<OrderItem>): Promise<OrderItem> {
+  @ApiOperation({ summary: 'Create new order item' })
+  @ApiResponse({ status: 201, description: 'Order item created' })
+  create(@Body() createOrderItemDto: CreateOrderItemDto): Promise<OrderItem> {
     return this.orderItemService.create(createOrderItemDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all order items' })
+  @ApiResponse({ status: 200, description: 'List of order items' })
   findAll(): Promise<OrderItem[]> {
     return this.orderItemService.findAll();
   }

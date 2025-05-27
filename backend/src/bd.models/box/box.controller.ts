@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nes
 import { BoxService } from './box.service';
 import { Box } from '../entity/box.entity';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CreateBoxDto } from '../dto/box.dto';
 
+@ApiTags('Boxes')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')
 @Controller('box')
@@ -11,11 +13,15 @@ export class BoxController {
   constructor(private readonly boxService: BoxService) {}
 
   @Post()
-  create(@Body() createBoxDto: Partial<Box>): Promise<Box> {
+  @ApiOperation({ summary: 'Create new box' })
+  @ApiResponse({ status: 201, type: Box })
+  create(@Body() createBoxDto: CreateBoxDto): Promise<Box> {
     return this.boxService.create(createBoxDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all boxes' })
+  @ApiResponse({ status: 200, type: [Box] })
   findAll(): Promise<Box[]> {
     return this.boxService.findAll();
   }

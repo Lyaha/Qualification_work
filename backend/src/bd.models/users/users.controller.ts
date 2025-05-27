@@ -14,11 +14,21 @@ import {
 import { UsersService } from './users.service';
 import { User, UserRole } from '../entity/user.entity';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { ApiBearerAuth, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiQuery,
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+} from '@nestjs/swagger';
 import { RoleGuard } from '../../auth/roles.guard';
 import { CurrentUser } from '../../auth/current-user.decorator';
 import { RolePermissions } from '../../auth/roles-hierarchy';
+import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
 
+@ApiTags('Users')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')
 @Controller('users')
@@ -27,20 +37,23 @@ export class UsersController {
 
   @Get()
   @UseGuards(RoleGuard)
+  @ApiOperation({ summary: 'Get all users' })
+  @ApiResponse({ status: 200, type: [User] })
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
   @Post()
   @UseGuards(RoleGuard)
-  create(@Body() data: Partial<User>): Promise<User> {
-    return this.usersService.create(data);
+  @ApiOperation({ summary: 'Create new user' })
+  @ApiResponse({ status: 201, type: User })
+  create(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.usersService.create(createUserDto);
   }
 
   @Get('/find')
-  @ApiQuery({ name: 'email', required: false })
-  @ApiQuery({ name: 'auth0_id', required: false })
-  @ApiOkResponse({ type: User })
+  @ApiOperation({ summary: 'Find user by email or auth0_id' })
+  @ApiResponse({ status: 200, type: User })
   async findByParam(
     @Query('email') email?: string,
     @Query('auth0_id') auth0_id?: string,
@@ -67,7 +80,9 @@ export class UsersController {
   }
 
   @Get('/me')
-  @ApiOkResponse({ type: User })
+  @ApiOperation({ summary: 'Get current user info' })
+  @ApiResponse({ status: 200, type: User })
+  @ApiResponse({ status: 403, description: 'User not authenticated' })
   async getCurrentUser(@CurrentUser() currentUser: User): Promise<User> {
     if (!currentUser) {
       throw new ForbiddenException('User not authenticated');
@@ -93,9 +108,12 @@ export class UsersController {
   }
 
   @Put('/user/:id')
+  @ApiOperation({ summary: 'Update user' })
+  @ApiParam({ name: 'id', description: 'User UUID' })
+  @ApiResponse({ status: 200, type: User })
   async update(
     @Param('id') id: string,
-    @Body() data: Partial<User>,
+    @Body() updateUserDto: UpdateUserDto,
     @CurrentUser() currentUser: User,
   ): Promise<User> {
     const targetUser = await this.usersService.findOne(id);
@@ -110,11 +128,12 @@ export class UsersController {
         throw new ForbiddenException('You do not have permission to edit this user');
       }
     }
-    return this.usersService.update(id, data);
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Get('/workers')
-  @ApiOkResponse({ type: [User] })
+  @ApiOperation({ summary: 'Get all warehouse workers' })
+  @ApiResponse({ status: 200, type: [User] })
   async getWorkers(): Promise<User[]> {
     return this.usersService.findByRole(UserRole.WORKER);
   }
@@ -132,6 +151,9 @@ export class UsersController {
   }
 
   @Delete('user/:id')
+  @ApiOperation({ summary: 'Delete user' })
+  @ApiParam({ name: 'id', description: 'User UUID' })
+  @ApiResponse({ status: 200, description: 'User deleted successfully' })
   async remove(@Param('id') id: string, @CurrentUser() currentUser: User): Promise<void> {
     const targetUser = await this.usersService.findOne(id);
     if (!targetUser) {

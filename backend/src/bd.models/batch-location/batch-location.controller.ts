@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nes
 import { BatchLocationService } from './batch-location.service';
 import { BatchLocation } from '../entity/batch-location.entity';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CreateBatchLocationDto } from '../dto/batch-location.dto';
 
+@ApiTags('Batch Locations')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')
 @Controller('batch-locations')
@@ -11,11 +13,15 @@ export class BatchLocationController {
   constructor(private readonly batchLocationService: BatchLocationService) {}
 
   @Post()
-  create(@Body() createBatchLocationDto: Partial<BatchLocation>): Promise<BatchLocation> {
-    return this.batchLocationService.create(createBatchLocationDto);
+  @ApiOperation({ summary: 'Create new batch location' })
+  @ApiResponse({ status: 201, type: BatchLocation })
+  create(@Body() createDto: CreateBatchLocationDto): Promise<BatchLocation> {
+    return this.batchLocationService.create(createDto);
   }
 
   @Get('batch/:batchId')
+  @ApiOperation({ summary: 'Get locations by batch ID' })
+  @ApiResponse({ status: 200, type: [BatchLocation] })
   findByBatchId(@Param('batchId') batchId: string): Promise<BatchLocation[]> {
     return this.batchLocationService.findByBatchId(batchId);
   }

@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nes
 import { LogService } from './log.service';
 import { Log } from '../entity/log.entity';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CreateLogDto } from '../dto/log.dto';
 
+@ApiTags('Logs')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')
 @Controller('log')
@@ -11,16 +13,23 @@ export class LogController {
   constructor(private readonly logService: LogService) {}
 
   @Post()
-  create(@Body() createLogDto: Partial<Log>): Promise<Log> {
+  @ApiOperation({ summary: 'Create new log entry' })
+  @ApiResponse({ status: 201, type: Log })
+  create(@Body() createLogDto: CreateLogDto): Promise<Log> {
     return this.logService.create(createLogDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all logs' })
+  @ApiResponse({ status: 200, type: [Log] })
   findAll(): Promise<Log[]> {
     return this.logService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get log by ID' })
+  @ApiResponse({ status: 200, type: Log })
+  @ApiResponse({ status: 404, description: 'Log not found' })
   findOne(@Param('id') id: string): Promise<Log> {
     return this.logService.findOne(id);
   }

@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nes
 import { PriceHistoryService } from './price_history.service';
 import { PriceHistory } from '../entity/price_history.entity';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CreatePriceHistoryDto } from '../dto/price-history.dto';
 
+@ApiTags('Price History')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')
 @Controller('price-history')
@@ -11,11 +13,15 @@ export class PriceHistoryController {
   constructor(private readonly priceHistoryService: PriceHistoryService) {}
 
   @Post()
-  create(@Body() createPriceHistoryDto: Partial<PriceHistory>): Promise<PriceHistory> {
-    return this.priceHistoryService.create(createPriceHistoryDto);
+  @ApiOperation({ summary: 'Create price history record' })
+  @ApiResponse({ status: 201, type: PriceHistory })
+  create(@Body() createDto: CreatePriceHistoryDto): Promise<PriceHistory> {
+    return this.priceHistoryService.create(createDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all price history records' })
+  @ApiResponse({ status: 200, type: [PriceHistory] })
   findAll(): Promise<PriceHistory[]> {
     return this.priceHistoryService.findAll();
   }

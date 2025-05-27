@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nes
 import { InventoryMovementService } from './inventory_movement.service';
 import { InventoryMovement } from '../entity/inventory_movement.entity';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CreateInventoryMovementDto } from '../dto/inventory-movement.dto';
 
+@ApiTags('Inventory Movements')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')
 @Controller('inventory-movement')
@@ -11,10 +13,10 @@ export class InventoryMovementController {
   constructor(private readonly inventoryMovementService: InventoryMovementService) {}
 
   @Post()
-  create(
-    @Body() createInventoryMovementDto: Partial<InventoryMovement>,
-  ): Promise<InventoryMovement> {
-    return this.inventoryMovementService.create(createInventoryMovementDto);
+  @ApiOperation({ summary: 'Create new inventory movement' })
+  @ApiResponse({ status: 201, type: InventoryMovement })
+  create(@Body() createDto: CreateInventoryMovementDto): Promise<InventoryMovement> {
+    return this.inventoryMovementService.create(createDto);
   }
 
   @Get()
