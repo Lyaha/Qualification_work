@@ -6,4 +6,5 @@ export type SupplyOrder = {
   status: SupplyOrderStatus;
   expected_delivery_date: string;
   created_at: string;
+  warehouse_id: string;
 };

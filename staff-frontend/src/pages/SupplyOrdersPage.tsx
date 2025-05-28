@@ -18,6 +18,8 @@ import {
   updateSupplyOrder,
   Supplier,
   getAllSuppliers,
+  Warehouse,
+  getWarehouses,
 } from '../api';
 import DetailModal from '../components/DetailModal';
 
@@ -39,6 +41,7 @@ const SupplyOrdersPage = () => {
     refetch: fetchSupplyOrders,
   } = useFetchData<SupplyOrder>(getAllSupplyOrders);
   const { data: suppliers } = useFetchData<Supplier>(getAllSuppliers);
+  const { data: warehouses } = useFetchData<Warehouse>(getWarehouses);
 
   // Универсальные хуки
   const { handleDelete, handleBulkDelete } = useCrudOperations<SupplyOrder>(
@@ -91,6 +94,13 @@ const SupplyOrdersPage = () => {
       required: true,
     },
     {
+      name: 'warehouse_id',
+      label: t('supplyOrders.warehouse'),
+      type: 'select',
+      options: warehouses.map((s) => ({ value: s.id, label: s.name })),
+      required: true,
+    },
+    {
       name: 'status',
       label: t('supplyOrders.status'),
       type: 'select',
@@ -115,8 +125,12 @@ const SupplyOrdersPage = () => {
     if (!data.expected_delivery_date) {
       throw new Error(t('errors.expectedDeliveryDateRequired'));
     }
+    if (!data.warehouse_id) {
+      throw new Error(t('errors.warehouseRequired'));
+    }
 
     await formHandler.handleSubmit({
+      warehouse_id: data.warehouse_id,
       supplier_id: data.supplier_id,
       status: data.status,
       created_at: data.created_at ?? new Date().toLocaleDateString(),

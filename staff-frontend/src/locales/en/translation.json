@@ -32,6 +32,8 @@
     "urgent": "Urgent",
     "quantity": "Quantity",
     "deadline": "Deadline",
+    "hideArchive": "Hide Archive",
+    "showArchive": "Show Archive",
     "unknownProduct": "Unknown Product",
     "legend": "Task Legend",
     "legendItems": {

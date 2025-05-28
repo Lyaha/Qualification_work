@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { MyTasks, Task } from '../api';
 import { useTranslation } from 'react-i18next';
 
@@ -23,6 +23,10 @@ const useMyTasks = () => {
       setLoading(false);
     }
   }, [t]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [handleSearch]);
 
   return { tasks, loading, error, handleSearch };
 };
