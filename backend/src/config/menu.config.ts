@@ -280,6 +280,7 @@ export const menuConfig: MenuItem[] = [
           en: 'Roles & Permissions',
         },
         path: '/roles',
+        hidden: true,
         allowedRoles: [UserRole.ADMIN, UserRole.DIRECTOR],
       },
     ],

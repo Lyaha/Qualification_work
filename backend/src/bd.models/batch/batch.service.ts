@@ -16,7 +16,10 @@ export class BatchService {
   }
 
   findAll(): Promise<Batch[]> {
-    return this.batchsRepository.find({ relations: ['product'] });
+    return this.batchsRepository.find({
+      order: { expiration_date: 'ASC' },
+      relations: ['product'],
+    });
   }
 
   async findOne(id: string): Promise<Batch> {
